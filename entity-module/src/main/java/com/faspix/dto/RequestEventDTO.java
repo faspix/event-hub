@@ -1,10 +1,12 @@
 package com.faspix.dto;
 
 import com.faspix.utility.Location;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
+@Data
 public class RequestEventDTO {
 
     private String title;

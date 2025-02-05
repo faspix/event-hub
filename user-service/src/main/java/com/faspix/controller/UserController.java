@@ -48,6 +48,13 @@ public class UserController {
                 : ResponseEntity.internalServerError().build();
     }
 
-
+    @GetMapping("{userId}")
+    public ResponseUserDTO findUserById(
+            @PathVariable Long userId
+    ) {
+        return userMapper.userToResponse(
+                userService.findUserById(userId)
+        );
+    }
 
 }

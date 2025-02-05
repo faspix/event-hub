@@ -2,7 +2,9 @@ package com.faspix.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
+@Data
 public class RequestUserDTO {
 
     @NotBlank(message = "Name shouldn't be blank")

@@ -2,10 +2,12 @@ package com.faspix.entity;
 
 import com.faspix.utility.EventState;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.OffsetDateTime;
 
 @Entity
+@Data
 public class Event {
 
     @Id

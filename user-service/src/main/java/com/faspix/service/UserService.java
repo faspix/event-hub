@@ -10,6 +10,10 @@ public interface UserService {
 
     User editUser(Long userId, RequestUserDTO userDTO);
 
+    User findUserById(Long userId);
+
+    User findUserByEmail(String email);
+
     Boolean deleteUser(Long userId);
 
 }

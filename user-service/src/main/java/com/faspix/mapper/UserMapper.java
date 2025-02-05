@@ -5,7 +5,7 @@ import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
     ResponseUserDTO userToResponse(User user);
