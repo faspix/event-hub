@@ -9,8 +9,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/entity-module" />
+            <option value="$PROJECT_DIR$/common-dto" />
             <option value="$PROJECT_DIR$/event-service" />
+            <option value="$PROJECT_DIR$/registry" />
             <option value="$PROJECT_DIR$/user-service" />
           </set>
         </option>

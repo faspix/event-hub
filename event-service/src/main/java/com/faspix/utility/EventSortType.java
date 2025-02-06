@@ -1,6 +1,8 @@
 package com.faspix.utility;
 
-public class EventSortType {
+public enum EventSortType {
 
+    EVENT_DATE,
+    VIEWS
 
 }

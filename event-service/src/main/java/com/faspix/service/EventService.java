@@ -3,9 +3,24 @@ package com.faspix.service;
 import com.faspix.dto.RequestEventDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.entity.Event;
+import com.faspix.utility.EventSortType;
+import jakarta.persistence.criteria.CriteriaBuilder;
+
+import java.time.OffsetDateTime;
+import java.util.List;
 
 public interface EventService {
 
     Event createEvent(Long creatorId, RequestEventDTO eventDTO);
+
+    Event editEvent(Long userId, Long eventId, RequestEventDTO eventDTO);
+
+    List<Event> findEvents(String text, List<Integer> categories, Boolean paid, OffsetDateTime rangeStart,
+                           OffsetDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
+                           Integer page, Integer size);
+
+    Event findEventById(Long eventId);
+
+    List<Event> findAllUsersEvents(Long userId, Integer page, Integer size);
 
 }

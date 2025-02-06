@@ -1,5 +1,6 @@
 rootProject.name = 'event-hub'
 include 'event-service'
 include 'user-service'
-include 'entity-module'
+include 'registry'
+include 'common-dto'
 

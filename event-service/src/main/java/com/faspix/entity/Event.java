@@ -42,7 +42,7 @@ public class Event {
 
     private OffsetDateTime publishedOn;
 
-    private Boolean requestPreModeration;
+    private Boolean requestModeration;
 
     private EventState state;
 
