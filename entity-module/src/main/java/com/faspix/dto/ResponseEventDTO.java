@@ -1,6 +1,6 @@
 package com.faspix.dto;
 
-import com.faspix.utility.EventState;
+import com.faspix.enums.EventState;
 import com.faspix.utility.Location;
 import lombok.Data;
 

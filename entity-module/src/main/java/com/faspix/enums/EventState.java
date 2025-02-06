@@ -1,4 +1,4 @@
-package com.faspix.utility;
+package com.faspix.enums;
 
 public enum EventState {
 

@@ -27,8 +27,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User editUser(Long userId, RequestUserDTO userDTO) {
-        User user = findUserById(userId);
-        return null;
+        findUserById(userId);
+        User updatedUser = userMapper.requestToUser(userDTO);
+        updatedUser.setUserId(userId);
+        return userRepository.save(updatedUser);
     }
 
     @Override
@@ -48,6 +50,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean deleteUser(Long userId) {
-        return null;
+        findUserById(userId);
+        userRepository.deleteById(userId);
+        return true;
     }
 }

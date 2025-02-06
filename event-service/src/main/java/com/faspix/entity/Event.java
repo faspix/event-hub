@@ -1,6 +1,7 @@
 package com.faspix.entity;
 
-import com.faspix.utility.EventState;
+import com.faspix.enums.EventState;
+import com.faspix.utility.Location;
 import jakarta.persistence.*;
 import lombok.Data;
 
