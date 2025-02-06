@@ -2,9 +2,11 @@ package com.faspix.entity;
 
 import com.faspix.enums.EventState;
 import com.faspix.utility.Location;
+import com.faspix.dto.ResponseUserShortDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -21,15 +23,15 @@ public class Event {
 
     // category
 
-    // confirmedRequests
+    private Integer confirmedRequests;
 
     private OffsetDateTime creationDate;
 
     private String description;
 
-    private OffsetDateTime eventDate;
+    private LocalDateTime eventDate;
 
-    // Initiator
+    private Long initiatorId;
 
     @Embedded
     private Location location;
@@ -44,6 +46,6 @@ public class Event {
 
     private EventState state;
 
-    //views
+    private Integer views;
 
 }
