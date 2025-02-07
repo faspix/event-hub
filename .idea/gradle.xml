@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/categories-service" />
             <option value="$PROJECT_DIR$/category-service" />
             <option value="$PROJECT_DIR$/common-dto" />
+            <option value="$PROJECT_DIR$/compilation-service" />
             <option value="$PROJECT_DIR$/event-service" />
             <option value="$PROJECT_DIR$/registry" />
             <option value="$PROJECT_DIR$/user-service" />

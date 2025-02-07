@@ -21,13 +21,13 @@ public class EventMapperUtil {
     private final UserMapper userMapper;
 
     @Named("getInitiator")
-    public ResponseUserShortDTO getInitiator(Long initiatorId) {
+    ResponseUserShortDTO getInitiator(Long initiatorId) {
         ResponseUserDTO responseUserDTO = userServiceClient.getUserById(initiatorId);
         return userMapper.responseUserDtoToResponseUserShortDto(responseUserDTO);
     }
 
     @Named("getCategoryDTO")
-    public ResponseCategoryDTO getCategoryDTO(Long categoryId) {
+    ResponseCategoryDTO getCategoryDTO(Long categoryId) {
         return categoryServiceClient.getCategoryById(categoryId);
     }
 
