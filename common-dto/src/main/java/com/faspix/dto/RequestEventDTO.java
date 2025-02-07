@@ -17,7 +17,7 @@ public class RequestEventDTO {
     private String annotation;
 
     @NotNull(message = "Category shouldn't be null")
-    private Integer categoryId;
+    private Long categoryId;
 
     @NotNull(message = "Description shouldn't be null")
     private String description;
@@ -35,11 +35,11 @@ public class RequestEventDTO {
 
     private Boolean requestModeration;
 
-    public Integer getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Integer categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 

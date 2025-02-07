@@ -23,17 +23,7 @@ public class Event {
 
     private String annotation;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "event_category",
-//            joinColumns = @JoinColumn(name = "event_id"),
-//            inverseJoinColumns = @JoinColumn(name = "category_id")
-//    )
-
-
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    private Long categoryId;
 
     private Integer confirmedRequests;
 

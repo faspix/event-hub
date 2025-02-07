@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> findCategories(Integer page, Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
+        Pageable pageRequest = PageRequestMaker.makePageRequest(page, size);
         return categoryRepository.findAll(pageRequest)
                 .stream()
                 .toList();

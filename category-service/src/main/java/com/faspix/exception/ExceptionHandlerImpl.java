@@ -10,7 +10,7 @@ public class ExceptionHandlerImpl {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ExceptionResponse handleUserNotFoundException(final EventNotFoundException e) {
+    private ExceptionResponse handleUserNotFoundException(final CategoryNotFoundException e) {
         return new ExceptionResponse(HttpStatus.BAD_REQUEST, e);
     }
 
