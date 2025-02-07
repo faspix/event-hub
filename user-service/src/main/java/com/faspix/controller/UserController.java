@@ -28,9 +28,9 @@ public class UserController {
         );
     }
 
-    @PatchMapping("{userId}")
+    @PatchMapping
     public ResponseUserDTO editUser(
-            @PathVariable Long userId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestBody @Valid RequestUserDTO userDTO
     ) {
         return userMapper.userToResponse(
@@ -38,9 +38,9 @@ public class UserController {
         );
     }
 
-    @DeleteMapping("{userId}")
+    @DeleteMapping
     public ResponseEntity<HttpStatus> deleteUser(
-            @PathVariable Long userId
+            @RequestHeader("X-User-Id") Long userId
     ) {
         Boolean result = userService.deleteUser(userId);
         return result ?

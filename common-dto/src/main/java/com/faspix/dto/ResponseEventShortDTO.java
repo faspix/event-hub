@@ -2,6 +2,7 @@ package com.faspix.dto;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ResponseEventShortDTO {
 
@@ -11,7 +12,7 @@ public class ResponseEventShortDTO {
 
     private String annotation;
 
-    // category
+    private ResponseCategoryDTO category;
 
     private Integer confirmedRequests;
 
@@ -22,6 +23,14 @@ public class ResponseEventShortDTO {
     private Boolean paid;
 
     private Integer views;
+
+    public ResponseCategoryDTO getCategory() {
+        return category;
+    }
+
+    public void setCategory(ResponseCategoryDTO category) {
+        this.category = category;
+    }
 
     public Long getEventId() {
         return eventId;

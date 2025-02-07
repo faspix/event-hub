@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class RequestEventDTO {
 
@@ -15,8 +16,8 @@ public class RequestEventDTO {
     @NotBlank(message = "Annotation shouldn't be blank")
     private String annotation;
 
-    //@NotNull(message = "Category shouldn't be null")
-    //private category;
+    @NotNull(message = "Category shouldn't be null")
+    private Integer categoryId;
 
     @NotNull(message = "Description shouldn't be null")
     private String description;
@@ -34,6 +35,13 @@ public class RequestEventDTO {
 
     private Boolean requestModeration;
 
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public String getTitle() {
         return title;

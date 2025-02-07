@@ -8,9 +8,11 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Entity
 @Data
+@Table(name = "events")
 public class Event {
 
     @Id
@@ -21,7 +23,17 @@ public class Event {
 
     private String annotation;
 
-    // category
+//    @ManyToMany
+//    @JoinTable(
+//            name = "event_category",
+//            joinColumns = @JoinColumn(name = "event_id"),
+//            inverseJoinColumns = @JoinColumn(name = "category_id")
+//    )
+
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     private Integer confirmedRequests;
 

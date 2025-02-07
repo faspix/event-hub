@@ -5,6 +5,7 @@ import com.faspix.utility.Location;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 public class ResponseEventDTO {
 
@@ -14,7 +15,7 @@ public class ResponseEventDTO {
 
     private String annotation;
 
-    // category
+    private ResponseCategoryDTO category;
 
     private Integer confirmedRequests;
 
@@ -41,6 +42,14 @@ public class ResponseEventDTO {
     private EventState state;
 
     private Integer views;
+
+    public ResponseCategoryDTO getCategory() {
+        return category;
+    }
+
+    public void setCategory(ResponseCategoryDTO category) {
+        this.category = category;
+    }
 
     public Long getEventId() {
         return eventId;
