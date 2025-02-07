@@ -3,4 +3,6 @@ include 'event-service'
 include 'user-service'
 include 'registry'
 include 'common-dto'
+include 'categories-service'
+include 'category-service'
 
