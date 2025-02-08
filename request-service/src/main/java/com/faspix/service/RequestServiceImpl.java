@@ -5,6 +5,7 @@ import com.faspix.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.entity.Request;
+import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
 import com.faspix.exception.RequestNotFountException;
 import com.faspix.exception.ValidationException;
@@ -39,9 +40,9 @@ public class RequestServiceImpl implements RequestService {
         ResponseEventDTO event = eventServiceClient.findEventById(eventId);
         if (event.getInitiator().getUserId().equals(requesterId))
             throw new ValidationException("Event initiator cannot leave a request to participate in his event");
-//        if (! event.getState().equals(EventState.PUBLISHED)) TODO: fix
+//        if (! EventState.PUBLISHED.equals(event.getState()))
 //            throw new ValidationException("You cannot participate in an unpublished event");
-        if (event.getConfirmedRequests() >= event.getParticipantLimit())
+        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit())
             throw new ValidationException("The event has reached the limit of requests for participation");
         Request request = new Request(eventId, requesterId, OffsetDateTime.now());
 
@@ -70,9 +71,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<Request> getRequestsToMyEvent(Long requesterId, Long eventId, Integer page, Integer size) {
-        if (! eventServiceClient.findEventById(eventId).getInitiator().getUserId().equals(requesterId)) {
-            throw new ValidationException("User with id " + requesterId + " doesn't own event with id " + eventId);
-        }
+        validateOwnership(requesterId, eventId, eventServiceClient.findEventById(eventId));
         Pageable pageRequest = makePageRequest(page, size);
         return requestRepository.findRequestsByEventId(eventId, pageRequest);
     }
@@ -88,21 +87,24 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public List<Request> setRequestsStatus(Long userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
         ResponseEventDTO eventDTO = eventServiceClient.findEventById(eventId);
-        if (! eventDTO.getInitiator().getUserId().equals(userId)) {
-            throw new ValidationException("User with id " + userId + " doesn't own event with id " + eventId);
-        }
+        validateOwnership(userId, eventId, eventDTO);
+        int limit = 0;
         int participantLimit = eventDTO.getParticipantLimit();
-        int acceptedRequest = requestRepository.getAcceptedEventsCount(eventId);
-        int limit = participantLimit - acceptedRequest;
-        if (limit <= 0) {
-            throw new ValidationException("Request limit to event with id " + eventId + " has been reached");
+        if (participantLimit != 0) {
+            int acceptedRequest = requestRepository.getAcceptedEventsCount(eventId);
+            limit = participantLimit - acceptedRequest;
+            if (limit <= 0) {
+                throw new ValidationException("Request limit to event with id " + eventId + " has been reached");
+            }
+        } else {
+            limit = Integer.MAX_VALUE;
         }
 
         int counter = 0;
         List<Request> requests = new ArrayList<>();
         for (Long requestId : requestDTO.getRequestIds()) {
             Request request = findRequestById(requestId);
-            if (request.getState().equals(ParticipationRequestState.PENDING)) {
+            if (ParticipationRequestState.PENDING.equals(request.getState())) {
                 if (requestDTO.getStatus() == ParticipationRequestState.CONFIRMED && counter < limit) {
                     request.setState(ParticipationRequestState.CONFIRMED);
                     counter++;
@@ -134,4 +136,11 @@ public class RequestServiceImpl implements RequestService {
         Pageable pageable = makePageRequest(page, size);
         return requestRepository.findRequestsByRequesterId(requesterId, pageable);
     }
+
+    private static void validateOwnership(Long userId, Long eventId, ResponseEventDTO eventDTO) {
+        if (! eventDTO.getInitiator().getUserId().equals(userId)) {
+            throw new ValidationException("User with id " + userId + " doesn't own event with id " + eventId);
+        }
+    }
+
 }

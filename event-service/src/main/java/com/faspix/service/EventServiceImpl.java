@@ -114,7 +114,7 @@ public class EventServiceImpl implements EventService {
         Event event = findEventById(eventId);
         if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1)))
             throw new ValidationException("Event with id " + eventId + " starts in less than an hour");
-        if (! event.getState().equals(EventState.PENDING))
+        if (! EventState.PENDING.equals(event.getState()))
             throw new ValidationException("Event must be in PENDING state");
 
         updateNotNullFields(requestDTO, event);
