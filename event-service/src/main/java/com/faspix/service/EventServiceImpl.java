@@ -11,9 +11,12 @@ import com.faspix.mapper.EventMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.utility.EventSortType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -63,10 +66,17 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> findEvents(String text, List<Integer> categories, Boolean paid,
-                                  OffsetDateTime rangeStart, OffsetDateTime rangeEnd,
+                                  LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                   Boolean onlyAvailable, EventSortType sort, Integer page, Integer size) {
+//        Sort sortType = Sort
+        Pageable pageRequest = makePageRequest(page, size,
+                Sort.by(sort.equals(EventSortType.EVENT_DATE) ? "eventDate" : "views"));
+//        sort.equals(EventSortType.EVENT_DATE) ? "eventDate" : "views"
 
-        return List.of();
+        System.out.println("->>>>>>>>> " + rangeEnd);
+        Page<Event> events = eventRepository.searchEvent(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, pageRequest);
+
+        return events.stream().toList();
     }
 
     @Override

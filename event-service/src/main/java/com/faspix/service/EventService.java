@@ -6,6 +6,8 @@ import com.faspix.entity.Event;
 import com.faspix.utility.EventSortType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -15,8 +17,8 @@ public interface EventService {
 
     Event editEvent(Long userId, Long eventId, RequestEventDTO eventDTO);
 
-    List<Event> findEvents(String text, List<Integer> categories, Boolean paid, OffsetDateTime rangeStart,
-                           OffsetDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
+    List<Event> findEvents(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart,
+                           LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
                            Integer page, Integer size);
 
     Event findEventById(Long eventId);

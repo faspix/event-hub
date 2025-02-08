@@ -6,10 +6,13 @@ import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.mapper.EventMapper;
 import com.faspix.service.EventService;
 import com.faspix.utility.EventSortType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -57,11 +60,11 @@ public class EventController {
 
     @GetMapping
     public List<ResponseEventShortDTO> findEvents(
-            @RequestParam String text,
+            @RequestParam(defaultValue = "") String text,
             @RequestParam(required = false) List<Integer> categories,
             @RequestParam(required = false) Boolean paid,
-            @RequestParam(required = false) OffsetDateTime rangeStart,
-            @RequestParam(required = false) OffsetDateTime rangeEnd,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "false") Boolean onlyAvailable,
             @RequestParam(defaultValue = "EVENT_DATE") EventSortType sort,
             @RequestParam(defaultValue = "0") Integer page,
