@@ -1,5 +1,6 @@
 package com.faspix.controller;
 
+import com.faspix.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestEventDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseEventShortDTO;
@@ -10,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -85,7 +88,12 @@ public class EventController {
         );
     }
 
-
+    @PostMapping("/requests")
+    public ResponseEntity<HttpStatus> setConfirmedRequestsNumber(
+            @RequestBody ConfirmedRequestsDTO requestsDTO
+    ) {
+        return eventService.setConfirmedRequestsNumber(requestsDTO);
+    }
 
 
 }

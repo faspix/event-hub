@@ -1,6 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.client.UserServiceClient;
+import com.faspix.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestEventDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.Event;
@@ -14,7 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -92,6 +96,15 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findEventsByInitiatorId(userId, pageRequest)
                 .stream()
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
+        Event event = findEventById(requestsDTO.getEventId());
+        event.setConfirmedRequests(requestsDTO.getCount());
+        eventRepository.save(event);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
 

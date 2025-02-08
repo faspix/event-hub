@@ -1,17 +1,15 @@
 package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
+import com.faspix.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseEventDTO;
-import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Request;
-import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
 import com.faspix.exception.RequestNotFountException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
-import com.faspix.utility.PageRequestMaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
@@ -52,7 +48,10 @@ public class RequestServiceImpl implements RequestService {
         if (event.getRequestModeration()) {
             request.setState(ParticipationRequestState.PENDING);
         } else {
-            request.setState(ParticipationRequestState.ACCEPTED);
+            request.setState(ParticipationRequestState.CONFIRMED);
+            eventServiceClient.setConfirmedRequestsNumber(
+                    new ConfirmedRequestsDTO(eventId, event.getConfirmedRequests() + 1)
+            );
         }
 
         return requestRepository.save(request);
@@ -102,15 +101,15 @@ public class RequestServiceImpl implements RequestService {
         int counter = 0;
         List<Request> requests = new ArrayList<>();
         for (Long requestId : requestDTO.getRequestIds()) {
-            Request r = findRequestById(requestId);
-            if (r.getState().equals(ParticipationRequestState.PENDING)) {
-                if (requestDTO.getStatus() == ParticipationRequestState.ACCEPTED && counter < limit) {
-                    r.setState(ParticipationRequestState.ACCEPTED);
+            Request request = findRequestById(requestId);
+            if (request.getState().equals(ParticipationRequestState.PENDING)) {
+                if (requestDTO.getStatus() == ParticipationRequestState.CONFIRMED && counter < limit) {
+                    request.setState(ParticipationRequestState.CONFIRMED);
                     counter++;
                 } else {
-                    r.setState(ParticipationRequestState.CANCELED);
+                    request.setState(ParticipationRequestState.REJECTED);
                 }
-                requests.add(r);
+                requests.add(request);
             }
         }
         requestRepository.saveAllAndFlush(requests);
@@ -119,12 +118,13 @@ public class RequestServiceImpl implements RequestService {
             List<Request> remainingPendingRequests = requestRepository
                     .findRequestsByEventIdAndState(eventId, ParticipationRequestState.PENDING);
             if (! remainingPendingRequests.isEmpty()) {
-                remainingPendingRequests.forEach(r -> r.setState(ParticipationRequestState.CANCELED));
+                remainingPendingRequests.forEach(r -> r.setState(ParticipationRequestState.REJECTED));
                 requestRepository.saveAll(remainingPendingRequests);
             }
         }
 
-        // TODO: set number of confirmed requests in event-service  (counter var)
+        Integer confirmedRequests = eventDTO.getConfirmedRequests() + counter;
+        eventServiceClient.setConfirmedRequestsNumber(new ConfirmedRequestsDTO(eventId, confirmedRequests));
 
         return requests;
     }

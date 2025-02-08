@@ -1,10 +1,13 @@
 package com.faspix.service;
 
+import com.faspix.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestEventDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.entity.Event;
 import com.faspix.utility.EventSortType;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,4 +28,5 @@ public interface EventService {
 
     List<Event> findAllUsersEvents(Long userId, Integer page, Integer size);
 
+    ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 }
