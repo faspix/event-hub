@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/compilation-service" />
             <option value="$PROJECT_DIR$/event-service" />
             <option value="$PROJECT_DIR$/registry" />
+            <option value="$PROJECT_DIR$/request-service" />
             <option value="$PROJECT_DIR$/user-service" />
           </set>
         </option>

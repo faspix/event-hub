@@ -46,6 +46,7 @@ public class Event {
 
     private Boolean requestModeration;
 
+    @Enumerated(EnumType.STRING)
     private EventState state;
 
     private Integer views;
