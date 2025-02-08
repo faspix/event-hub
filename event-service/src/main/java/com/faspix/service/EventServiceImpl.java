@@ -3,9 +3,11 @@ package com.faspix.service;
 import com.faspix.client.UserServiceClient;
 import com.faspix.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
+import com.faspix.enums.EventStateAction;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
@@ -105,6 +107,47 @@ public class EventServiceImpl implements EventService {
         event.setConfirmedRequests(requestsDTO.getCount());
         eventRepository.save(event);
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    @Override
+    public Event adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO) {
+        Event event = findEventById(eventId);
+        if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1)))
+            throw new ValidationException("Event with id " + eventId + " starts in less than an hour");
+        if (! event.getState().equals(EventState.PENDING))
+            throw new ValidationException("Event must be in PENDING state");
+
+        updateNotNullFields(requestDTO, event);
+
+        if (EventStateAction.PUBLISH_EVENT.equals(requestDTO.getStateAction())) {
+            event.setState(EventState.PUBLISHED);
+            event.setPublishedOn(OffsetDateTime.now());
+        } else if (EventStateAction.REJECT_EVENT.equals(requestDTO.getStateAction())) {
+            event.setState(EventState.CANCELED);
+        }
+
+        return eventRepository.save(event);
+    }
+
+    private static void updateNotNullFields(RequestUpdateEventAdminDTO requestDTO, Event event) {
+        if (requestDTO.getAnnotation() != null)
+            event.setAnnotation(requestDTO.getAnnotation());
+        if (requestDTO.getCategoryId() != null)
+            event.setCategoryId(requestDTO.getCategoryId());
+        if (requestDTO.getDescription() != null)
+            event.setDescription(requestDTO.getDescription());
+        if (requestDTO.getEventDate() != null)
+            event.setEventDate(requestDTO.getEventDate());
+        if (requestDTO.getLocation() != null)
+            event.setLocation(requestDTO.getLocation());
+        if (requestDTO.getPaid() != null)
+            event.setPaid(requestDTO.getPaid());
+        if (requestDTO.getParticipantLimit() != null)
+            event.setParticipantLimit(requestDTO.getParticipantLimit());
+        if (requestDTO.getRequestModeration() != null)
+            event.setRequestModeration(requestDTO.getRequestModeration());
+        if (requestDTO.getTitle() != null)
+            event.setTitle(requestDTO.getTitle());
     }
 
 

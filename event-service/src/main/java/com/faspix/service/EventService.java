@@ -2,6 +2,7 @@ package com.faspix.service;
 
 import com.faspix.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.entity.Event;
 import com.faspix.utility.EventSortType;
@@ -29,4 +30,6 @@ public interface EventService {
     List<Event> findAllUsersEvents(Long userId, Integer page, Integer size);
 
     ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
+
+    Event adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
 }

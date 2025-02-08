@@ -1,9 +1,6 @@
 package com.faspix.controller;
 
-import com.faspix.dto.ConfirmedRequestsDTO;
-import com.faspix.dto.RequestEventDTO;
-import com.faspix.dto.ResponseEventDTO;
-import com.faspix.dto.ResponseEventShortDTO;
+import com.faspix.dto.*;
 import com.faspix.mapper.EventMapper;
 import com.faspix.service.EventService;
 import com.faspix.utility.EventSortType;
@@ -95,5 +92,14 @@ public class EventController {
         return eventService.setConfirmedRequestsNumber(requestsDTO);
     }
 
+    @PatchMapping("/admin/{eventId}")
+    public ResponseEventDTO adminEditEvent(
+            @PathVariable Long eventId,
+            @RequestBody RequestUpdateEventAdminDTO requestDTO
+    ) {
+        return eventMapper.eventToResponse(
+                eventService.adminEditEvent(eventId, requestDTO)
+        );
+    }
 
 }
