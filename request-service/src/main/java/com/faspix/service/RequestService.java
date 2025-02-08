@@ -10,7 +10,7 @@ public interface RequestService {
 
     Request cancelRequest(Long requesterId, Long eventId);
 
-    Request getRequestsToEvent(Long requesterId, Long eventId);
+    List<Request> getRequestsToMyEvent(Long requesterId, Long eventId, Integer page, Integer size);
 
     Request findRequestById(Long requestId);
 

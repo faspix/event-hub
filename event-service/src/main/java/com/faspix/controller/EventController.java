@@ -46,7 +46,7 @@ public class EventController {
         );
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public List<ResponseEventShortDTO> findAllUserEvents(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") Integer page,

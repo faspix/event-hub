@@ -2,6 +2,7 @@ package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.ResponseEventDTO;
+import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Request;
 import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
@@ -54,12 +55,22 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public Request cancelRequest(Long requesterId, Long eventId) {
-        return null;
+        Request request = requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId);
+        if (request == null) {
+            throw new RequestNotFountException("User with id " + requesterId +
+                    " didn't leave a request to participate in event with id " + eventId);
+        }
+        requestRepository.delete(request);
+        return request;
     }
 
     @Override
-    public Request getRequestsToEvent(Long requesterId, Long eventId) {
-        return null;
+    public List<Request> getRequestsToMyEvent(Long requesterId, Long eventId, Integer page, Integer size) {
+        if (! eventServiceClient.findEventById(eventId).getInitiator().getUserId().equals(requesterId)) {
+            throw new ValidationException("User with id " + requesterId + " doesn't own event with id " + eventId);
+        }
+        Pageable pageRequest = makePageRequest(page, size);
+        return requestRepository.findRequestsByEventId(eventId, pageRequest);
     }
 
     @Override

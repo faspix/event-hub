@@ -13,4 +13,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     List<Request> findRequestsByRequesterId(Long requesterId, Pageable pageable);
 
+    List<Request> findRequestsByEventId(Long eventId, Pageable pageable);
+
 }

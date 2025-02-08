@@ -29,9 +29,9 @@ public class RequestController {
         );
     }
 
-    @PatchMapping("/events/{eventId}")
+    @PatchMapping("/events/{eventId}/cancel")
     public ResponseParticipationRequestDTO cancelRequest(
-            @HeaderParam("X-User-Id") Long requesterId,
+            @RequestHeader("X-User-Id") Long requesterId,
             @PathVariable Long eventId
     ) {
         return requestMapper.participationRequestToResponse(
@@ -40,18 +40,21 @@ public class RequestController {
     }
 
     @GetMapping("/events/{eventId}")
-    public ResponseParticipationRequestDTO getRequestsToEvent(
-            @HeaderParam("X-User-Id") Long requesterId,
-            @PathVariable Long eventId
+    public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(
+            @RequestHeader("X-User-Id") Long requesterId,
+            @PathVariable Long eventId,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) {
-        return requestMapper.participationRequestToResponse(
-                requestService.getRequestsToEvent(requesterId, eventId)
-        );
+        return requestService.getRequestsToMyEvent(requesterId, eventId, page, size)
+                .stream()
+                .map(requestMapper::participationRequestToResponse)
+                .toList();
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/users")
     public List<ResponseParticipationRequestDTO> getUsersRequests(
-            @PathVariable Long userId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
 
