@@ -1,5 +1,6 @@
 package com.faspix.service;
 
+import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.entity.Request;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface RequestService {
 
     Request findRequestById(Long requestId);
 
-    Request setRequestStatus(Long userId, Long requesterId, Long eventId);
+    List<Request> setRequestsStatus(Long userId, Long eventId, RequestParticipationRequestDTO requestDTO);
 
     List<Request> getUsersRequests(Long requesterId, Integer page, Integer size);
 

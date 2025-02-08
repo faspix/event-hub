@@ -1,6 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
+import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Request;
@@ -14,9 +15,13 @@ import com.faspix.utility.PageRequestMaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
@@ -38,7 +43,7 @@ public class RequestServiceImpl implements RequestService {
         ResponseEventDTO event = eventServiceClient.findEventById(eventId);
         if (event.getInitiator().getUserId().equals(requesterId))
             throw new ValidationException("Event initiator cannot leave a request to participate in his event");
-//        if (! event.getState().equals(EventState.PUBLISHED))
+//        if (! event.getState().equals(EventState.PUBLISHED)) TODO: fix
 //            throw new ValidationException("You cannot participate in an unpublished event");
         if (event.getConfirmedRequests() >= event.getParticipantLimit())
             throw new ValidationException("The event has reached the limit of requests for participation");
@@ -81,8 +86,47 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Request setRequestStatus(Long userId, Long requesterId, Long eventId) {
-        return null;
+    @Transactional
+    public List<Request> setRequestsStatus(Long userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
+        ResponseEventDTO eventDTO = eventServiceClient.findEventById(eventId);
+        if (! eventDTO.getInitiator().getUserId().equals(userId)) {
+            throw new ValidationException("User with id " + userId + " doesn't own event with id " + eventId);
+        }
+        int participantLimit = eventDTO.getParticipantLimit();
+        int acceptedRequest = requestRepository.getAcceptedEventsCount(eventId);
+        int limit = participantLimit - acceptedRequest;
+        if (limit <= 0) {
+            throw new ValidationException("Request limit to event with id " + eventId + " has been reached");
+        }
+
+        int counter = 0;
+        List<Request> requests = new ArrayList<>();
+        for (Long requestId : requestDTO.getRequestIds()) {
+            Request r = findRequestById(requestId);
+            if (r.getState().equals(ParticipationRequestState.PENDING)) {
+                if (requestDTO.getStatus() == ParticipationRequestState.ACCEPTED && counter < limit) {
+                    r.setState(ParticipationRequestState.ACCEPTED);
+                    counter++;
+                } else {
+                    r.setState(ParticipationRequestState.CANCELED);
+                }
+                requests.add(r);
+            }
+        }
+        requestRepository.saveAllAndFlush(requests);
+
+        if (counter >= limit) {
+            List<Request> remainingPendingRequests = requestRepository
+                    .findRequestsByEventIdAndState(eventId, ParticipationRequestState.PENDING);
+            if (! remainingPendingRequests.isEmpty()) {
+                remainingPendingRequests.forEach(r -> r.setState(ParticipationRequestState.CANCELED));
+                requestRepository.saveAll(remainingPendingRequests);
+            }
+        }
+
+        // TODO: set number of confirmed requests in event-service  (counter var)
+
+        return requests;
     }
 
     @Override

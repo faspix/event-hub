@@ -1,5 +1,6 @@
 package com.faspix.controller;
 
+import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.service.RequestService;
@@ -52,6 +53,18 @@ public class RequestController {
                 .toList();
     }
 
+    @PatchMapping("/events/{eventId}")
+    public List<ResponseParticipationRequestDTO> setRequestsStatus(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long eventId,
+            @RequestBody RequestParticipationRequestDTO requestDTO
+    ) {
+        return requestService.setRequestsStatus(userId, eventId, requestDTO)
+                .stream()
+                .map(requestMapper::participationRequestToResponse)
+                .toList();
+    }
+
     @GetMapping("/users")
     public List<ResponseParticipationRequestDTO> getUsersRequests(
             @RequestHeader("X-User-Id") Long userId,
@@ -65,7 +78,5 @@ public class RequestController {
                 .toList();
     }
 
-//    @PatchMapping("")
-//    public
 
 }
