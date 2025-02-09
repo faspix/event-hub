@@ -1,6 +1,7 @@
 package com.faspix.controller;
 
 import com.faspix.dto.*;
+import com.faspix.enums.EventState;
 import com.faspix.mapper.EventMapper;
 import com.faspix.service.EventService;
 import com.faspix.utility.EventSortType;
@@ -62,7 +63,7 @@ public class EventController {
     @GetMapping
     public List<ResponseEventShortDTO> findEvents(
             @RequestParam(defaultValue = "") String text,
-            @RequestParam(required = false) List<Integer> categories,
+            @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) Boolean paid,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
@@ -75,6 +76,22 @@ public class EventController {
                         .stream()
                         .map(eventMapper::eventToShortResponse)
                         .toList();
+    }
+
+    @GetMapping("/admin/search")
+    public List<ResponseEventDTO> findEventsByAdmin(
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<EventState> states,
+            @RequestParam(required = false) List<Long> categories,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        return eventService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, page, size)
+                .stream()
+                .map(eventMapper::eventToResponse)
+                .toList();
     }
 
     @GetMapping("{eventId}")

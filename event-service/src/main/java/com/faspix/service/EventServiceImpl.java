@@ -80,7 +80,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> findEvents(String text, List<Integer> categories, Boolean paid,
+    public List<Event> findEvents(String text, List<Long> categories, Boolean paid,
                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                   Boolean onlyAvailable, EventSortType sort, Integer page, Integer size) {
 //        Sort sortType = Sort
@@ -115,6 +115,15 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> findEventsByCategoryId(Long catId) {
         return eventRepository.findEventsByCategoryId(catId);
+    }
+
+    @Override
+    public List<Event> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+                                       LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page,
+                                       Integer size) {
+        Pageable pageRequest = makePageRequest(page, size);
+        return eventRepository.searchEventAdmin(users, states, categories, rangeStart, rangeEnd, pageRequest)
+                .stream().toList();
     }
 
     @Override

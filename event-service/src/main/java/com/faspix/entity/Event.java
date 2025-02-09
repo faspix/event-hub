@@ -31,6 +31,7 @@ public class Event {
 
     private String description;
 
+//    @Column()
     private LocalDateTime eventDate;
 
     private Long initiatorId;
