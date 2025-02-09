@@ -40,8 +40,8 @@ public class RequestServiceImpl implements RequestService {
         ResponseEventDTO event = eventServiceClient.findEventById(eventId);
         if (event.getInitiator().getUserId().equals(requesterId))
             throw new ValidationException("Event initiator cannot leave a request to participate in his event");
-//        if (! EventState.PUBLISHED.equals(event.getState()))
-//            throw new ValidationException("You cannot participate in an unpublished event");
+        if (! EventState.PUBLISHED.equals(event.getState()))
+            throw new ValidationException("User cannot participate in an unpublished event");
         if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit())
             throw new ValidationException("The event has reached the limit of requests for participation");
         Request request = new Request(eventId, requesterId, OffsetDateTime.now());
@@ -88,22 +88,13 @@ public class RequestServiceImpl implements RequestService {
     public List<Request> setRequestsStatus(Long userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
         ResponseEventDTO eventDTO = eventServiceClient.findEventById(eventId);
         validateOwnership(userId, eventId, eventDTO);
-        int limit = 0;
-        int participantLimit = eventDTO.getParticipantLimit();
-        if (participantLimit != 0) {
-            int acceptedRequest = requestRepository.getAcceptedEventsCount(eventId);
-            limit = participantLimit - acceptedRequest;
-            if (limit <= 0) {
-                throw new ValidationException("Request limit to event with id " + eventId + " has been reached");
-            }
-        } else {
-            limit = Integer.MAX_VALUE;
-        }
+
+        int limit = getAvailableRequestsLimit(eventDTO);
 
         int counter = 0;
         List<Request> requests = new ArrayList<>();
-        for (Long requestId : requestDTO.getRequestIds()) {
-            Request request = findRequestById(requestId);
+        List<Request> requestsList = requestRepository.findAllById(requestDTO.getRequestIds());
+        for (Request request : requestsList) {
             if (ParticipationRequestState.PENDING.equals(request.getState())) {
                 if (requestDTO.getStatus() == ParticipationRequestState.CONFIRMED && counter < limit) {
                     request.setState(ParticipationRequestState.CONFIRMED);
@@ -116,14 +107,7 @@ public class RequestServiceImpl implements RequestService {
         }
         requestRepository.saveAllAndFlush(requests);
 
-        if (counter >= limit) {
-            List<Request> remainingPendingRequests = requestRepository
-                    .findRequestsByEventIdAndState(eventId, ParticipationRequestState.PENDING);
-            if (! remainingPendingRequests.isEmpty()) {
-                remainingPendingRequests.forEach(r -> r.setState(ParticipationRequestState.REJECTED));
-                requestRepository.saveAll(remainingPendingRequests);
-            }
-        }
+        rejectPendingRequests(eventId, counter, limit);
 
         Integer confirmedRequests = eventDTO.getConfirmedRequests() + counter;
         eventServiceClient.setConfirmedRequestsNumber(new ConfirmedRequestsDTO(eventId, confirmedRequests));
@@ -137,9 +121,37 @@ public class RequestServiceImpl implements RequestService {
         return requestRepository.findRequestsByRequesterId(requesterId, pageable);
     }
 
+
     private static void validateOwnership(Long userId, Long eventId, ResponseEventDTO eventDTO) {
         if (! eventDTO.getInitiator().getUserId().equals(userId)) {
             throw new ValidationException("User with id " + userId + " doesn't own event with id " + eventId);
+        }
+    }
+
+    private int getAvailableRequestsLimit(ResponseEventDTO eventDTO) {
+        int limit = 0;
+        Long eventId = eventDTO.getEventId();
+        int participantLimit = eventDTO.getParticipantLimit();
+        if (participantLimit != 0) {
+            int acceptedRequest = requestRepository.getAcceptedEventsCount(eventId);
+            limit = participantLimit - acceptedRequest;
+            if (limit <= 0) {
+                throw new ValidationException("Request limit to event with id " + eventId + " has been reached");
+            }
+        } else {
+            limit = Integer.MAX_VALUE;
+        }
+        return limit;
+    }
+
+    private void rejectPendingRequests(Long eventId, int counter, int limit) {
+        if (counter >= limit) {
+            List<Request> remainingPendingRequests = requestRepository
+                    .findRequestsByEventIdAndState(eventId, ParticipationRequestState.PENDING);
+            if (! remainingPendingRequests.isEmpty()) {
+                remainingPendingRequests.forEach(r -> r.setState(ParticipationRequestState.REJECTED));
+                requestRepository.saveAll(remainingPendingRequests);
+            }
         }
     }
 
