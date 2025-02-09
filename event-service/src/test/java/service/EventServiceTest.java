@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static utility.DtoFactory.*;
+import static utility.EventFactory.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {

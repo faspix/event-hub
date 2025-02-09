@@ -7,7 +7,6 @@ import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
 import com.faspix.repository.UserRepository;
 import com.faspix.service.UserService;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,11 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static utility.dto.*;
+import static utility.UserFactory.*;
 
 @SpringBootTest(classes = {UserApplication.class})
 @AutoConfigureMockMvc
@@ -49,7 +47,9 @@ public class UserControllerTest {
 
     @Test
     public void deleteUserTest() {
-        User user = new User(null, "name", "mail10@mail");
+        User user = makeUserTest();
+        user.setUserId(null);
+        user.setEmail("mail7@mail.com");
         userRepository.save(user);
 
         ResponseEntity<HttpStatus> result = userController.deleteUser(user.getUserId());
@@ -58,7 +58,10 @@ public class UserControllerTest {
 
     @Test
     public void editUserTest() {
-        User savedUser = userRepository.save(new User(null, "name", "mail2@mail.com"));
+        User user = makeUserTest();
+        user.setUserId(null);
+        user.setEmail("mail09@mail.com");
+        User savedUser = userRepository.save(user);
         RequestUserDTO dtoForUpdate = makeRequestUserTest();
         dtoForUpdate.setEmail("updated@mail.com");
 
@@ -69,7 +72,9 @@ public class UserControllerTest {
 
     @Test
     public void findUserTest() {
-        User user2 = new User(null, "name", "mail3@mail.com");
+        User user2 = makeUserTest();
+        user2.setUserId(null);
+        user2.setEmail("mail019@mail.com");
         User savedUser = userRepository.save(user2);
 
         ResponseUserDTO user = userController.findUserById(savedUser.getUserId());

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConfirmedRequestsDTO {
 
     @NotNull(message = "Event id cannot be null")

@@ -1,11 +1,9 @@
 package service;
 
 import com.faspix.dto.RequestUserDTO;
-import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.UserRepository;
-import com.faspix.service.UserService;
 import com.faspix.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +20,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static utility.dto.*;
+import static utility.UserFactory.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {

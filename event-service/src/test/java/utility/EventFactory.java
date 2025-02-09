@@ -9,7 +9,7 @@ import com.faspix.utility.Location;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
-public class DtoFactory {
+public class EventFactory {
 
     public static ResponseUserShortDTO makeResponseShortUser() {
         return ResponseUserShortDTO.builder()
