@@ -16,8 +16,14 @@ public class ExceptionHandlerImpl {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ExceptionResponse handleUserNotFoundException(final ValidationException e) {
+    private ExceptionResponse handleValidationException(final ValidationException e) {
         return new ExceptionResponse(HttpStatus.BAD_REQUEST, e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    private ExceptionResponse handleCompilationAlreadyExistException(final CompilationAlreadyExistException e) {
+        return new ExceptionResponse(HttpStatus.CONFLICT, e);
     }
 
     @ExceptionHandler

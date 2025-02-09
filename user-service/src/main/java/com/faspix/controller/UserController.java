@@ -20,6 +20,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseUserDTO createUser(
             @RequestBody @Valid RequestUserDTO userDTO
     ) {
@@ -39,6 +40,7 @@ public class UserController {
     }
 
     @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<HttpStatus> deleteUser(
             @RequestHeader("X-User-Id") Long userId
     ) {

@@ -25,7 +25,8 @@ public class EventController {
 
     private final EventMapper eventMapper;
 
-    @PostMapping()
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEventDTO createEvent(
             @RequestHeader(value = "X-User-Id") Long creatorId,
             @RequestBody @Valid RequestEventDTO eventDTO
@@ -83,6 +84,16 @@ public class EventController {
         return eventMapper.eventToResponse(
                 eventService.findEventById(eventId)
         );
+    }
+
+    @GetMapping("/categories/{catId}")
+    public List<ResponseEventShortDTO> findEventsByCategoryId(
+            @PathVariable Long catId
+    ) {
+        return eventService.findEventsByCategoryId(catId)
+                .stream()
+                .map(eventMapper::eventToShortResponse)
+                .toList();
     }
 
     @PostMapping("/requests")

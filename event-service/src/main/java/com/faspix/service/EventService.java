@@ -29,6 +29,8 @@ public interface EventService {
 
     List<Event> findAllUsersEvents(Long userId, Integer page, Integer size);
 
+    List<Event> findEventsByCategoryId(Long catId);
+
     ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 
     Event adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);

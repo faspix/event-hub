@@ -24,6 +24,7 @@ import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
 
     private final RequestMapper requestMapper;
@@ -33,6 +34,7 @@ public class RequestServiceImpl implements RequestService {
     private final EventServiceClient eventServiceClient;
 
     @Override
+    @Transactional // TODO: ErrorResponse: Request must have status PENDING
     public Request createRequest(Long requesterId, Long eventId) {
         if (requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId) != null)
             throw new ValidationException("User with id " + requesterId +
@@ -59,6 +61,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public Request cancelRequest(Long requesterId, Long eventId) {
         Request request = requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId);
         if (request == null) {

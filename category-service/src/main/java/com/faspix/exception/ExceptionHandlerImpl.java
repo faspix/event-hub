@@ -10,14 +10,26 @@ public class ExceptionHandlerImpl {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ExceptionResponse handleUserNotFoundException(final CategoryNotFoundException e) {
+    private ExceptionResponse handleCategoryNotFoundException(final CategoryNotFoundException e) {
         return new ExceptionResponse(HttpStatus.BAD_REQUEST, e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ExceptionResponse handleUserNotFoundException(final ValidationException e) {
+    private ExceptionResponse handleValidationException(final ValidationException e) {
         return new ExceptionResponse(HttpStatus.BAD_REQUEST, e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    private ExceptionResponse handleCategoryAlreadyExistException(final CategoryAlreadyExistException e) {
+        return new ExceptionResponse(HttpStatus.CONFLICT, e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    private ExceptionResponse handleCategoryNotEmptyException(final CategoryNotEmptyException e) {
+        return new ExceptionResponse(HttpStatus.CONFLICT, e);
     }
 
     @ExceptionHandler

@@ -17,6 +17,7 @@ public class User {
     private String name;
 
     @EqualsAndHashCode.Include
+    @Column(unique = true, nullable = false)
     private String email;
 
 }

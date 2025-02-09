@@ -40,10 +40,11 @@ public class CompilationController {
 
     @GetMapping
     public List<ResponseCompilationDTO> findCompilations(
+            @RequestParam(required = false) Boolean pinned,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return compilationService.findCompilations(page, size)
+        return compilationService.findCompilations(pinned, page, size)
                 .stream()
                 .map(compilationMapper::compilationToResponse)
                 .toList();

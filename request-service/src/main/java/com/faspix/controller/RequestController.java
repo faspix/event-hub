@@ -6,6 +6,7 @@ import com.faspix.mapper.RequestMapper;
 import com.faspix.service.RequestService;
 import jakarta.ws.rs.HeaderParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class RequestController {
 
 
     @PostMapping("/events/{eventId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseParticipationRequestDTO createRequest(
             @RequestHeader("X-User-Id") Long requesterId,
             @PathVariable Long eventId

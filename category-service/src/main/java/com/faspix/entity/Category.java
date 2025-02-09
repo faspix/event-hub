@@ -12,10 +12,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
 
+    @Column(unique = true, nullable = false)
     private String name;
-
-//    @OneToMany(mappedBy = "events")
-//    private List<Event> eventList;
-
 
 }

@@ -11,7 +11,7 @@ public interface CompilationService {
 
     Compilation findCompilationById(Long id);
 
-    List<Compilation> findCompilations(Integer page, Integer size);
+    List<Compilation> findCompilations(Boolean pinned, Integer page, Integer size);
 
     Compilation editCompilation(Long id, RequestCompilationDTO compilationDTO);
 

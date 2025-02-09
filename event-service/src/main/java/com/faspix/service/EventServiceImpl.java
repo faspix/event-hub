@@ -30,6 +30,7 @@ import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
     private final EventMapper eventMapper;
@@ -39,7 +40,10 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
 
     @Override
+    @Transactional
     public Event createEvent(Long creatorId, RequestEventDTO eventDTO) {
+        if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
+            throw new ValidationException("Event cannot start in less than 2 hours");
         ResponseUserDTO userDTO = userServiceClient.getUserById(creatorId);
         Event event = eventMapper.requestToEvent(eventDTO);
 
@@ -53,11 +57,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public Event editEvent(Long userId, Long eventId, RequestEventDTO eventDTO) {
+        if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
+            throw new ValidationException("Event cannot start in less than 2 hours");
         Event event = findEventById(eventId);
-        if (! event.getInitiatorId().equals(userId)) {
+        if (! event.getInitiatorId().equals(userId))
             throw new ValidationException("User with id " + userId + " didn't create event with id " + eventId);
-        }
+        if (event.getState() == EventState.PUBLISHED)
+            throw new ValidationException("Event must not be published");
+
         Event updatedEvent = eventMapper.requestToEvent(eventDTO);
         updatedEvent.setEventId(eventId);
 
@@ -85,11 +94,14 @@ public class EventServiceImpl implements EventService {
         return events.stream().toList();
     }
 
-    @Override
+    @Override // TODO: publish check (?)
     public Event findEventById(Long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(
+        Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
+//        if (event.getState() != EventState.PUBLISHED)
+//            throw new EventNotFoundException("Event with id " + eventId + " not found");
+        return event;
     }
 
     @Override
@@ -98,6 +110,11 @@ public class EventServiceImpl implements EventService {
         return eventRepository.findEventsByInitiatorId(userId, pageRequest)
                 .stream()
                 .toList();
+    }
+
+    @Override
+    public List<Event> findEventsByCategoryId(Long catId) {
+        return eventRepository.findEventsByCategoryId(catId);
     }
 
     @Override
@@ -110,9 +127,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public Event adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO) {
         Event event = findEventById(eventId);
-        if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1)))
+        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)))
             throw new ValidationException("Event with id " + eventId + " starts in less than an hour");
         if (! EventState.PENDING.equals(event.getState()))
             throw new ValidationException("Event must be in PENDING state");

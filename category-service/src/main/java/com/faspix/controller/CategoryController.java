@@ -41,6 +41,7 @@ public class CategoryController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseCategoryDTO createCategory(
             @RequestBody RequestCategoryDTO categoryDTO
     ) {
@@ -60,6 +61,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("{categoryId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<HttpStatus> deleteCategory(
             @PathVariable Long categoryId
     ) {
