@@ -4,7 +4,10 @@ import com.faspix.enums.EventState;
 import com.faspix.utility.Location;
 import com.faspix.dto.ResponseUserShortDTO;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -12,6 +15,9 @@ import java.util.List;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "events")
 public class Event {
 
