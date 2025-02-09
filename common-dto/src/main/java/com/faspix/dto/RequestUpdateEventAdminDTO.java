@@ -2,11 +2,15 @@ package com.faspix.dto;
 
 import com.faspix.enums.EventStateAction;
 import com.faspix.utility.Location;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequestUpdateEventAdminDTO {
 
     private String annotation;

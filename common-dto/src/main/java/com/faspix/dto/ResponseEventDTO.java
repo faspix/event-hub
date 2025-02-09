@@ -2,13 +2,17 @@ package com.faspix.dto;
 
 import com.faspix.enums.EventState;
 import com.faspix.utility.Location;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResponseEventDTO {
 
     private Long eventId;
