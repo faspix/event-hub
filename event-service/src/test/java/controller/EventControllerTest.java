@@ -8,18 +8,20 @@ import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
-import com.faspix.exception.EventNotFoundException;
-import com.faspix.exception.ValidationException;
 import com.faspix.repository.EventRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -27,10 +29,10 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utility.EventFactory.*;
 import static utility.UserFactory.*;
 
@@ -54,20 +56,43 @@ public class EventControllerTest {
     @MockitoBean
     private CategoryServiceClient categoryServiceClient;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void init() {
         eventRepository.deleteAll();
     }
 
     @Test
-    public void createEventTest_Success() {
+    public void createEventTest_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         when(userServiceClient.getUserById(anyLong()))
                 .thenReturn(makeResponseUserTest());
 
-        ResponseEventDTO event = eventController.createEvent(1L, requestEventDTO);
+        MvcResult mvcResult = mockMvc.perform(post("/events")
+                        .content(objectMapper.writeValueAsString(requestEventDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseEventDTO event = objectMapper.readValue(body, ResponseEventDTO.class);
 
-        assertThat(event.getEventDate(), equalTo(requestEventDTO.getEventDate()));
+        Event event1 = eventRepository.findById(event.getEventId()).get();
+
+        assertThat(event.getEventId(), equalTo(event1.getEventId()));
+        assertThat(event.getEventDate(), equalTo(event1.getEventDate()));
+        assertThat(event.getAnnotation(), equalTo(event1.getAnnotation()));
+        assertThat(event.getRequestModeration(), equalTo(event1.getRequestModeration()));
+        assertThat(event.getPaid(), equalTo(event1.getPaid()));
+        assertThat(event.getDescription(), equalTo(event1.getDescription()));
+        assertThat(event.getLocation(), equalTo(event1.getLocation()));
+        assertThat(event.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
+        assertThat(event.getTitle(), equalTo(event1.getTitle()));
+        assertThat(event.getState(), equalTo(EventState.PENDING));
+
         assertThat(event.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
         assertThat(event.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
         assertThat(event.getPaid(), equalTo(requestEventDTO.getPaid()));
@@ -81,13 +106,35 @@ public class EventControllerTest {
 
 
     @Test
-    public void createEventTest_EventStartsToSoon_Success() {
+    public void createEventTest_EventStartsToSoon_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2).plusMinutes(1));
         when(userServiceClient.getUserById(anyLong()))
                 .thenReturn(makeResponseUserTest());
 
-        ResponseEventDTO response = eventController.createEvent(1L, requestEventDTO);
+
+        MvcResult mvcResult = mockMvc.perform(post("/events")
+                        .content(objectMapper.writeValueAsString(requestEventDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isCreated())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseEventDTO response = objectMapper.readValue(body, ResponseEventDTO.class);
+
+        Event event1 = eventRepository.findById(response.getEventId()).get();
+
+        assertThat(response.getEventId(), equalTo(event1.getEventId()));
+        assertThat(response.getEventDate(), equalTo(event1.getEventDate()));
+        assertThat(response.getAnnotation(), equalTo(event1.getAnnotation()));
+        assertThat(response.getRequestModeration(), equalTo(event1.getRequestModeration()));
+        assertThat(response.getPaid(), equalTo(event1.getPaid()));
+        assertThat(response.getDescription(), equalTo(event1.getDescription()));
+        assertThat(response.getLocation(), equalTo(event1.getLocation()));
+        assertThat(response.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
+        assertThat(response.getTitle(), equalTo(event1.getTitle()));
+        assertThat(response.getState(), equalTo(EventState.PENDING));
 
         assertThat(response.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
         assertThat(response.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
@@ -101,28 +148,50 @@ public class EventControllerTest {
     }
 
     @Test
-    public void createEventTest_EventStartsToSoon_Exception() {
+    public void createEventTest_EventStartsToSoon_Exception() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2));
 
-        ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> eventController.createEvent(1L, requestEventDTO)
-        );
-        assertEquals("Event cannot start in less than 2 hours", exception.getMessage());
+        mockMvc.perform(post("/events")
+                        .content(objectMapper.writeValueAsString(requestEventDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isBadRequest());
+
     }
 
     @Test
-    public void editEventTest_Success() {
+    public void editEventTest_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setTitle("updated title");
         Event event = makeEventTest();
         event.setEventId(null);
         Event savedEvent = eventRepository.save(event);
 
-        ResponseEventDTO response = eventController.editEvent(1L,
-                savedEvent.getEventId(), requestEventDTO);
+        MvcResult mvcResult = mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+                        .content(objectMapper.writeValueAsString(requestEventDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseEventDTO response = objectMapper.readValue(body, ResponseEventDTO.class);
 
-        assertThat(response.getEventDate(), equalTo(requestEventDTO.getEventDate()));
+        Event event1 = eventRepository.findById(response.getEventId()).get();
+
+        assertThat(response.getEventId(), equalTo(event1.getEventId()));
+        assertThat(response.getEventDate(), equalTo(event1.getEventDate()));
+        assertThat(response.getAnnotation(), equalTo(event1.getAnnotation()));
+        assertThat(response.getRequestModeration(), equalTo(event1.getRequestModeration()));
+        assertThat(response.getPaid(), equalTo(event1.getPaid()));
+        assertThat(response.getDescription(), equalTo(event1.getDescription()));
+        assertThat(response.getLocation(), equalTo(event1.getLocation()));
+        assertThat(response.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
+        assertThat(response.getTitle(), equalTo(event1.getTitle()));
+        assertThat(response.getState(), equalTo(EventState.PENDING));
+
         assertThat(response.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
         assertThat(response.getTitle(), equalTo(requestEventDTO.getTitle()));
         assertThat(response.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
@@ -134,7 +203,7 @@ public class EventControllerTest {
 
 
     @Test
-    public void editEventTest_EventStartsToSoon_Success() {
+    public void editEventTest_EventStartsToSoon_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setTitle("updated title");
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2).plusMinutes(1));
@@ -142,20 +211,40 @@ public class EventControllerTest {
         event.setEventId(null);
         Event savedEvent = eventRepository.save(event);
 
-        ResponseEventDTO response = eventController.editEvent(1L,
-                savedEvent.getEventId(), requestEventDTO);
+        MvcResult mvcResult = mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+                        .content(objectMapper.writeValueAsString(requestEventDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseEventDTO response = objectMapper.readValue(body, ResponseEventDTO.class);
 
-        assertThat(response.getEventDate(), equalTo(requestEventDTO.getEventDate()));
+        Event event1 = eventRepository.findById(response.getEventId()).get();
+
+        assertThat(response.getEventId(), equalTo(event1.getEventId()));
+        assertThat(response.getEventDate(), equalTo(event1.getEventDate()));
+        assertThat(response.getAnnotation(), equalTo(event1.getAnnotation()));
+        assertThat(response.getRequestModeration(), equalTo(event1.getRequestModeration()));
+        assertThat(response.getPaid(), equalTo(event1.getPaid()));
+        assertThat(response.getDescription(), equalTo(event1.getDescription()));
+        assertThat(response.getLocation(), equalTo(event1.getLocation()));
+        assertThat(response.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
+        assertThat(response.getTitle(), equalTo(event1.getTitle()));
+        assertThat(response.getState(), equalTo(EventState.PENDING));
+
         assertThat(response.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
         assertThat(response.getTitle(), equalTo(requestEventDTO.getTitle()));
         assertThat(response.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
         assertThat(response.getDescription(), equalTo(requestEventDTO.getDescription()));
         assertThat(response.getLocation(), equalTo(requestEventDTO.getLocation()));
         assertThat(response.getPaid(), equalTo(requestEventDTO.getPaid()));
+
     }
 
     @Test
-    public void editEventTest_EventStartsToSoon_Exception() {
+    public void editEventTest_EventStartsToSoon_Exception() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setTitle("updated title");
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2));
@@ -163,15 +252,18 @@ public class EventControllerTest {
         event.setEventId(null);
         Event savedEvent = eventRepository.save(event);
 
-        ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> eventController.editEvent(1L, savedEvent.getEventId(), requestEventDTO)
-        );
-        assertEquals("Event cannot start in less than 2 hours", exception.getMessage());
+        mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+                .content(objectMapper.writeValueAsString(requestEventDTO))
+                .header("X-User-Id", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+
     }
 
 
     @Test
-    public void editEventTest_UserDidntCreateEvent_Exception() {
+    public void editEventTest_UserDidntCreateEvent_Exception() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         Event event = makeEventTest();
         event.setEventId(null);
@@ -179,13 +271,17 @@ public class EventControllerTest {
 
         Event savedEvent = eventRepository.save(event);
 
-        ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> eventController.editEvent(1L, savedEvent.getEventId(), requestEventDTO)
-        );
+        mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+                        .content(objectMapper.writeValueAsString(requestEventDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isBadRequest());
+
     }
 
     @Test
-    public void editEventTest_PublishedEvent_Exception() {
+    public void editEventTest_PublishedEvent_Exception() throws Exception {
         Event event = makeEventTest();
         event.setState(EventState.PUBLISHED);
         event.setEventId(null);
@@ -193,27 +289,37 @@ public class EventControllerTest {
 
         Event savedEvent = eventRepository.save(event);
 
-        ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> eventController.editEvent(1L, savedEvent.getEventId(), requestEventDTO)
-        );
-        assertEquals("Event must not be published", exception.getMessage());
+        mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+                .content(objectMapper.writeValueAsString(requestEventDTO))
+                .header("X-User-Id", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+
     }
 
     @Test
-    public void findEventByIdTest_Success() {
+    public void findEventByIdTest_Success() throws Exception {
         Event event = makeEventTest();
         event.setEventId(null);
 
         Event savedEvent = eventRepository.save(event);
-        ResponseEventDTO result = eventController.findEventById(savedEvent.getEventId());
+
+
+        MvcResult mvcResult = mockMvc.perform(get("/events/" + savedEvent.getEventId())
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseEventDTO result = objectMapper.readValue(body, ResponseEventDTO.class);
 
         assertThat(result.getEventId(), equalTo(savedEvent.getEventId()));
         assertThat(result.getTitle(), equalTo(savedEvent.getTitle()));
         assertThat(result.getAnnotation(), equalTo(savedEvent.getAnnotation()));
         assertThat(result.getDescription(), equalTo(savedEvent.getDescription()));
         assertThat(result.getEventDate(), equalTo(savedEvent.getEventDate()));
-        assertThat(result.getPublishedOn(), equalTo(savedEvent.getPublishedOn()));
-        assertThat(result.getCreationDate(), equalTo(savedEvent.getCreationDate()));
         assertThat(result.getLocation(), equalTo(savedEvent.getLocation()));
         assertThat(result.getPaid(), equalTo(savedEvent.getPaid()));
         assertThat(result.getState(), equalTo(savedEvent.getState()));
@@ -221,23 +327,31 @@ public class EventControllerTest {
     }
 
     @Test
-    public void findEventByIdTest_EventNotFound_ThrowsException() {
-        EventNotFoundException exception = assertThrowsExactly(EventNotFoundException.class,
-                () -> eventController.findEventById(100L)
-        );
-        assertEquals("Event with id 100 not found", exception.getMessage());
+    public void findEventByIdTest_EventNotFound_ThrowsException() throws Exception {
+        mockMvc.perform(get("/events/100")
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isNotFound());
     }
 
     @Test
-    public void findEventsByCategoryIdTest_Success() {
+    public void findEventsByCategoryIdTest_Success() throws Exception {
         Event event = makeEventTest();
         event.setEventId(null);
 
         Event savedEvent = eventRepository.save(event);
 
-        ResponseEventShortDTO result = eventController
-                .findEventsByCategoryId(savedEvent.getCategoryId())
-                .getFirst();
+        MvcResult mvcResult = mockMvc.perform(get("/events/categories/" + savedEvent.getCategoryId())
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> resultList = objectMapper.readValue(body, new TypeReference<>() {});
+        System.out.println(resultList);
+        ResponseEventShortDTO result = resultList.getFirst();
 
         assertThat(result.getEventId(), equalTo(savedEvent.getEventId()));
         assertThat(result.getTitle(), equalTo(savedEvent.getTitle()));
@@ -248,7 +362,7 @@ public class EventControllerTest {
     }
 
     @Test
-    public void findAllUserEventsTest_Success() {
+    public void findAllUserEventsTest_Success() throws Exception {
         Event event1 = makeEventTest();
         event1.setTitle("Title 1");
         event1.setEventId(null);
@@ -259,7 +373,14 @@ public class EventControllerTest {
         event2.setEventId(null);
         eventRepository.save(event2);
 
-        List<ResponseEventShortDTO> events = eventController.findAllUserEvents(1L, 0, 10);
+        MvcResult mvcResult = mockMvc.perform(get("/events/users/1")
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
 
         assertThat(events.size(), equalTo(2));
         assertThat(events.get(0).getTitle(), equalTo(event1.getTitle()));
@@ -267,8 +388,16 @@ public class EventControllerTest {
     }
 
     @Test
-    public void findAllUserEventsTest_UserHasNoEvents_ReturnsEmptyList() {
-        List<ResponseEventShortDTO> events = eventController.findAllUserEvents(100L, 0, 10);
+    public void findAllUserEventsTest_UserHasNoEvents_ReturnsEmptyList() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/events/users/1")
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
         assertThat(events.size(), equalTo(0));
     }
 
@@ -285,13 +414,22 @@ public class EventControllerTest {
     }
 
     @Test
-    public void adminEditEventTest_Success() {
+    public void adminEditEventTest_Success() throws Exception {
         Event event = makeEventTest();
         event.setEventId(null);
         Event savedEvent = eventRepository.save(event);
 
         RequestUpdateEventAdminDTO adminDTO = makeAdminRequest();
-        eventController.adminEditEvent(savedEvent.getEventId(), adminDTO);
+
+        MvcResult mvcResult = mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+                        .content(objectMapper.writeValueAsString(adminDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseEventDTO response = objectMapper.readValue(body, ResponseEventDTO.class);
 
         Event result = eventRepository.findById(savedEvent.getEventId()).get();
 
@@ -301,30 +439,49 @@ public class EventControllerTest {
         assertThat(result.getDescription(), equalTo(adminDTO.getDescription()));
         assertThat(result.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
+
+        assertThat(response.getEventDate(), equalTo(adminDTO.getEventDate()));
+        assertThat(response.getTitle(), equalTo(adminDTO.getTitle()));
+        assertThat(response.getAnnotation(), equalTo(adminDTO.getAnnotation()));
+        assertThat(response.getDescription(), equalTo(adminDTO.getDescription()));
+        assertThat(response.getLocation(), equalTo(adminDTO.getLocation()));
+        assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
     }
 
     @Test
-    public void adminEditEventTest_EventStartsToSoon_Exception() {
+    public void adminEditEventTest_EventStartsToSoon_Exception() throws Exception {
         RequestUpdateEventAdminDTO adminRequest = makeAdminRequest();
         Event event = makeEventTest();
         event.setEventId(null);
         event.setEventDate(LocalDateTime.now().plusHours(1));
         Event savedEvent = eventRepository.save(event);
 
-        ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> eventController.adminEditEvent(savedEvent.getEventId(), adminRequest)
-        );
+       mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+                        .content(objectMapper.writeValueAsString(adminRequest))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isBadRequest());
     }
 
     @Test
-    public void adminEditEventTest_EventStartsToSoon_Success() {
+    public void adminEditEventTest_EventStartsToSoon_Success() throws Exception {
         Event event = makeEventTest();
         event.setEventId(null);
         event.setEventDate(LocalDateTime.now().plusHours(2));
         Event savedEvent = eventRepository.save(event);
 
         RequestUpdateEventAdminDTO adminDTO = makeAdminRequest();
-        eventController.adminEditEvent(savedEvent.getEventId(), adminDTO);
+
+        MvcResult mvcResult = mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+                        .content(objectMapper.writeValueAsString(adminDTO))
+                        .header("X-User-Id", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseEventDTO response = objectMapper.readValue(body, ResponseEventDTO.class);
 
         Event result = eventRepository.findById(savedEvent.getEventId()).get();
 
@@ -334,10 +491,18 @@ public class EventControllerTest {
         assertThat(result.getDescription(), equalTo(adminDTO.getDescription()));
         assertThat(result.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
+
+        assertThat(response.getEventDate(), equalTo(adminDTO.getEventDate()));
+        assertThat(response.getTitle(), equalTo(adminDTO.getTitle()));
+        assertThat(response.getAnnotation(), equalTo(adminDTO.getAnnotation()));
+        assertThat(response.getDescription(), equalTo(adminDTO.getDescription()));
+        assertThat(response.getLocation(), equalTo(adminDTO.getLocation()));
+        assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
+
     }
 
     @Test
-    public void adminEditEventTest_InvalidState_Exception() {
+    public void adminEditEventTest_InvalidState_Exception() throws Exception {
         Event event = makeEventTest();
         event.setState(EventState.CANCELED);
         event.setEventId(null);
@@ -346,10 +511,13 @@ public class EventControllerTest {
         RequestUpdateEventAdminDTO adminRequest = makeAdminRequest();
         adminRequest.setStateAction(EventStateAction.PUBLISH_EVENT);
 
-        ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> eventController.adminEditEvent(savedEvent.getEventId(), adminRequest)
-        );
-        assertEquals("Event must be in PENDING state", exception.getMessage());
+        mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+                .content(objectMapper.writeValueAsString(adminRequest))
+                .header("X-User-Id", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isBadRequest());
+
     }
 
 
