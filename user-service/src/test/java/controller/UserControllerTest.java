@@ -3,31 +3,23 @@ package controller;
 import com.faspix.UserApplication;
 import com.faspix.controller.UserController;
 import com.faspix.dto.RequestUserDTO;
-import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
-import com.faspix.exception.UserAlreadyExistException;
-import com.faspix.exception.UserNotFoundException;
 import com.faspix.repository.UserRepository;
 import com.faspix.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utility.UserFactory.*;
 
@@ -74,43 +66,63 @@ public class UserControllerTest {
     }
 
     @Test
-    public void createUserTest_EmailAlreadyExist_Exception() {
+    public void createUserTest_EmailAlreadyExist_Exception() throws Exception {
         RequestUserDTO requestUserDTO = makeRequestUserTest();
-        userController.createUser(requestUserDTO);
-        UserAlreadyExistException exception = assertThrows(UserAlreadyExistException.class,
-                () -> userController.createUser(requestUserDTO)
-        );
-        assertEquals("User with email mail@mail.com already exist", exception.getMessage());
+
+        mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(requestUserDTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful());
+
+        mockMvc.perform(post("/users")
+                .content(objectMapper.writeValueAsString(requestUserDTO))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isConflict());
+
     }
 
     @Test
-    public void deleteUserTest_Success() {
+    public void deleteUserTest_Success() throws Exception {
         User user = makeUserTest();
         user.setUserId(null);
-        userRepository.save(user);
+        user = userRepository.save(user);
 
-        ResponseEntity<HttpStatus> result = userController.deleteUser(user.getUserId());
-        assertThat(result, equalTo(ResponseEntity.ok(HttpStatus.OK)));
+        mockMvc.perform(delete("/users")
+                        .header("X-User-Id", user.getUserId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isNoContent());
     }
 
     @Test
-    public void deleteUserTest_UserNotFound_Exception() {
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
-                () -> userController.deleteUser(100L)
-        );
-        assertEquals("User with id 100 not found", exception.getMessage());
+    public void deleteUserTest_UserNotFound_Exception() throws Exception {
+        mockMvc.perform(delete("/users")
+                .header("X-User-Id", 100)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
     }
 
 
     @Test
-    public void editUserTest_Success() {
+    public void editUserTest_Success() throws Exception {
         User user = makeUserTest();
         user.setUserId(null);
         User savedUser = userRepository.save(user);
         RequestUserDTO dtoForUpdate = makeRequestUserTest();
         dtoForUpdate.setEmail("updated@mail.com");
 
-        ResponseUserDTO updatedUser = userController.editUser(savedUser.getUserId(), dtoForUpdate);
+        MvcResult mvcResult = mockMvc.perform(patch("/users")
+                        .content(objectMapper.writeValueAsString(dtoForUpdate))
+                        .header("X-User-Id", savedUser.getUserId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseUserDTO updatedUser = objectMapper.readValue(body, ResponseUserDTO.class);
 
         User findUserDTO = userRepository.findUserByEmail(dtoForUpdate.getEmail()).get();
         assertThat(findUserDTO.getName(), equalTo(updatedUser.getName()));
@@ -118,31 +130,41 @@ public class UserControllerTest {
     }
 
     @Test
-    public void editUserTest_UserNotFound_Exception() {
+    public void editUserTest_UserNotFound_Exception() throws Exception {
         RequestUserDTO dtoForUpdate = makeRequestUserTest();
         dtoForUpdate.setEmail("updated@mail.com");
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
-                () -> userController.editUser(100L, dtoForUpdate)
-        );
-        assertEquals("User with id 100 not found", exception.getMessage());
+        mockMvc.perform(patch("/users")
+                        .content(objectMapper.writeValueAsString(dtoForUpdate))
+                        .header("X-User-Id", 100)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isNotFound());
     }
 
     @Test
-    public void findUserTest() {
+    public void findUserTest() throws Exception {
         User user2 = makeUserTest();
         user2.setUserId(null);
         User savedUser = userRepository.save(user2);
 
-        ResponseUserDTO user = userController.findUserById(savedUser.getUserId());
+        MvcResult mvcResult = mockMvc.perform(get("/users/" + savedUser.getUserId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseUserDTO user = objectMapper.readValue(body, ResponseUserDTO.class);
+
         assertThat(user2.getEmail(), equalTo(user.getEmail()));
         assertThat(user2.getName(), equalTo(user.getName()));
     }
 
     @Test
-    public void findUserNotFoundTest() {
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
-                () -> userController.findUserById(100L));
-        assertEquals("User with id 100 not found", exception.getMessage());
+    public void findUserNotFoundTest() throws Exception {
+        mockMvc.perform(get("/users/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
     }
 }

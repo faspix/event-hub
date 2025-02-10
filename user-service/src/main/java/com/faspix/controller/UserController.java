@@ -41,13 +41,10 @@ public class UserController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<HttpStatus> deleteUser(
+    public void deleteUser(
             @RequestHeader("X-User-Id") Long userId
     ) {
-        Boolean result = userService.deleteUser(userId);
-        return result ?
-                ResponseEntity.ok(HttpStatus.OK)
-                : ResponseEntity.internalServerError().build();
+        userService.deleteUser(userId);
     }
 
     @GetMapping("{userId}")

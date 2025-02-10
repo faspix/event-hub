@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionHandlerImpl {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionResponse handleUserNotFoundException(final UserNotFoundException e) {
-        return new ExceptionResponse(HttpStatus.BAD_REQUEST, e);
+        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
     }
 
     @ExceptionHandler
