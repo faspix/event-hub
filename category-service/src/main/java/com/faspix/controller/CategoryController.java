@@ -62,13 +62,10 @@ public class CategoryController {
 
     @DeleteMapping("{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<HttpStatus> deleteCategory(
+    public void deleteCategory(
             @PathVariable Long categoryId
     ) {
-        Boolean result = categoryService.deleteCategory(categoryId);
-        return result ?
-                ResponseEntity.ok(HttpStatus.OK)
-                : ResponseEntity.internalServerError().build();
+        categoryService.deleteCategory(categoryId);
     }
 
 }

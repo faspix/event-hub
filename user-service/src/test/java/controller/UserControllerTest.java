@@ -148,7 +148,7 @@ public class UserControllerTest {
         user2.setUserId(null);
         User savedUser = userRepository.save(user2);
 
-        MvcResult mvcResult = mockMvc.perform(get("/users/" + savedUser.getUserId())
+        MvcResult mvcResult = mockMvc.perform(get("/users/{userId}", savedUser.getUserId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())

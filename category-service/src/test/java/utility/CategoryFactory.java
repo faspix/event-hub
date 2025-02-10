@@ -8,7 +8,7 @@ public class CategoryFactory {
 
     public static Category makeCategory() {
         return Category.builder()
-                .categoryId(1L)
+                .categoryId(null)
                 .name("Name")
                 .build();
     }
