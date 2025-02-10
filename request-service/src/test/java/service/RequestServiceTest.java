@@ -198,8 +198,10 @@ public class RequestServiceTest {
         RequestParticipationRequestDTO requestDTO = makeRequestRequest();
         eventDTO.setParticipantLimit(4);
         eventDTO.setConfirmedRequests(0);
-        when(eventServiceClient.findEventById(eventId)).thenReturn(eventDTO);
-        when(requestRepository.getAcceptedEventsCount(eventId)).thenReturn(2);
+        when(eventServiceClient.findEventById(eventId))
+                .thenReturn(eventDTO);
+        when(requestRepository.getAcceptedEventsCount(eventId))
+                .thenReturn(2);
 
         Request request1 = makeRequest();
         Request request2 = makeRequest();
@@ -226,7 +228,8 @@ public class RequestServiceTest {
 
         ResponseEventDTO eventDTO = makeResponseEventTest();
         RequestParticipationRequestDTO requestDTO = makeRequestRequest();
-        when(eventServiceClient.findEventById(eventId)).thenReturn(eventDTO);
+        when(eventServiceClient.findEventById(anyLong()))
+                .thenReturn(eventDTO);
 
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> requestService.setRequestsStatus(userId, eventId, requestDTO));
@@ -242,7 +245,8 @@ public class RequestServiceTest {
         RequestParticipationRequestDTO requestDTO = makeRequestRequest();
         eventDTO.setParticipantLimit(3);
 
-        when(eventServiceClient.findEventById(eventId)).thenReturn(eventDTO);
+        when(eventServiceClient.findEventById(anyLong()))
+                .thenReturn(eventDTO);
         when(requestRepository.getAcceptedEventsCount(eventId)).thenReturn(3);
 
         ValidationException exception = assertThrows(ValidationException.class,

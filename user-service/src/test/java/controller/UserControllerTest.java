@@ -3,25 +3,32 @@ package controller;
 import com.faspix.UserApplication;
 import com.faspix.controller.UserController;
 import com.faspix.dto.RequestUserDTO;
+import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
 import com.faspix.repository.UserRepository;
 import com.faspix.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utility.UserFactory.*;
 
 @SpringBootTest(classes = {UserApplication.class})
@@ -40,15 +47,27 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void init() {
         userRepository.deleteAll();
     }
 
     @Test
-    public void createUserTest_Success() {
+    public void createUserTest_Success() throws Exception {
         RequestUserDTO requestUserDTO = makeRequestUserTest();
-        ResponseUserDTO userDTO = userController.createUser(requestUserDTO);
+
+        MvcResult mvcResult = mockMvc.perform(post("/users")
+                        .content(objectMapper.writeValueAsString(requestUserDTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseUserDTO userDTO = objectMapper.readValue(body, ResponseUserDTO.class);
+
         User findUserDTO = userRepository.findUserByEmail(requestUserDTO.getEmail()).get();
         assertThat(findUserDTO.getName(), equalTo(userDTO.getName()));
         assertThat(findUserDTO.getEmail(), equalTo(userDTO.getEmail()));
