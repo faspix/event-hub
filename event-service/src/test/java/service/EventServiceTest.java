@@ -6,6 +6,7 @@ import com.faspix.dto.RequestEventDTO;
 import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
+import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.repository.EventRepository;
@@ -18,17 +19,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static utility.EventFactory.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +52,7 @@ public class EventServiceTest {
 
 
     @Test
-    public void createEventTest() {
+    public void createEventTest_Success() {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
@@ -65,10 +69,12 @@ public class EventServiceTest {
         assertThat(event.getTitle(), equalTo(requestEventDTO.getTitle()));
         assertThat(event.getState(), equalTo(EventState.PENDING));
 
+        verify(eventRepository, times(1)).save(any());
+
     }
 
     @Test
-    public void createEventTest_ValidationException_2hoursBoundaryValues_NotThrowsException() {
+    public void createEventTest_EventDateIsTooSoon_Success() {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2).plusMinutes(1));
         when(eventRepository.save(any()))
@@ -85,20 +91,22 @@ public class EventServiceTest {
         assertThat(event.getTitle(), equalTo(requestEventDTO.getTitle()));
         assertThat(event.getState(), equalTo(EventState.PENDING));
 
+        verify(eventRepository, times(1)).save(any());
     }
 
     @Test
-    public void createEventTest_ValidationException_2hoursException_ThrowsException() {
+    public void createEventTest_EventDateIsTooSoon_Exception() {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now());
 
-        Assertions.assertThrowsExactly(ValidationException.class,
+        ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
                 () -> eventService.createEvent(1L, requestEventDTO)
         );
+        assertEquals("Event cannot start in less than 2 hours", exception.getMessage());
     }
 
     @Test
-    public void editEventTest() {
+    public void editEventTest_Success() {
         Event event = makeEventTest();
         event.setTitle("updated event title");
         RequestEventDTO updateRequest = makeRequestEventTest();
@@ -123,22 +131,24 @@ public class EventServiceTest {
         assertThat(updatedEvent.getViews(), equalTo(event.getViews()));
         assertThat(updatedEvent.getInitiatorId(), equalTo(event.getInitiatorId()));
 
+        verify(eventRepository, times(1)).save(any());
     }
 
 
     @Test
-    public void editEventTest_ValidationException_2hoursException_ThrowsException() {
+    public void editEventTest_EventStartsTooSoon_Exception() {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2));
 
-        Assertions.assertThrowsExactly(ValidationException.class,
+        ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
                 () -> eventService.editEvent(1L, 1L, requestEventDTO)
         );
+        assertEquals("Event cannot start in less than 2 hours", exception.getMessage());
     }
 
 
     @Test
-    public void editEventTest_ValidationException_2hoursBoundaryValues_NotThrowsException() {
+    public void editEventTest_EventStartsTooSoon_Success() {
         Event event = makeEventTest();
         event.setTitle("updated event title");
         event.setEventDate(LocalDateTime.now().plusHours(2).plusMinutes(1));
@@ -165,36 +175,39 @@ public class EventServiceTest {
         assertThat(updatedEvent.getViews(), equalTo(event.getViews()));
         assertThat(updatedEvent.getInitiatorId(), equalTo(event.getInitiatorId()));
 
+        verify(eventRepository, times(1)).save(any());
     }
 
     @Test
-    public void editEventTest_ValidationException_UserDidntCreateEvent_ThrowsException() {
+    public void editEventTest_UserDidntCreateEvent_Exception() {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         Event event = makeEventTest();
         event.setInitiatorId(22L);
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        Assertions.assertThrowsExactly(ValidationException.class,
+        ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
                 () -> eventService.editEvent(1L, 1L, requestEventDTO)
         );
+        assertEquals("User with id 1 didn't create event with id 1", exception.getMessage());
     }
 
     @Test
-    public void editEventTest_ValidationException_PublishedEvent_ThrowsException() {
+    public void editEventTest_PublishedEvent_Exception() {
         Event event = makeEventTest();
         event.setState(EventState.PUBLISHED);
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        Assertions.assertThrowsExactly(ValidationException.class,
+        ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
                 () -> eventService.editEvent(1L, 1L, requestEventDTO)
         );
+        assertEquals("Event must not be published", exception.getMessage());
     }
 
     @Test
-    public void findEventTest() {
+    public void findEventTest_Success() {
         Event event = makeEventTest();
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
@@ -217,7 +230,29 @@ public class EventServiceTest {
     }
 
     @Test
-    public void setConfirmedRequestsNumberTest() {
+    public void findEventByIdTest_EventNotFound_Exception() {
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
+                eventService.findEventById(1L)
+        );
+
+        assertEquals("Event with id 1 not found", exception.getMessage());
+
+    }
+
+    @Test
+    public void findAllUsersEventsTest_Success() {
+        List<Event> events = List.of(makeEventTest(), makeEventTest());
+        when(eventRepository.findEventsByInitiatorId(anyLong(), any())).thenReturn(new PageImpl<>(events));
+
+        List<Event> result = eventService.findAllUsersEvents(1L, 0, 10);
+
+        assertThat(result.size(), equalTo(2));
+    }
+
+    @Test
+    public void setConfirmedRequestsNumberTest_Success() {
         Event event = makeEventTest();
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
@@ -231,7 +266,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void adminEditEventTest() {
+    public void adminEditEventTest_Success() {
         Event event = makeEventTest();
         Event eventFromRepo = makeEventTest();
         eventFromRepo.setState(EventState.PUBLISHED);
@@ -256,24 +291,27 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
         assertThat(eventFromRepo.getViews(), equalTo(updatedEvent.getViews()));
         assertThat(eventFromRepo.getInitiatorId(), equalTo(updatedEvent.getInitiatorId()));
+
+        verify(eventRepository, times(1)).save(any());
     }
 
     @Test
-    public void adminEditEventTest_ValidationException_1hoursException_ThrowsException() {
+    public void adminEditEventTest_EventStartTooSoon_Exception() {
         RequestUpdateEventAdminDTO adminRequest = makeAdminRequest();
         Event event = makeEventTest();
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
         event.setEventDate(LocalDateTime.now().plusHours(1));
 
-        Assertions.assertThrowsExactly(ValidationException.class,
+        ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
                 () -> eventService.adminEditEvent(1L, adminRequest)
         );
+        assertEquals("Event with id 1 starts in less than an hour", exception.getMessage());
     }
 
 
     @Test
-    public void adminEditEventTest_ValidationException_1hoursBoundaryValues_NotThrowsException() {
+    public void adminEditEventTest_EventStartsToSoon_Success() {
         Event event = makeEventTest();
         event.setEventDate(LocalDateTime.now().plusHours(1).plusMinutes(1));
         Event eventFromRepo = makeEventTest();
@@ -299,6 +337,8 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
         assertThat(eventFromRepo.getViews(), equalTo(updatedEvent.getViews()));
         assertThat(eventFromRepo.getInitiatorId(), equalTo(updatedEvent.getInitiatorId()));
+
+        verify(eventRepository, times(1)).save(any());
     }
 
 }
