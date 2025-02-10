@@ -169,7 +169,7 @@ public class EventControllerTest {
         event.setEventId(null);
         Event savedEvent = eventRepository.save(event);
 
-        MvcResult mvcResult = mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+        MvcResult mvcResult = mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(requestEventDTO))
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -211,7 +211,7 @@ public class EventControllerTest {
         event.setEventId(null);
         Event savedEvent = eventRepository.save(event);
 
-        MvcResult mvcResult = mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+        MvcResult mvcResult = mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(requestEventDTO))
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -252,7 +252,7 @@ public class EventControllerTest {
         event.setEventId(null);
         Event savedEvent = eventRepository.save(event);
 
-        mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+        mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                 .content(objectMapper.writeValueAsString(requestEventDTO))
                 .header("X-User-Id", 1)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -271,7 +271,7 @@ public class EventControllerTest {
 
         Event savedEvent = eventRepository.save(event);
 
-        mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+        mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(requestEventDTO))
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -289,7 +289,7 @@ public class EventControllerTest {
 
         Event savedEvent = eventRepository.save(event);
 
-        mockMvc.perform(patch("/events/" + savedEvent.getEventId())
+        mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                 .content(objectMapper.writeValueAsString(requestEventDTO))
                 .header("X-User-Id", 1)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -306,7 +306,7 @@ public class EventControllerTest {
         Event savedEvent = eventRepository.save(event);
 
 
-        MvcResult mvcResult = mockMvc.perform(get("/events/" + savedEvent.getEventId())
+        MvcResult mvcResult = mockMvc.perform(get("/events/{eventId}", savedEvent.getEventId())
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -328,7 +328,8 @@ public class EventControllerTest {
 
     @Test
     public void findEventByIdTest_EventNotFound_ThrowsException() throws Exception {
-        mockMvc.perform(get("/events/100")
+        Long eventId = 100L;
+        mockMvc.perform(get("/events/{eventId}", eventId)
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -342,7 +343,8 @@ public class EventControllerTest {
 
         Event savedEvent = eventRepository.save(event);
 
-        MvcResult mvcResult = mockMvc.perform(get("/events/categories/" + savedEvent.getCategoryId())
+        MvcResult mvcResult = mockMvc.perform(get("/events/categories/{categoryId}",
+                                                                        savedEvent.getCategoryId())
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -363,6 +365,7 @@ public class EventControllerTest {
 
     @Test
     public void findAllUserEventsTest_Success() throws Exception {
+        Long eventId = 1L;
         Event event1 = makeEventTest();
         event1.setTitle("Title 1");
         event1.setEventId(null);
@@ -373,7 +376,7 @@ public class EventControllerTest {
         event2.setEventId(null);
         eventRepository.save(event2);
 
-        MvcResult mvcResult = mockMvc.perform(get("/events/users/1")
+        MvcResult mvcResult = mockMvc.perform(get("/events/users/{eventId}", eventId)
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -389,7 +392,8 @@ public class EventControllerTest {
 
     @Test
     public void findAllUserEventsTest_UserHasNoEvents_ReturnsEmptyList() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/events/users/1")
+        Long eventId = 100L;
+        MvcResult mvcResult = mockMvc.perform(get("/events/users/{eventId}", eventId)
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -421,7 +425,7 @@ public class EventControllerTest {
 
         RequestUpdateEventAdminDTO adminDTO = makeAdminRequest();
 
-        MvcResult mvcResult = mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+        MvcResult mvcResult = mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(adminDTO))
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -456,7 +460,7 @@ public class EventControllerTest {
         event.setEventDate(LocalDateTime.now().plusHours(1));
         Event savedEvent = eventRepository.save(event);
 
-       mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+       mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(adminRequest))
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -473,7 +477,7 @@ public class EventControllerTest {
 
         RequestUpdateEventAdminDTO adminDTO = makeAdminRequest();
 
-        MvcResult mvcResult = mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+        MvcResult mvcResult = mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(adminDTO))
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -511,7 +515,7 @@ public class EventControllerTest {
         RequestUpdateEventAdminDTO adminRequest = makeAdminRequest();
         adminRequest.setStateAction(EventStateAction.PUBLISH_EVENT);
 
-        mockMvc.perform(patch("/events/admin/" + savedEvent.getEventId())
+        mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                 .content(objectMapper.writeValueAsString(adminRequest))
                 .header("X-User-Id", 1)
                 .contentType(MediaType.APPLICATION_JSON)

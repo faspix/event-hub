@@ -112,6 +112,7 @@ public class RequestServiceImpl implements RequestService {
 
         rejectPendingRequests(eventId, counter, limit);
 
+        // TODO: AMQP
         Integer confirmedRequests = eventDTO.getConfirmedRequests() + counter;
         eventServiceClient.setConfirmedRequestsNumber(new ConfirmedRequestsDTO(eventId, confirmedRequests));
 

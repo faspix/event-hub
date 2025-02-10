@@ -77,7 +77,8 @@ public class CategoryControllerTest {
 
     @Test
     void findCategoryByIdTest_CategoryNotFound_Exception() throws Exception {
-        mockMvc.perform(get("/categories/100")
+        Long categoryId = 100L;
+        mockMvc.perform(get("/categories/{categoryId}", categoryId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -138,9 +139,10 @@ public class CategoryControllerTest {
 
     @Test
     void editCategoryTest_CategoryNotFound_Exception() throws Exception {
+        Long categoryId = 100L;
         RequestCategoryDTO updatedCategoryDTO = makeRequestCategory();
 
-        mockMvc.perform(patch("/categories/100")
+        mockMvc.perform(patch("/categories/{categoryId}", categoryId)
                         .content(objectMapper.writeValueAsString(updatedCategoryDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

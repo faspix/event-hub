@@ -66,6 +66,7 @@ public class RequestControllerTest {
 
     @Test
     public void createRequestTest_Success() throws Exception {
+        Long eventId = 1L;
         Request request = makeRequest();
         request.setId(null);
         ResponseEventDTO eventDTO = makeResponseEventTest();
@@ -75,7 +76,7 @@ public class RequestControllerTest {
                 .thenReturn(eventDTO);
         requestRepository.save(request);
 
-        MvcResult mvcResult = mockMvc.perform(post("/requests/events/1")
+        MvcResult mvcResult = mockMvc.perform(post("/requests/events/{eventId}", eventId)
                         .header("X-User-Id", 2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -90,6 +91,7 @@ public class RequestControllerTest {
 
     @Test
     public void createRequestTest_RequestAlreadyExists_Exception() throws Exception {
+        Long eventId = 1L;
         ResponseEventDTO eventDTO = makeResponseEventTest();
         eventDTO.setState(EventState.PUBLISHED);
         eventDTO.setParticipantLimit(20);
@@ -97,7 +99,7 @@ public class RequestControllerTest {
                 .thenReturn(eventDTO);
         requestController.createRequest(2L, 1L);
 
-        mockMvc.perform(post("/requests/events/1")
+        mockMvc.perform(post("/requests/events/{eventId}", eventId)
                         .header("X-User-Id", 2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -106,11 +108,12 @@ public class RequestControllerTest {
 
     @Test
     public void cancelRequestTest_Success() throws Exception {
+        Long eventId = 1L;
         Request request = makeRequest();
         request.setId(null);
         requestRepository.save(request);
 
-        MvcResult mvcResult = mockMvc.perform(patch("/requests/events/1/cancel")
+        MvcResult mvcResult = mockMvc.perform(patch("/requests/events/{eventId}/cancel", eventId)
                                 .header("X-User-Id", request.getRequesterId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -124,7 +127,8 @@ public class RequestControllerTest {
 
     @Test
     public void cancelRequestTest_RequestNotFound_Exception() throws Exception {
-        mockMvc.perform(patch("/requests/events/1/cancel")
+        Long eventId = 1L;
+        mockMvc.perform(patch("/requests/events/{eventId}/cancel", eventId)
                         .header("X-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -133,6 +137,7 @@ public class RequestControllerTest {
 
     @Test
     public void getRequestsToMyEventTest_Success() throws Exception {
+        Long eventId = 1L;
         Request request = makeRequest();
         request.setId(null);
         List<Request> requests = List.of(request);
@@ -141,7 +146,7 @@ public class RequestControllerTest {
                 .thenReturn(eventDTO);
         requestRepository.saveAll(requests);
 
-        MvcResult mvcResult = mockMvc.perform(get("/requests/events/1")
+        MvcResult mvcResult = mockMvc.perform(get("/requests/events/{eventId}", eventId)
                         .header("X-User-Id", request.getRequesterId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -155,6 +160,7 @@ public class RequestControllerTest {
 
     @Test
     public void setRequestsStatusTest_Success() throws Exception {
+        Long eventId = 1L;
         Request request = makeRequest();
         request.setId(null);
         ResponseEventDTO eventDTO = makeResponseEventTest();
@@ -164,7 +170,7 @@ public class RequestControllerTest {
         RequestParticipationRequestDTO requestDTO = makeRequestRequest();
         requestDTO.setRequestIds(List.of(save.getId()));
 
-        MvcResult mvcResult = mockMvc.perform(patch("/requests/events/1")
+        MvcResult mvcResult = mockMvc.perform(patch("/requests/events/{eventId}", eventId)
                         .header("X-User-Id", request.getRequesterId())
                         .content(objectMapper.writeValueAsString(requestDTO))
                         .contentType(MediaType.APPLICATION_JSON)

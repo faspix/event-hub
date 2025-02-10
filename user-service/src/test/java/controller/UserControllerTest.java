@@ -162,7 +162,8 @@ public class UserControllerTest {
 
     @Test
     public void findUserNotFoundTest() throws Exception {
-        mockMvc.perform(get("/users/100")
+        Long userId = 100L;
+        mockMvc.perform(get("/users/{userId}", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isNotFound());
