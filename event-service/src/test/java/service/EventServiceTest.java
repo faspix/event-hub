@@ -49,7 +49,7 @@ public class EventServiceTest {
 
     @Test
     public void createEventTest() {
-        RequestEventDTO requestEventDTO = makeRequestTest();
+        RequestEventDTO requestEventDTO = makeRequestEventTest();
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
 
@@ -69,7 +69,7 @@ public class EventServiceTest {
 
     @Test
     public void createEventTest_ValidationException_2hoursBoundaryValues_NotThrowsException() {
-        RequestEventDTO requestEventDTO = makeRequestTest();
+        RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2).plusMinutes(1));
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
@@ -89,7 +89,7 @@ public class EventServiceTest {
 
     @Test
     public void createEventTest_ValidationException_2hoursException_ThrowsException() {
-        RequestEventDTO requestEventDTO = makeRequestTest();
+        RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now());
 
         Assertions.assertThrowsExactly(ValidationException.class,
@@ -101,7 +101,7 @@ public class EventServiceTest {
     public void editEventTest() {
         Event event = makeEventTest();
         event.setTitle("updated event title");
-        RequestEventDTO updateRequest = makeRequestTest();
+        RequestEventDTO updateRequest = makeRequestEventTest();
         updateRequest.setTitle(event.getTitle());
         when(eventRepository.save(any()))
                 .thenReturn(event);
@@ -128,7 +128,7 @@ public class EventServiceTest {
 
     @Test
     public void editEventTest_ValidationException_2hoursException_ThrowsException() {
-        RequestEventDTO requestEventDTO = makeRequestTest();
+        RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2));
 
         Assertions.assertThrowsExactly(ValidationException.class,
@@ -142,7 +142,7 @@ public class EventServiceTest {
         Event event = makeEventTest();
         event.setTitle("updated event title");
         event.setEventDate(LocalDateTime.now().plusHours(2).plusMinutes(1));
-        RequestEventDTO updateRequest = makeRequestTest();
+        RequestEventDTO updateRequest = makeRequestEventTest();
         updateRequest.setTitle(event.getTitle());
         updateRequest.setEventDate(event.getEventDate());
         when(eventRepository.save(any()))
@@ -169,7 +169,7 @@ public class EventServiceTest {
 
     @Test
     public void editEventTest_ValidationException_UserDidntCreateEvent_ThrowsException() {
-        RequestEventDTO requestEventDTO = makeRequestTest();
+        RequestEventDTO requestEventDTO = makeRequestEventTest();
         Event event = makeEventTest();
         event.setInitiatorId(22L);
         when(eventRepository.findById(anyLong()))
@@ -184,14 +184,13 @@ public class EventServiceTest {
     public void editEventTest_ValidationException_PublishedEvent_ThrowsException() {
         Event event = makeEventTest();
         event.setState(EventState.PUBLISHED);
-        RequestEventDTO requestEventDTO = makeRequestTest();
+        RequestEventDTO requestEventDTO = makeRequestEventTest();
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
         Assertions.assertThrowsExactly(ValidationException.class,
                 () -> eventService.editEvent(1L, 1L, requestEventDTO)
         );
-
     }
 
     @Test
@@ -200,20 +199,20 @@ public class EventServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        Event findEvent = eventService.findEventById(1L);
+        Event result = eventService.findEventById(1L);
 
-        assertThat(findEvent.getEventId(), equalTo(event.getEventId()));
-        assertThat(findEvent.getEventDate(), equalTo(event.getEventDate()));
-        assertThat(findEvent.getTitle(), equalTo(event.getTitle()));
-        assertThat(findEvent.getAnnotation(), equalTo(event.getAnnotation()));
-        assertThat(findEvent.getDescription(), equalTo(event.getDescription()));
-        assertThat(findEvent.getLocation(), equalTo(event.getLocation()));
-        assertThat(findEvent.getCreationDate(), equalTo(event.getCreationDate()));
-        assertThat(findEvent.getPublishedOn(), equalTo(event.getPublishedOn()));
-        assertThat(findEvent.getPaid(), equalTo(event.getPaid()));
-        assertThat(findEvent.getState(), equalTo(event.getState()));
-        assertThat(findEvent.getViews(), equalTo(event.getViews()));
-        assertThat(findEvent.getInitiatorId(), equalTo(event.getInitiatorId()));
+        assertThat(result.getEventId(), equalTo(event.getEventId()));
+        assertThat(result.getEventDate(), equalTo(event.getEventDate()));
+        assertThat(result.getTitle(), equalTo(event.getTitle()));
+        assertThat(result.getAnnotation(), equalTo(event.getAnnotation()));
+        assertThat(result.getDescription(), equalTo(event.getDescription()));
+        assertThat(result.getLocation(), equalTo(event.getLocation()));
+        assertThat(result.getCreationDate(), equalTo(event.getCreationDate()));
+        assertThat(result.getPublishedOn(), equalTo(event.getPublishedOn()));
+        assertThat(result.getPaid(), equalTo(event.getPaid()));
+        assertThat(result.getState(), equalTo(event.getState()));
+        assertThat(result.getViews(), equalTo(event.getViews()));
+        assertThat(result.getInitiatorId(), equalTo(event.getInitiatorId()));
 
     }
 

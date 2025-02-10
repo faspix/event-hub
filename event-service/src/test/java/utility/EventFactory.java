@@ -39,7 +39,7 @@ public class EventFactory {
                 .build();
     }
 
-    public static ResponseEventDTO makeResponseTest() {
+    public static ResponseEventDTO makeResponseEventTest() {
         return ResponseEventDTO.builder()
                 .eventId(1L)
                 .title("title")
@@ -63,7 +63,7 @@ public class EventFactory {
                 .build();
     }
 
-    public static ResponseEventShortDTO makeShortResponseTest() {
+    public static ResponseEventShortDTO makeShortResponseEventTest() {
         return ResponseEventShortDTO.builder()
                 .eventId(1L)
                 .title("title")
@@ -80,7 +80,7 @@ public class EventFactory {
                 .build();
     }
 
-    public static RequestEventDTO makeRequestTest() {
+    public static RequestEventDTO makeRequestEventTest() {
         return RequestEventDTO.builder()
                 .title("title")
                 .annotation("annotation")

@@ -19,6 +19,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findEventsByCategoryId(Long categoryId);
 
+    List<Event> findEventsByTitle(String title);
+
     // TODO: fix
     @Query("SELECT e FROM Event e WHERE " +
             "e.state = 'PUBLISHED' " +

@@ -41,8 +41,9 @@ public class UserControllerTest {
         RequestUserDTO requestUserDTO = makeRequestUserTest();
 
         ResponseUserDTO userDTO = userController.createUser(requestUserDTO);
-        assertThat(requestUserDTO.getName(), equalTo(userDTO.getName()));
-        assertThat(requestUserDTO.getEmail(), equalTo(userDTO.getEmail()));
+        User findUserDTO = userRepository.findUserByEmail(requestUserDTO.getEmail()).get();
+        assertThat(findUserDTO.getName(), equalTo(userDTO.getName()));
+        assertThat(findUserDTO.getEmail(), equalTo(userDTO.getEmail()));
     }
 
     @Test
@@ -66,8 +67,10 @@ public class UserControllerTest {
         dtoForUpdate.setEmail("updated@mail.com");
 
         ResponseUserDTO updatedUser = userController.editUser(savedUser.getUserId(), dtoForUpdate);
-        assertThat(dtoForUpdate.getName(), equalTo(updatedUser.getName()));
-        assertThat(dtoForUpdate.getEmail(), equalTo(updatedUser.getEmail()));
+
+        User findUserDTO = userRepository.findUserByEmail(dtoForUpdate.getEmail()).get();
+        assertThat(findUserDTO.getName(), equalTo(updatedUser.getName()));
+        assertThat(findUserDTO.getEmail(), equalTo(updatedUser.getEmail()));
     }
 
     @Test
