@@ -5,8 +5,11 @@ import com.faspix.controller.UserController;
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
+import com.faspix.exception.UserAlreadyExistException;
+import com.faspix.exception.UserNotFoundException;
 import com.faspix.repository.UserRepository;
 import com.faspix.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,6 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static utility.UserFactory.*;
 
 @SpringBootTest(classes = {UserApplication.class})
@@ -35,11 +40,14 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @BeforeEach
+    void init() {
+        userRepository.deleteAll();
+    }
 
     @Test
-    public void createUserTest() {
+    public void createUserTest_Success() {
         RequestUserDTO requestUserDTO = makeRequestUserTest();
-
         ResponseUserDTO userDTO = userController.createUser(requestUserDTO);
         User findUserDTO = userRepository.findUserByEmail(requestUserDTO.getEmail()).get();
         assertThat(findUserDTO.getName(), equalTo(userDTO.getName()));
@@ -47,10 +55,19 @@ public class UserControllerTest {
     }
 
     @Test
-    public void deleteUserTest() {
+    public void createUserTest_EmailAlreadyExist_Exception() {
+        RequestUserDTO requestUserDTO = makeRequestUserTest();
+        userController.createUser(requestUserDTO);
+        UserAlreadyExistException exception = assertThrows(UserAlreadyExistException.class,
+                () -> userController.createUser(requestUserDTO)
+        );
+        assertEquals("User with email mail@mail.com already exist", exception.getMessage());
+    }
+
+    @Test
+    public void deleteUserTest_Success() {
         User user = makeUserTest();
         user.setUserId(null);
-        user.setEmail("mail7@mail.com");
         userRepository.save(user);
 
         ResponseEntity<HttpStatus> result = userController.deleteUser(user.getUserId());
@@ -58,10 +75,18 @@ public class UserControllerTest {
     }
 
     @Test
-    public void editUserTest() {
+    public void deleteUserTest_UserNotFound_Exception() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userController.deleteUser(100L)
+        );
+        assertEquals("User with id 100 not found", exception.getMessage());
+    }
+
+
+    @Test
+    public void editUserTest_Success() {
         User user = makeUserTest();
         user.setUserId(null);
-        user.setEmail("mail09@mail.com");
         User savedUser = userRepository.save(user);
         RequestUserDTO dtoForUpdate = makeRequestUserTest();
         dtoForUpdate.setEmail("updated@mail.com");
@@ -74,10 +99,20 @@ public class UserControllerTest {
     }
 
     @Test
+    public void editUserTest_UserNotFound_Exception() {
+        RequestUserDTO dtoForUpdate = makeRequestUserTest();
+        dtoForUpdate.setEmail("updated@mail.com");
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userController.editUser(100L, dtoForUpdate)
+        );
+        assertEquals("User with id 100 not found", exception.getMessage());
+    }
+
+    @Test
     public void findUserTest() {
         User user2 = makeUserTest();
         user2.setUserId(null);
-        user2.setEmail("mail019@mail.com");
         User savedUser = userRepository.save(user2);
 
         ResponseUserDTO user = userController.findUserById(savedUser.getUserId());
@@ -85,4 +120,10 @@ public class UserControllerTest {
         assertThat(user2.getName(), equalTo(user.getName()));
     }
 
+    @Test
+    public void findUserNotFoundTest() {
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class,
+                () -> userController.findUserById(100L));
+        assertEquals("User with id 100 not found", exception.getMessage());
+    }
 }
