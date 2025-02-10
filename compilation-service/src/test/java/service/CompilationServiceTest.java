@@ -79,7 +79,7 @@ public class CompilationServiceTest {
 
         when(compilationRepository.findById(anyLong()))
                 .thenReturn(Optional.of(compilation));
-        when(compilationRepository.save(any()))
+        when(compilationRepository.saveAndFlush(any()))
                 .thenReturn(compilation);
 
         Compilation result = compilationService.editCompilation(1L, updateDTO);

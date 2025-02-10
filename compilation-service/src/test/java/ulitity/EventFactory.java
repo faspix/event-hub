@@ -1,7 +1,6 @@
-package utility;
+package ulitity;
 
 import com.faspix.dto.*;
-import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
 import com.faspix.utility.Location;
@@ -15,27 +14,6 @@ public class EventFactory {
         return ResponseUserShortDTO.builder()
                 .userId(1L)
                 .name("name")
-                .build();
-    }
-
-    public static Event makeEventTest() {
-        return Event.builder()
-                .eventId(null)
-                .title("title")
-                .annotation("annotation")
-                .categoryId(1L)
-                .participantLimit(10)
-                .creationDate(OffsetDateTime.now())
-                .description("description")
-                .eventDate(LocalDateTime.MAX)
-                .initiatorId(1L)
-                .location(new Location(10.0, 10.0))
-                .paid(false)
-                .confirmedRequests(10)
-                .publishedOn(OffsetDateTime.now())
-                .requestModeration(false)
-                .state(EventState.PENDING)
-                .views(0)
                 .build();
     }
 

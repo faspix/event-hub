@@ -63,7 +63,7 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation updatedCompilation = compilationMapper.requestToCompilation(compilationDTO);
         updatedCompilation.setId(id);
         try {
-            return compilationRepository.save(updatedCompilation);
+            return compilationRepository.saveAndFlush(updatedCompilation);
         } catch (DataIntegrityViolationException e) {
             throw new CompilationAlreadyExistException(
                     "Compilation with title '" + compilationDTO.getTitle() + "' already exist");
