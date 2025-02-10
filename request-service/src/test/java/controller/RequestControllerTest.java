@@ -24,9 +24,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utility.EventFactory.makeResponseEventTest;
 import static utility.RequestFactory.*;
@@ -38,7 +40,6 @@ import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(classes = {RequestApplication.class})
 @AutoConfigureMockMvc
-@Transactional
 public class RequestControllerTest {
 
     @Autowired
@@ -68,7 +69,6 @@ public class RequestControllerTest {
     public void createRequestTest_Success() throws Exception {
         Long eventId = 1L;
         Request request = makeRequest();
-        request.setId(null);
         ResponseEventDTO eventDTO = makeResponseEventTest();
         eventDTO.setParticipantLimit(20);
         eventDTO.setState(EventState.PUBLISHED);
@@ -87,6 +87,9 @@ public class RequestControllerTest {
 
         Request savedRequest = requestRepository.findRequestByRequesterIdAndEventId(2L, 1L);
         assertThat(savedRequest.getState(), equalTo(response.getState()));
+        assertThat(savedRequest.getRequesterId(), equalTo(response.getRequesterId()));
+        assertThat(savedRequest.getState(), equalTo(response.getState()));
+        assertThat(savedRequest.getId(), equalTo(response.getId()));
     }
 
     @Test
@@ -110,7 +113,6 @@ public class RequestControllerTest {
     public void cancelRequestTest_Success() throws Exception {
         Long eventId = 1L;
         Request request = makeRequest();
-        request.setId(null);
         requestRepository.save(request);
 
         MvcResult mvcResult = mockMvc.perform(patch("/requests/events/{eventId}/cancel", eventId)
@@ -139,7 +141,6 @@ public class RequestControllerTest {
     public void getRequestsToMyEventTest_Success() throws Exception {
         Long eventId = 1L;
         Request request = makeRequest();
-        request.setId(null);
         List<Request> requests = List.of(request);
         ResponseEventDTO eventDTO = makeResponseEventTest();
         when(eventServiceClient.findEventById(anyLong()))
@@ -162,7 +163,6 @@ public class RequestControllerTest {
     public void setRequestsStatusTest_Success() throws Exception {
         Long eventId = 1L;
         Request request = makeRequest();
-        request.setId(null);
         ResponseEventDTO eventDTO = makeResponseEventTest();
         when(eventServiceClient.findEventById(anyLong()))
                 .thenReturn(eventDTO);
@@ -186,7 +186,6 @@ public class RequestControllerTest {
     @Test
     public void getUsersRequestsTest_Success() throws Exception {
         Request request = makeRequest();
-        request.setId(null);
         requestRepository.save(request);
 
         MvcResult mvcResult = mockMvc.perform(get("/requests/users")

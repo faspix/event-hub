@@ -13,7 +13,7 @@ public class RequestFactory {
 
     public static Request makeRequest() {
         return Request.builder()
-                .id(1L)
+                .id(null)
                 .requesterId(1L)
                 .eventId(1L)
                 .state(ParticipationRequestState.PENDING)

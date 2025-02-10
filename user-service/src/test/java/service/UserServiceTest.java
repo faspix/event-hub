@@ -71,6 +71,7 @@ public class UserServiceTest {
     public void editUserTest_Success() {
         User user = makeUserTest();
         user.setEmail("updated@mail.com");
+        user.setUserId(1L);
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
         when(userRepository.saveAndFlush(any()))

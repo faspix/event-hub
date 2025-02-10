@@ -8,7 +8,7 @@ public class UserFactory {
 
     public static User makeUserTest() {
         return User.builder()
-                .userId(1L)
+                .userId(null)
                 .name("UserName")
                 .email("mail@mail.com")
                 .build();

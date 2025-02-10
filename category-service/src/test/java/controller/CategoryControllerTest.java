@@ -32,7 +32,6 @@ import static utility.CategoryFactory.*;
 
 @SpringBootTest(classes = {CategoryApplication.class})
 @AutoConfigureMockMvc
-@Transactional
 public class CategoryControllerTest {
 
     @Autowired

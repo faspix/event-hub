@@ -19,7 +19,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utility.UserFactory.*;
 
@@ -56,6 +58,8 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
+                .andExpectAll(jsonPath("$.name", is(requestUserDTO.getName())))
+                .andExpectAll(jsonPath("$.email", is(requestUserDTO.getEmail())))
                 .andReturn();
         String body = mvcResult.getResponse().getContentAsString();
         ResponseUserDTO userDTO = objectMapper.readValue(body, ResponseUserDTO.class);
@@ -86,7 +90,6 @@ public class UserControllerTest {
     @Test
     public void deleteUserTest_Success() throws Exception {
         User user = makeUserTest();
-        user.setUserId(null);
         user = userRepository.save(user);
 
         mockMvc.perform(delete("/users")
@@ -108,9 +111,7 @@ public class UserControllerTest {
 
     @Test
     public void editUserTest_Success() throws Exception {
-        User user = makeUserTest();
-        user.setUserId(null);
-        User savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(makeUserTest());
         RequestUserDTO dtoForUpdate = makeRequestUserTest();
         dtoForUpdate.setEmail("updated@mail.com");
 
@@ -120,6 +121,8 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
+                .andExpectAll(jsonPath("$.name", is(dtoForUpdate.getName())))
+                .andExpectAll(jsonPath("$.email", is(dtoForUpdate.getEmail())))
                 .andReturn();
         String body = mvcResult.getResponse().getContentAsString();
         ResponseUserDTO updatedUser = objectMapper.readValue(body, ResponseUserDTO.class);
@@ -145,13 +148,14 @@ public class UserControllerTest {
     @Test
     public void findUserTest() throws Exception {
         User user2 = makeUserTest();
-        user2.setUserId(null);
         User savedUser = userRepository.save(user2);
 
         MvcResult mvcResult = mockMvc.perform(get("/users/{userId}", savedUser.getUserId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
+                .andExpectAll(jsonPath("$.name", is(user2.getName())))
+                .andExpectAll(jsonPath("$.email", is(user2.getEmail())))
                 .andReturn();
         String body = mvcResult.getResponse().getContentAsString();
         ResponseUserDTO user = objectMapper.readValue(body, ResponseUserDTO.class);
