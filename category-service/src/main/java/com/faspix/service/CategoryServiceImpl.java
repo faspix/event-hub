@@ -2,6 +2,7 @@ package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCategoryDTO;
+import com.faspix.dto.ResponseCategoryDTO;
 import com.faspix.entity.Category;
 import com.faspix.exception.CategoryAlreadyExistException;
 import com.faspix.exception.CategoryNotEmptyException;
@@ -33,26 +34,30 @@ public class CategoryServiceImpl implements CategoryService {
     private final EventServiceClient eventServiceClient;
 
     @Override
-    public List<Category> findCategories(Integer page, Integer size) {
+    public List<ResponseCategoryDTO> findCategories(Integer page, Integer size) {
         Pageable pageRequest = PageRequestMaker.makePageRequest(page, size);
         return categoryRepository.findAll(pageRequest)
                 .stream()
+                .map(categoryMapper::categoryToResponse)
                 .toList();
     }
 
     @Override
-    public Category findCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId).orElseThrow(
+    public ResponseCategoryDTO findCategoryById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new CategoryNotFoundException("Category with id " + categoryId + " not found")
         );
+        return categoryMapper.categoryToResponse(category);
     }
 
     @Override
     @Transactional
-    public Category createCategory(RequestCategoryDTO categoryDTO) {
+    public ResponseCategoryDTO createCategory(RequestCategoryDTO categoryDTO) {
         Category category = categoryMapper.requestToCategory(categoryDTO);
         try {
-            return categoryRepository.saveAndFlush(category);
+            return categoryMapper.categoryToResponse(
+                    categoryRepository.saveAndFlush(category)
+            );
         } catch (DataIntegrityViolationException e) {
             throw new CategoryAlreadyExistException("Category with name '" + category.getName() + "' already exist");
         }
@@ -60,12 +65,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public Category editCategory(Long categoryId, RequestCategoryDTO categoryDTO) {
-        Category category = findCategoryById(categoryId);
+    public ResponseCategoryDTO editCategory(Long categoryId, RequestCategoryDTO categoryDTO) {
+        ResponseCategoryDTO category = findCategoryById(categoryId);
         Category updatedCategory = categoryMapper.requestToCategory(categoryDTO);
         updatedCategory.setCategoryId(category.getCategoryId());
         try {
-            return categoryRepository.saveAndFlush(updatedCategory);
+            return categoryMapper.categoryToResponse(
+                    categoryRepository.saveAndFlush(updatedCategory)
+            );
         } catch (DataIntegrityViolationException e) {
             throw new CategoryAlreadyExistException("Category with name '" + updatedCategory.getName() + "' already exist");
         }
