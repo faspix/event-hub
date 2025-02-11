@@ -1,9 +1,6 @@
 package com.faspix.service;
 
-import com.faspix.dto.ConfirmedRequestsDTO;
-import com.faspix.dto.RequestEventDTO;
-import com.faspix.dto.RequestUpdateEventAdminDTO;
-import com.faspix.dto.ResponseEventDTO;
+import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.utility.EventSortType;
@@ -18,24 +15,26 @@ import java.util.List;
 
 public interface EventService {
 
-    Event createEvent(Long creatorId, RequestEventDTO eventDTO);
+    ResponseEventDTO createEvent(Long creatorId, RequestEventDTO eventDTO);
 
-    Event editEvent(Long userId, Long eventId, RequestEventDTO eventDTO);
+    ResponseEventDTO editEvent(Long userId, Long eventId, RequestEventDTO eventDTO);
 
-    List<Event> findEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+    List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                            LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
                            Integer page, Integer size);
 
-    Event findEventById(Long eventId);
+    ResponseEventDTO findEventById(Long eventId);
 
-    List<Event> findAllUsersEvents(Long userId, Integer page, Integer size);
+    Event getEventById(Long eventId);
 
-    List<Event> findEventsByCategoryId(Long catId);
+    List<ResponseEventShortDTO> findAllUsersEvents(Long userId, Integer page, Integer size);
 
-    List<Event> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+    List<ResponseEventShortDTO> findEventsByCategoryId(Long catId);
+
+    List<ResponseEventDTO> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page, Integer size);
 
     ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 
-    Event adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
+    ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
 }

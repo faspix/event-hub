@@ -1,14 +1,14 @@
 package service;
 
+import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.UserServiceClient;
-import com.faspix.dto.ConfirmedRequestsDTO;
-import com.faspix.dto.RequestEventDTO;
-import com.faspix.dto.RequestUpdateEventAdminDTO;
+import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
+import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.service.EventServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -47,9 +47,14 @@ public class EventServiceTest {
     @InjectMocks
     private EventServiceImpl eventService;
 
+    @Mock
+    private CategoryServiceClient categoryServiceClient;
+
     @Spy
     private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
+    @Spy
+    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Test
     public void createEventTest_Success() {
@@ -57,14 +62,13 @@ public class EventServiceTest {
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
 
-        Event event = eventService.createEvent(1L, requestEventDTO);
+        ResponseEventDTO event = eventService.createEvent(1L, requestEventDTO);
 
         assertThat(event.getEventDate(), equalTo(requestEventDTO.getEventDate()));
         assertThat(event.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
         assertThat(event.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
         assertThat(event.getPaid(), equalTo(requestEventDTO.getPaid()));
         assertThat(event.getDescription(), equalTo(requestEventDTO.getDescription()));
-        assertThat(event.getCategoryId(), equalTo(requestEventDTO.getCategoryId()));
         assertThat(event.getParticipantLimit(), equalTo(requestEventDTO.getParticipantLimit()));
         assertThat(event.getTitle(), equalTo(requestEventDTO.getTitle()));
         assertThat(event.getState(), equalTo(EventState.PENDING));
@@ -80,13 +84,12 @@ public class EventServiceTest {
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
 
-        Event event = eventService.createEvent(1L, requestEventDTO);
+        ResponseEventDTO event = eventService.createEvent(1L, requestEventDTO);
 
         assertThat(event.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
         assertThat(event.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
         assertThat(event.getPaid(), equalTo(requestEventDTO.getPaid()));
         assertThat(event.getDescription(), equalTo(requestEventDTO.getDescription()));
-        assertThat(event.getCategoryId(), equalTo(requestEventDTO.getCategoryId()));
         assertThat(event.getParticipantLimit(), equalTo(requestEventDTO.getParticipantLimit()));
         assertThat(event.getTitle(), equalTo(requestEventDTO.getTitle()));
         assertThat(event.getState(), equalTo(EventState.PENDING));
@@ -116,7 +119,7 @@ public class EventServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(makeEventTest()));
 
-        Event updatedEvent = eventService.editEvent(1L, 1L, updateRequest);
+        ResponseEventDTO updatedEvent = eventService.editEvent(1L, 1L, updateRequest);
 
         assertThat(updatedEvent.getEventId(), equalTo(event.getEventId()));
         assertThat(updatedEvent.getEventDate(), equalTo(event.getEventDate()));
@@ -129,7 +132,6 @@ public class EventServiceTest {
         assertThat(updatedEvent.getPaid(), equalTo(event.getPaid()));
         assertThat(updatedEvent.getState(), equalTo(event.getState()));
         assertThat(updatedEvent.getViews(), equalTo(event.getViews()));
-        assertThat(updatedEvent.getInitiatorId(), equalTo(event.getInitiatorId()));
 
         verify(eventRepository, times(1)).save(any());
     }
@@ -160,7 +162,7 @@ public class EventServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(makeEventTest()));
 
-        Event updatedEvent = eventService.editEvent(1L, 1L, updateRequest);
+        ResponseEventDTO updatedEvent = eventService.editEvent(1L, 1L, updateRequest);
 
         assertThat(updatedEvent.getEventId(), equalTo(event.getEventId()));
         assertThat(updatedEvent.getEventDate(), equalTo(event.getEventDate()));
@@ -173,7 +175,6 @@ public class EventServiceTest {
         assertThat(updatedEvent.getPaid(), equalTo(event.getPaid()));
         assertThat(updatedEvent.getState(), equalTo(event.getState()));
         assertThat(updatedEvent.getViews(), equalTo(event.getViews()));
-        assertThat(updatedEvent.getInitiatorId(), equalTo(event.getInitiatorId()));
 
         verify(eventRepository, times(1)).save(any());
     }
@@ -209,10 +210,11 @@ public class EventServiceTest {
     @Test
     public void findEventTest_Success() {
         Event event = makeEventTest();
+        event.setState(EventState.PUBLISHED);
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        Event result = eventService.findEventById(1L);
+        ResponseEventDTO result = eventService.findEventById(1L);
 
         assertThat(result.getEventId(), equalTo(event.getEventId()));
         assertThat(result.getEventDate(), equalTo(event.getEventDate()));
@@ -225,20 +227,33 @@ public class EventServiceTest {
         assertThat(result.getPaid(), equalTo(event.getPaid()));
         assertThat(result.getState(), equalTo(event.getState()));
         assertThat(result.getViews(), equalTo(event.getViews()));
-        assertThat(result.getInitiatorId(), equalTo(event.getInitiatorId()));
 
     }
 
     @Test
     public void findEventByIdTest_EventNotFound_Exception() {
-        when(eventRepository.findById(anyLong())).thenReturn(Optional.empty());
+        Event event = makeEventTest();
+        when(eventRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(event));
+
+        EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
+                eventService.findEventById(1L)
+        );
+
+        assertEquals("Event with id 1 not published yet", exception.getMessage());
+    }
+
+
+    @Test
+    public void findEventByIdTest_EventNotPublished_Exception() {
+        when(eventRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
                 eventService.findEventById(1L)
         );
 
         assertEquals("Event with id 1 not found", exception.getMessage());
-
     }
 
     @Test
@@ -246,7 +261,7 @@ public class EventServiceTest {
         List<Event> events = List.of(makeEventTest(), makeEventTest());
         when(eventRepository.findEventsByInitiatorId(anyLong(), any())).thenReturn(new PageImpl<>(events));
 
-        List<Event> result = eventService.findAllUsersEvents(1L, 0, 10);
+        List<ResponseEventShortDTO> result = eventService.findAllUsersEvents(1L, 0, 10);
 
         assertThat(result.size(), equalTo(2));
     }
@@ -277,7 +292,7 @@ public class EventServiceTest {
 
         RequestUpdateEventAdminDTO adminRequest = makeAdminRequest();
 
-        Event updatedEvent = eventService.adminEditEvent(1L, adminRequest);
+        ResponseEventDTO updatedEvent = eventService.adminEditEvent(1L, adminRequest);
 
         assertThat(eventFromRepo.getEventId(), equalTo(updatedEvent.getEventId()));
         assertThat(eventFromRepo.getEventDate(), equalTo(updatedEvent.getEventDate()));
@@ -285,12 +300,9 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getAnnotation(), equalTo(updatedEvent.getAnnotation()));
         assertThat(eventFromRepo.getDescription(), equalTo(updatedEvent.getDescription()));
         assertThat(eventFromRepo.getLocation(), equalTo(updatedEvent.getLocation()));
-        assertThat(eventFromRepo.getCreationDate(), equalTo(updatedEvent.getCreationDate()));
-        assertThat(eventFromRepo.getPublishedOn(), equalTo(updatedEvent.getPublishedOn()));
         assertThat(eventFromRepo.getPaid(), equalTo(updatedEvent.getPaid()));
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
         assertThat(eventFromRepo.getViews(), equalTo(updatedEvent.getViews()));
-        assertThat(eventFromRepo.getInitiatorId(), equalTo(updatedEvent.getInitiatorId()));
 
         verify(eventRepository, times(1)).save(any());
     }
@@ -323,7 +335,7 @@ public class EventServiceTest {
 
         RequestUpdateEventAdminDTO adminRequest = makeAdminRequest();
 
-        Event updatedEvent = eventService.adminEditEvent(1L, adminRequest);
+        ResponseEventDTO updatedEvent = eventService.adminEditEvent(1L, adminRequest);
 
         assertThat(eventFromRepo.getEventId(), equalTo(updatedEvent.getEventId()));
         assertThat(eventFromRepo.getEventDate(), equalTo(updatedEvent.getEventDate()));
@@ -331,12 +343,9 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getAnnotation(), equalTo(updatedEvent.getAnnotation()));
         assertThat(eventFromRepo.getDescription(), equalTo(updatedEvent.getDescription()));
         assertThat(eventFromRepo.getLocation(), equalTo(updatedEvent.getLocation()));
-        assertThat(eventFromRepo.getCreationDate(), equalTo(updatedEvent.getCreationDate()));
-        assertThat(eventFromRepo.getPublishedOn(), equalTo(updatedEvent.getPublishedOn()));
         assertThat(eventFromRepo.getPaid(), equalTo(updatedEvent.getPaid()));
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
         assertThat(eventFromRepo.getViews(), equalTo(updatedEvent.getViews()));
-        assertThat(eventFromRepo.getInitiatorId(), equalTo(updatedEvent.getInitiatorId()));
 
         verify(eventRepository, times(1)).save(any());
     }

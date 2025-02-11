@@ -1,16 +1,15 @@
 package com.faspix.service;
 
+import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.UserServiceClient;
-import com.faspix.dto.ConfirmedRequestsDTO;
-import com.faspix.dto.RequestEventDTO;
-import com.faspix.dto.RequestUpdateEventAdminDTO;
-import com.faspix.dto.ResponseUserDTO;
+import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
+import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.utility.EventSortType;
 import lombok.RequiredArgsConstructor;
@@ -37,14 +36,18 @@ public class EventServiceImpl implements EventService {
 
     private final UserServiceClient userServiceClient;
 
+    private final CategoryServiceClient categoryServiceClient;
+
     private final EventRepository eventRepository;
+
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
-    public Event createEvent(Long creatorId, RequestEventDTO eventDTO) {
+    public ResponseEventDTO createEvent(Long creatorId, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
-        ResponseUserDTO userDTO = userServiceClient.getUserById(creatorId);
+        userServiceClient.getUserById(creatorId);
         Event event = eventMapper.requestToEvent(eventDTO);
 
         event.setConfirmedRequests(0);
@@ -53,15 +56,16 @@ public class EventServiceImpl implements EventService {
         event.setState(EventState.PENDING);
         event.setViews(0);
 
-        return eventRepository.save(event);
+        eventRepository.save(event);
+        return getResponseDTO(event);
     }
 
     @Override
     @Transactional
-    public Event editEvent(Long userId, Long eventId, RequestEventDTO eventDTO) {
+    public ResponseEventDTO editEvent(Long userId, Long eventId, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
-        Event event = findEventById(eventId);
+        Event event = getEventById(eventId);
         if (! event.getInitiatorId().equals(userId))
             throw new ValidationException("User with id " + userId + " didn't create event with id " + eventId);
         if (event.getState() == EventState.PUBLISHED)
@@ -76,11 +80,13 @@ public class EventServiceImpl implements EventService {
         updatedEvent.setState(event.getState());
         updatedEvent.setViews(event.getViews());
 
-        return eventRepository.save(updatedEvent);
+        return eventMapper.eventToResponse(
+                eventRepository.save(updatedEvent)
+        );
     }
 
     @Override
-    public List<Event> findEvents(String text, List<Long> categories, Boolean paid,
+    public List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid,
                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                   Boolean onlyAvailable, EventSortType sort, Integer page, Integer size) {
 //        Sort sortType = Sort
@@ -91,45 +97,61 @@ public class EventServiceImpl implements EventService {
         System.out.println("->>>>>>>>> " + rangeEnd);
         Page<Event> events = eventRepository.searchEvent(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, pageRequest);
 
-        return events.stream().toList();
-    }
-
-    @Override // TODO: publish check (?)
-    public Event findEventById(Long eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(
-                () -> new EventNotFoundException("Event with id " + eventId + " not found")
-        );
-//        if (event.getState() != EventState.PUBLISHED)
-//            throw new EventNotFoundException("Event with id " + eventId + " not found");
-        return event;
-    }
-
-    @Override
-    public List<Event> findAllUsersEvents(Long userId, Integer page, Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
-        return eventRepository.findEventsByInitiatorId(userId, pageRequest)
+        return events
                 .stream()
+                .map(this::getResponseShortDTO)
                 .toList();
     }
 
     @Override
-    public List<Event> findEventsByCategoryId(Long catId) {
-        return eventRepository.findEventsByCategoryId(catId);
+    public ResponseEventDTO findEventById(Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(
+                () -> new EventNotFoundException("Event with id " + eventId + " not found")
+        );
+        if (event.getState() != EventState.PUBLISHED)
+            throw new EventNotFoundException("Event with id " + eventId + " not published yet");
+        return getResponseDTO(event);
+    }
+
+
+    public Event getEventById(Long eventId) {
+        return eventRepository.findById(eventId).orElseThrow(
+                () -> new EventNotFoundException("Event with id " + eventId + " not found")
+        );
     }
 
     @Override
-    public List<Event> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+    public List<ResponseEventShortDTO> findAllUsersEvents(Long userId, Integer page, Integer size) {
+        Pageable pageRequest = makePageRequest(page, size);
+        return eventRepository.findEventsByInitiatorId(userId, pageRequest)
+                .stream()
+                .map(this::getResponseShortDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ResponseEventShortDTO> findEventsByCategoryId(Long catId) {
+        return eventRepository.findEventsByCategoryId(catId)
+                .stream()
+                .map(eventMapper::eventToShortResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ResponseEventDTO> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page,
                                        Integer size) {
         Pageable pageRequest = makePageRequest(page, size);
         return eventRepository.searchEventAdmin(users, states, categories, rangeStart, rangeEnd, pageRequest)
-                .stream().toList();
+                .stream()
+                .map(this::getResponseDTO)
+                .toList();
     }
 
     @Override
     @Transactional
     public ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
-        Event event = findEventById(requestsDTO.getEventId());
+        Event event = getEventById(requestsDTO.getEventId());
         event.setConfirmedRequests(requestsDTO.getCount());
         eventRepository.save(event);
         return ResponseEntity.ok(HttpStatus.OK);
@@ -137,8 +159,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public Event adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO) {
-        Event event = findEventById(eventId);
+    public ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO) {
+        Event event = getEventById(eventId);
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)))
             throw new ValidationException("Event with id " + eventId + " starts in less than an hour");
         if (! EventState.PENDING.equals(event.getState()))
@@ -153,7 +175,9 @@ public class EventServiceImpl implements EventService {
             event.setState(EventState.CANCELED);
         }
 
-        return eventRepository.save(event);
+        eventRepository.save(event);
+
+        return getResponseDTO(event);
     }
 
     private static void updateNotNullFields(RequestUpdateEventAdminDTO requestDTO, Event event) {
@@ -177,5 +201,31 @@ public class EventServiceImpl implements EventService {
             event.setTitle(requestDTO.getTitle());
     }
 
+
+    private ResponseEventDTO getResponseDTO(Event event) {
+        Long categoryId = event.getCategoryId();
+        Long initiatorId = event.getInitiatorId();
+        ResponseCategoryDTO category = categoryServiceClient.getCategoryById(categoryId);
+        ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
+                userServiceClient.getUserById(initiatorId)
+        );
+        ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
+        responseDTO.setCategory(category);
+        responseDTO.setInitiator(initiator);
+        return responseDTO;
+    }
+
+    private ResponseEventShortDTO getResponseShortDTO(Event event) {
+        Long categoryId = event.getCategoryId();
+        Long initiatorId = event.getInitiatorId();
+        ResponseCategoryDTO category = categoryServiceClient.getCategoryById(categoryId);
+        ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
+                userServiceClient.getUserById(initiatorId)
+        );
+        ResponseEventShortDTO responseDTO = eventMapper.eventToShortResponse(event);
+        responseDTO.setCategory(category);
+        responseDTO.setInitiator(initiator);
+        return responseDTO;
+    }
 
 }

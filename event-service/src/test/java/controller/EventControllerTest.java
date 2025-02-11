@@ -283,7 +283,9 @@ public class EventControllerTest {
 
     @Test
     public void findEventByIdTest_Success() throws Exception {
-        Event savedEvent = eventRepository.save(makeEventTest());
+        Event event = makeEventTest();
+        event.setState(EventState.PUBLISHED);
+        Event savedEvent = eventRepository.save(event);
 
 
         MvcResult mvcResult = mockMvc.perform(get("/events/{eventId}", savedEvent.getEventId())

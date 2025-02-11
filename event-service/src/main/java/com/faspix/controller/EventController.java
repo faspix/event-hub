@@ -32,9 +32,7 @@ public class EventController {
             @RequestHeader(value = "X-User-Id") Long creatorId,
             @RequestBody @Valid RequestEventDTO eventDTO
     ) {
-        return eventMapper.eventToResponse(
-                eventService.createEvent(creatorId, eventDTO)
-        );
+        return eventService.createEvent(creatorId, eventDTO);
     }
 
     @PatchMapping("{eventId}")
@@ -43,9 +41,7 @@ public class EventController {
             @PathVariable Long eventId,
             @RequestBody RequestEventDTO eventDTO
     ) {
-        return eventMapper.eventToResponse(
-                eventService.editEvent(userId, eventId, eventDTO)
-        );
+        return eventService.editEvent(userId, eventId, eventDTO);
     }
 
     @GetMapping("/users/{userId}")
@@ -54,10 +50,7 @@ public class EventController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return eventService.findAllUsersEvents(userId, page, size)
-                .stream()
-                .map(eventMapper::eventToShortResponse)
-                .toList();
+        return eventService.findAllUsersEvents(userId, page, size);
     }
 
     @GetMapping
@@ -72,10 +65,7 @@ public class EventController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return eventService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, page, size)
-                        .stream()
-                        .map(eventMapper::eventToShortResponse)
-                        .toList();
+        return eventService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, page, size);
     }
 
     @GetMapping("/admin/search")
@@ -88,29 +78,21 @@ public class EventController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return eventService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, page, size)
-                .stream()
-                .map(eventMapper::eventToResponse)
-                .toList();
+        return eventService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, page, size);
     }
 
     @GetMapping("{eventId}")
     public ResponseEventDTO findEventById(
             @PathVariable Long eventId
     ) {
-        return eventMapper.eventToResponse(
-                eventService.findEventById(eventId)
-        );
+        return eventService.findEventById(eventId);
     }
 
     @GetMapping("/categories/{catId}")
     public List<ResponseEventShortDTO> findEventsByCategoryId(
             @PathVariable Long catId
     ) {
-        return eventService.findEventsByCategoryId(catId)
-                .stream()
-                .map(eventMapper::eventToShortResponse)
-                .toList();
+        return eventService.findEventsByCategoryId(catId);
     }
 
     @PostMapping("/requests")
@@ -125,9 +107,7 @@ public class EventController {
             @PathVariable Long eventId,
             @RequestBody RequestUpdateEventAdminDTO requestDTO
     ) {
-        return eventMapper.eventToResponse(
-                eventService.adminEditEvent(eventId, requestDTO)
-        );
+        return eventService.adminEditEvent(eventId, requestDTO);
     }
 
 }

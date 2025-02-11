@@ -7,15 +7,17 @@ import com.faspix.entity.Event;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {EventMapperUtil.class})
+@Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    @Mapping(source = "initiatorId", target = "initiator", qualifiedByName = "getInitiator")
-    @Mapping(source = "categoryId", target = "category", qualifiedByName = "getCategoryDTO")
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "category", ignore = true)
     ResponseEventDTO eventToResponse(Event event);
 
-    @Mapping(source = "initiatorId", target = "initiator", qualifiedByName = "getInitiator")
-    @Mapping(source = "categoryId", target = "category", qualifiedByName = "getCategoryDTO")
+    Event responseToEvent(ResponseEventDTO responseDTO);
+
+    @Mapping(target = "initiator", ignore = true)
+    @Mapping(target = "category", ignore = true)
     ResponseEventShortDTO eventToShortResponse(Event event);
 
     @Mapping(source = "paid", target = "paid", defaultValue = "false")
