@@ -1,10 +1,15 @@
 package com.faspix.service;
 
+import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
+import com.faspix.dto.ResponseCompilationDTO;
+import com.faspix.dto.ResponseEventDTO;
+import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationAlreadyExistException;
 import com.faspix.exception.CompilationNotFountException;
 import com.faspix.mapper.CompilationMapper;
+import com.faspix.mapper.EventMapper;
 import com.faspix.repository.CompilationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,17 +30,31 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationMapper compilationMapper;
 
+    private final EventMapper eventMapper;
+
+    private final EventServiceClient eventServiceClient;
+
     @Override
     @Transactional
-    public Compilation createCompilation(RequestCompilationDTO compilationDTO) {
-        try {
-            return compilationRepository.saveAndFlush(
-                    compilationMapper.requestToCompilation(compilationDTO)
-            );
-        } catch (DataIntegrityViolationException e) {
-            throw new CompilationAlreadyExistException(
-                    "Compilation with title '" + compilationDTO.getTitle() + "' already exist");
-        }
+    public ResponseCompilationDTO createCompilation(RequestCompilationDTO compilationDTO) {
+        if (compilationRepository.findCompilationByTitle(compilationDTO.getTitle()).isPresent())
+                throw new CompilationAlreadyExistException(
+                        "Compilation with title '" + compilationDTO.getTitle() + "' already exist");
+
+        List<Long> eventIds = compilationDTO.getEvents();
+        List<ResponseEventShortDTO> events = eventIds.stream()
+                .map(eventServiceClient::getEventById)
+                .map(eventMapper::eventToShortEvent)
+                .toList();
+
+        Compilation compilation = compilationRepository.save(
+                compilationMapper.requestToCompilation(compilationDTO)
+        );
+
+        ResponseCompilationDTO responseDTO = compilationMapper.compilationToResponse(compilation);
+        responseDTO.setEvents(events);
+
+        return responseDTO;
     }
 
     @Override

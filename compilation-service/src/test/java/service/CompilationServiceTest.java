@@ -2,6 +2,7 @@ package service;
 
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
+import com.faspix.dto.ResponseCompilationDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationNotFountException;
 import com.faspix.mapper.CompilationMapper;
@@ -49,7 +50,7 @@ public class CompilationServiceTest {
         when(compilationRepository.saveAndFlush(any()))
                 .thenReturn(makeCompilation());
 
-        Compilation result = compilationService.createCompilation(compilationDTO);
+        ResponseCompilationDTO result = compilationService.createCompilation(compilationDTO);
 
         assertThat(result.getTitle(), equalTo(compilationDTO.getTitle()));
         assertThat(result.getEvents().getFirst(), equalTo(compilationDTO.getEvents().getFirst()));

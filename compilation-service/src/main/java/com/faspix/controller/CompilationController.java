@@ -24,9 +24,7 @@ public class CompilationController {
     public ResponseCompilationDTO createCompilation(
             @RequestBody RequestCompilationDTO compilationDTO
     ) {
-        return compilationMapper.compilationToResponse(
-                compilationService.createCompilation(compilationDTO)
-        );
+        return compilationService.createCompilation(compilationDTO);
     }
 
     @GetMapping("{compId}")

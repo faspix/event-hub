@@ -5,19 +5,28 @@ plugins {
 }
 
 group = 'com.faspix'
-version = '0.0.1-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    mavenLocal()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 ext {
     set('springCloudVersion', "2024.0.0")
 }
 
+
 dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-    implementation "org.springframework.cloud:spring-cloud-starter-config"
+    implementation "org.springframework.cloud:spring-cloud-config-server"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -28,7 +37,6 @@ dependencyManagement {
     }
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }
-

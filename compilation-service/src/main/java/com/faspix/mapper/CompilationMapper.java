@@ -6,10 +6,10 @@ import com.faspix.entity.Compilation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {CompilationMapperUtil.class})
+@Mapper(componentModel = "spring")
 public interface CompilationMapper {
 
-    @Mapping(target = "events", source = "events", qualifiedByName = "getEventsDto")
+    @Mapping(target = "events", ignore = true)
     ResponseCompilationDTO compilationToResponse(Compilation compilation);
 
     Compilation requestToCompilation(RequestCompilationDTO compilationDTO);

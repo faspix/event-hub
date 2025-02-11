@@ -1,13 +1,14 @@
 package com.faspix.service;
 
 import com.faspix.dto.RequestCompilationDTO;
+import com.faspix.dto.ResponseCompilationDTO;
 import com.faspix.entity.Compilation;
 
 import java.util.List;
 
 public interface CompilationService {
 
-    Compilation createCompilation(RequestCompilationDTO compilationDTO);
+    ResponseCompilationDTO createCompilation(RequestCompilationDTO compilationDTO);
 
     Compilation findCompilationById(Long id);
 
