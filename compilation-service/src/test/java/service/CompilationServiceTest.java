@@ -63,7 +63,7 @@ public class CompilationServiceTest {
         when(compilationRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(compilation));
 
-        Compilation result = compilationService.findCompilationById(1L);
+        ResponseCompilationDTO result = compilationService.findCompilationById(1L);
         assertThat(result.getId(), equalTo(compilation.getId()));
         assertThat(result.getPinned(), equalTo(compilation.getPinned()));
         assertThat(result.getTitle(), equalTo(compilation.getTitle()));
@@ -83,7 +83,7 @@ public class CompilationServiceTest {
         when(compilationRepository.saveAndFlush(any()))
                 .thenReturn(compilation);
 
-        Compilation result = compilationService.editCompilation(1L, updateDTO);
+        ResponseCompilationDTO result = compilationService.editCompilation(1L, updateDTO);
 
         assertThat(result.getTitle(), equalTo(updateDTO.getTitle()));
         assertThat(result.getEvents(), equalTo(updateDTO.getEvents()));
@@ -96,7 +96,7 @@ public class CompilationServiceTest {
         when(compilationRepository.findAll(any(Pageable.class)))
                 .thenReturn(new PageImpl<>(compilations));
 
-        List<Compilation> result = compilationService.findCompilations(null, 0, 10);
+        List<ResponseCompilationDTO> result = compilationService.findCompilations(null, 0, 10);
         System.out.println(result);
 
         assertThat(result.size(), equalTo(compilations.size()));
@@ -110,7 +110,7 @@ public class CompilationServiceTest {
         when(compilationRepository.findCompilationsByPinned(anyBoolean(), any(Pageable.class)))
                 .thenReturn(compilations);
 
-        List<Compilation> result = compilationService.findCompilations(true, 0, 10);
+        List<ResponseCompilationDTO> result = compilationService.findCompilations(true, 0, 10);
         System.out.println(result);
 
         assertThat(result.size(), equalTo(compilations.size()));

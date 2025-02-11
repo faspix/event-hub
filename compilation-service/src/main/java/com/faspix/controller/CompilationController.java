@@ -17,8 +17,6 @@ public class CompilationController {
 
     private final CompilationService compilationService;
 
-    private final CompilationMapper compilationMapper;
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseCompilationDTO createCompilation(
@@ -31,9 +29,7 @@ public class CompilationController {
     public ResponseCompilationDTO findCompilationById(
             @PathVariable Long compId
     ) {
-        return compilationMapper.compilationToResponse(
-                compilationService.findCompilationById(compId)
-        );
+        return compilationService.findCompilationById(compId);
     }
 
     @GetMapping
@@ -42,10 +38,7 @@ public class CompilationController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return compilationService.findCompilations(pinned, page, size)
-                .stream()
-                .map(compilationMapper::compilationToResponse)
-                .toList();
+        return compilationService.findCompilations(pinned, page, size);
     }
 
     @PatchMapping("{compId}")
@@ -53,9 +46,7 @@ public class CompilationController {
             @PathVariable Long compId,
             @RequestBody RequestCompilationDTO compilationDTO
     ) {
-        return compilationMapper.compilationToResponse(
-                compilationService.editCompilation(compId, compilationDTO)
-        );
+        return compilationService.editCompilation(compId, compilationDTO);
     }
 
     // TODO: return value

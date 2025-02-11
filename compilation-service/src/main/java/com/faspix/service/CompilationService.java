@@ -10,11 +10,11 @@ public interface CompilationService {
 
     ResponseCompilationDTO createCompilation(RequestCompilationDTO compilationDTO);
 
-    Compilation findCompilationById(Long id);
+    ResponseCompilationDTO findCompilationById(Long id);
 
-    List<Compilation> findCompilations(Boolean pinned, Integer page, Integer size);
+    List<ResponseCompilationDTO> findCompilations(Boolean pinned, Integer page, Integer size);
 
-    Compilation editCompilation(Long id, RequestCompilationDTO compilationDTO);
+    ResponseCompilationDTO editCompilation(Long id, RequestCompilationDTO compilationDTO);
 
     Boolean deleteCompilation(Long id);
 
