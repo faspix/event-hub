@@ -1,6 +1,7 @@
 package service;
 
 import com.faspix.dto.RequestUserDTO;
+import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
@@ -45,9 +46,11 @@ public class UserServiceTest {
         when(userRepository.saveAndFlush(any()))
                 .thenReturn(user);
 
-        User userDTO = userService.createUser(requestUserDTO);
+        ResponseUserDTO userDTO = userService.createUser(requestUserDTO);
 
-        assertThat(userDTO, equalTo(user));
+        assertThat(userDTO.getName(), equalTo(user.getName()));
+        assertThat(userDTO.getUserId(), equalTo(user.getUserId()));
+        assertThat(userDTO.getEmail(), equalTo(user.getEmail()));
         verify(userRepository, times(1)).saveAndFlush(any());
         verify(userMapper, times(1)).requestToUser(any());
     }
@@ -80,7 +83,7 @@ public class UserServiceTest {
         RequestUserDTO dtoForUpdate = makeRequestUserTest();
         dtoForUpdate.setEmail("updated@mail.com");
 
-        User updatedUser = userService.editUser(user.getUserId(), dtoForUpdate);
+        ResponseUserDTO updatedUser = userService.editUser(user.getUserId(), dtoForUpdate);
 
         assertThat(updatedUser.getEmail(), equalTo(dtoForUpdate.getEmail()));
         assertThat(updatedUser.getName(), equalTo(dtoForUpdate.getName()));
@@ -135,9 +138,11 @@ public class UserServiceTest {
         when(userRepository.findById(user.getUserId()))
                 .thenReturn(Optional.of(user));
 
-        User foundUser = userService.findUserById(user.getUserId());
+        ResponseUserDTO foundUser = userService.findUserById(user.getUserId());
 
-        assertThat(foundUser, equalTo(user));
+        assertThat(foundUser.getName(), equalTo(user.getName()));
+        assertThat(foundUser.getUserId(), equalTo(user.getUserId()));
+        assertThat(foundUser.getEmail(), equalTo(user.getEmail()));
         verify(userRepository, times(1)).findById(user.getUserId());
     }
 
@@ -159,9 +164,11 @@ public class UserServiceTest {
         when(userRepository.findUserByEmail(user.getEmail()))
                 .thenReturn(Optional.of(user));
 
-        User foundUser = userService.findUserByEmail(user.getEmail());
+        ResponseUserDTO foundUser = userService.findUserByEmail(user.getEmail());
 
-        assertThat(foundUser, equalTo(user));
+        assertThat(foundUser.getName(), equalTo(user.getName()));
+        assertThat(foundUser.getUserId(), equalTo(user.getUserId()));
+        assertThat(foundUser.getEmail(), equalTo(user.getEmail()));
         verify(userRepository, times(1)).findUserByEmail(user.getEmail());
     }
 

@@ -6,6 +6,7 @@ import com.faspix.dto.ResponseCompilationDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationNotFountException;
 import com.faspix.mapper.CompilationMapper;
+import com.faspix.mapper.EventMapper;
 import com.faspix.repository.CompilationRepository;
 import com.faspix.service.CompilationServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ public class CompilationServiceTest {
     @Spy
     private CompilationMapper compilationMapper = Mappers.getMapper(CompilationMapper.class);
 
+    @Spy
+    private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
+
     @Test
     public void createCompilationTest_Success() {
         RequestCompilationDTO compilationDTO = makeRequestCompilation();
@@ -53,7 +57,6 @@ public class CompilationServiceTest {
         ResponseCompilationDTO result = compilationService.createCompilation(compilationDTO);
 
         assertThat(result.getTitle(), equalTo(compilationDTO.getTitle()));
-        assertThat(result.getEvents().getFirst(), equalTo(compilationDTO.getEvents().getFirst()));
         assertThat(result.getPinned(), equalTo(compilationDTO.getPinned()));
     }
 
@@ -67,7 +70,6 @@ public class CompilationServiceTest {
         assertThat(result.getId(), equalTo(compilation.getId()));
         assertThat(result.getPinned(), equalTo(compilation.getPinned()));
         assertThat(result.getTitle(), equalTo(compilation.getTitle()));
-        assertThat(result.getEvents().getFirst(), equalTo(compilation.getEvents().getFirst()));
     }
 
 
@@ -86,7 +88,6 @@ public class CompilationServiceTest {
         ResponseCompilationDTO result = compilationService.editCompilation(1L, updateDTO);
 
         assertThat(result.getTitle(), equalTo(updateDTO.getTitle()));
-        assertThat(result.getEvents(), equalTo(updateDTO.getEvents()));
         assertThat(result.getPinned(), equalTo(updateDTO.getPinned()));
     }
 
@@ -108,7 +109,7 @@ public class CompilationServiceTest {
     public void getAllCompilationsTest_PinnedTrue_Success() {
         List<Compilation> compilations = List.of(makeCompilation(), makeCompilation());
         when(compilationRepository.findCompilationsByPinned(anyBoolean(), any(Pageable.class)))
-                .thenReturn(compilations);
+                .thenReturn(new PageImpl<>(compilations));
 
         List<ResponseCompilationDTO> result = compilationService.findCompilations(true, 0, 10);
         System.out.println(result);

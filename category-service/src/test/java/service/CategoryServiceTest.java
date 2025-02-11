@@ -2,6 +2,7 @@ package service;
 
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCategoryDTO;
+import com.faspix.dto.ResponseCategoryDTO;
 import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Category;
 import com.faspix.exception.CategoryAlreadyExistException;
@@ -57,7 +58,7 @@ public class CategoryServiceTest {
         when(categoryRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(category));
 
-        Category result = categoryService.findCategoryById(1L);
+        ResponseCategoryDTO result = categoryService.findCategoryById(1L);
 
         assertThat(result.getCategoryId(), equalTo(category.getCategoryId()));
         assertThat(result.getName(), equalTo(category.getName()));
@@ -71,7 +72,7 @@ public class CategoryServiceTest {
         when(categoryRepository.findAll(any(Pageable.class)))
                 .thenReturn(categoryPage);
 
-        List<Category> result = categoryService.findCategories(0, 10);
+        List<ResponseCategoryDTO> result = categoryService.findCategories(0, 10);
 
         assertThat(result, hasSize(1));
         assertThat(result.get(0).getName(), equalTo(categories.get(0).getName()));
@@ -84,7 +85,7 @@ public class CategoryServiceTest {
         when(categoryRepository.saveAndFlush(any()))
                 .thenReturn(category);
 
-        Category result = categoryService.createCategory(requestDTO);
+        ResponseCategoryDTO result = categoryService.createCategory(requestDTO);
 
         assertThat(result.getName(), equalTo(category.getName()));
         assertThat(result.getCategoryId(), equalTo(category.getCategoryId()));
@@ -116,7 +117,7 @@ public class CategoryServiceTest {
         when(categoryRepository.saveAndFlush(any()))
                 .thenReturn(updatedCategory);
 
-        Category result = categoryService.editCategory(1L, requestDTO);
+        ResponseCategoryDTO result = categoryService.editCategory(1L, requestDTO);
         assertThat(result.getName(), equalTo(updatedCategory.getName()));
         verify(categoryRepository, times(1)).saveAndFlush(any());
     }

@@ -1,18 +1,19 @@
 package com.faspix.service;
 
 import com.faspix.dto.RequestUserDTO;
+import com.faspix.dto.ResponseCategoryDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
 
 public interface UserService {
 
-    User createUser(RequestUserDTO userDTO);
+    ResponseUserDTO createUser(RequestUserDTO userDTO);
 
-    User editUser(Long userId, RequestUserDTO userDTO);
+    ResponseUserDTO editUser(Long userId, RequestUserDTO userDTO);
 
-    User findUserById(Long userId);
+    ResponseUserDTO findUserById(Long userId);
 
-    User findUserByEmail(String email);
+    ResponseUserDTO findUserByEmail(String email);
 
     Boolean deleteUser(Long userId);
 

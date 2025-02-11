@@ -1,6 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.dto.RequestUserDTO;
+import com.faspix.dto.ResponseUserDTO;
 import com.faspix.entity.User;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
@@ -22,11 +23,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User createUser(RequestUserDTO userDTO) {
+    public ResponseUserDTO createUser(RequestUserDTO userDTO) {
         try {
-            return userRepository.saveAndFlush(
+            User user = userRepository.saveAndFlush(
                     userMapper.requestToUser(userDTO)
             );
+            return userMapper.userToResponse(user);
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyExistException("User with email " + userDTO.getEmail() + " already exist");
         }
@@ -34,12 +36,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User editUser(Long userId, RequestUserDTO userDTO) {
+    public ResponseUserDTO editUser(Long userId, RequestUserDTO userDTO) {
         findUserById(userId);
         User updatedUser = userMapper.requestToUser(userDTO);
         updatedUser.setUserId(userId);
         try {
-            return userRepository.saveAndFlush(updatedUser);
+            return userMapper.userToResponse(
+                    userRepository.saveAndFlush(updatedUser)
+            );
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyExistException("User with email " + userDTO.getEmail() + " already exist");
         }
@@ -47,18 +51,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
+    public ResponseUserDTO findUserById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("User with id " + userId + " not found")
         );
+        return userMapper.userToResponse(user);
     }
 
     @Override
-    public User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email).orElseThrow(
+    public ResponseUserDTO findUserByEmail(String email) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(
                 () -> new UserNotFoundException("User with email " + email + " not found")
         );
-
+        return userMapper.userToResponse(user);
     }
 
     @Override

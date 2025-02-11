@@ -24,9 +24,7 @@ public class UserController {
     public ResponseUserDTO createUser(
             @RequestBody @Valid RequestUserDTO userDTO
     ) {
-        return userMapper.userToResponse(
-                userService.createUser(userDTO)
-        );
+        return userService.createUser(userDTO);
     }
 
     @PatchMapping
@@ -34,9 +32,8 @@ public class UserController {
             @RequestHeader("X-User-Id") Long userId,
             @RequestBody @Valid RequestUserDTO userDTO
     ) {
-        return userMapper.userToResponse(
-                userService.editUser(userId, userDTO)
-        );
+        return userService.editUser(userId, userDTO);
+
     }
 
     // TODO: return value
@@ -52,9 +49,7 @@ public class UserController {
     public ResponseUserDTO findUserById(
             @PathVariable Long userId
     ) {
-        return userMapper.userToResponse(
-                userService.findUserById(userId)
-        );
+        return userService.findUserById(userId);
     }
 
 }
