@@ -7,4 +7,5 @@ include 'categories-service'
 include 'category-service'
 include 'compilation-service'
 include 'request-service'
+include 'gateway'
 

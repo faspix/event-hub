@@ -18,5 +18,14 @@ spring:
       hibernate:
         format_sql: true
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+
 server:
   port: 9092

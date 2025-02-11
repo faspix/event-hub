@@ -60,6 +60,7 @@ public class CompilationController {
         );
     }
 
+    // TODO: return value
     @DeleteMapping("{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(

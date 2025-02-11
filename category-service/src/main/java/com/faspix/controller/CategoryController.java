@@ -60,6 +60,7 @@ public class CategoryController {
         );
     }
 
+    // TODO: return value
     @DeleteMapping("{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(

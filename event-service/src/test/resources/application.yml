@@ -11,6 +11,8 @@ spring:
     console:
       enabled: true
 
+
+
 eureka:
   client:
     enabled: false

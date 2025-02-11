@@ -39,6 +39,7 @@ public class UserController {
         );
     }
 
+    // TODO: return value
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(
