@@ -3,6 +3,7 @@ package service;
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseEventDTO;
+import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.entity.Request;
 import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
@@ -58,7 +59,7 @@ public class RequestServiceTest {
         when(requestRepository.save(any()))
                 .thenReturn(responseParticipationRequest);
 
-        Request request = requestService.createRequest(2L, 1L);
+        ResponseParticipationRequestDTO request = requestService.createRequest(2L, 1L);
 
         assertThat(request.getRequesterId(), equalTo(responseParticipationRequest.getRequesterId()));
         assertThat(request.getState(), equalTo(responseParticipationRequest.getState()));
@@ -83,7 +84,7 @@ public class RequestServiceTest {
         when(requestRepository.save(any()))
                 .thenReturn(responseParticipationRequest);
 
-        Request request = requestService.createRequest(2L, 1L);
+        ResponseParticipationRequestDTO request = requestService.createRequest(2L, 1L);
 
         assertThat(request.getRequesterId(), equalTo(responseParticipationRequest.getRequesterId()));
         assertThat(request.getState(), equalTo(responseParticipationRequest.getState()));
@@ -147,7 +148,7 @@ public class RequestServiceTest {
         Request requestRequest = makeRequest();
         when(requestRepository.findRequestByRequesterIdAndEventId(anyLong(), anyLong()))
                 .thenReturn(requestRequest);
-        Request responseRequest = requestService.cancelRequest(1L, 1L);
+        ResponseParticipationRequestDTO responseRequest = requestService.cancelRequest(1L, 1L);
 
         assertThat(responseRequest.getRequesterId(), equalTo(requestRequest.getRequesterId()));
         assertThat(responseRequest.getId(), equalTo(requestRequest.getId()));
@@ -180,7 +181,7 @@ public class RequestServiceTest {
         when(requestRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(requestRequest));
 
-        Request responseRequest = requestService.findRequestById(1L);
+        ResponseParticipationRequestDTO responseRequest = requestService.findRequestById(1L);
 
         assertThat(responseRequest.getRequesterId(), equalTo(requestRequest.getRequesterId()));
         assertThat(responseRequest.getId(), equalTo(requestRequest.getId()));
@@ -210,7 +211,7 @@ public class RequestServiceTest {
         List<Request> requests = List.of(request1, request2, request3);
         when(requestRepository.findAllById(requestDTO.getRequestIds())).thenReturn(requests);
 
-        List<Request> updatedRequests = requestService.setRequestsStatus(userId, eventId, requestDTO);
+        List<ResponseParticipationRequestDTO> updatedRequests = requestService.setRequestsStatus(userId, eventId, requestDTO);
 
         assertEquals(3, updatedRequests.size());
         assertEquals(ParticipationRequestState.CONFIRMED, updatedRequests.get(0).getState());

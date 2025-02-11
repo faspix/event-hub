@@ -1,9 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
-import com.faspix.dto.ConfirmedRequestsDTO;
-import com.faspix.dto.RequestParticipationRequestDTO;
-import com.faspix.dto.ResponseEventDTO;
+import com.faspix.dto.*;
 import com.faspix.entity.Request;
 import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
@@ -35,7 +33,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional // TODO: ErrorResponse: Request must have status PENDING
-    public Request createRequest(Long requesterId, Long eventId) {
+    public ResponseParticipationRequestDTO createRequest(Long requesterId, Long eventId) {
         if (requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId) != null)
             throw new ValidationException("User with id " + requesterId +
                     " already leave a request to participate in event with id " + eventId);
@@ -57,38 +55,44 @@ public class RequestServiceImpl implements RequestService {
             );
         }
 
-        return requestRepository.save(request);
+        return requestMapper.participationRequestToResponse(
+                requestRepository.save(request)
+        );
     }
 
     @Override
     @Transactional
-    public Request cancelRequest(Long requesterId, Long eventId) {
+    public ResponseParticipationRequestDTO cancelRequest(Long requesterId, Long eventId) {
         Request request = requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId);
         if (request == null) {
             throw new RequestNotFountException("User with id " + requesterId +
                     " didn't leave a request to participate in event with id " + eventId);
         }
         requestRepository.delete(request);
-        return request;
+        return requestMapper.participationRequestToResponse(request);
     }
 
     @Override
-    public List<Request> getRequestsToMyEvent(Long requesterId, Long eventId, Integer page, Integer size) {
+    public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(Long requesterId, Long eventId, Integer page, Integer size) {
         validateOwnership(requesterId, eventId, eventServiceClient.findEventById(eventId));
         Pageable pageRequest = makePageRequest(page, size);
-        return requestRepository.findRequestsByEventId(eventId, pageRequest);
+        return requestRepository.findRequestsByEventId(eventId, pageRequest)
+                .stream()
+                .map(requestMapper::participationRequestToResponse)
+                .toList();
     }
 
     @Override
-    public Request findRequestById(Long requestId) {
-        return requestRepository.findById(requestId).orElseThrow(
+    public ResponseParticipationRequestDTO findRequestById(Long requestId) {
+        Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new RequestNotFountException("Request with id " + requestId + " not found")
         );
+        return requestMapper.participationRequestToResponse(request);
     }
 
     @Override
     @Transactional
-    public List<Request> setRequestsStatus(Long userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
+    public List<ResponseParticipationRequestDTO> setRequestsStatus(Long userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
         ResponseEventDTO eventDTO = eventServiceClient.findEventById(eventId);
         validateOwnership(userId, eventId, eventDTO);
 
@@ -116,13 +120,18 @@ public class RequestServiceImpl implements RequestService {
         Integer confirmedRequests = eventDTO.getConfirmedRequests() + counter;
         eventServiceClient.setConfirmedRequestsNumber(new ConfirmedRequestsDTO(eventId, confirmedRequests));
 
-        return requests;
+        return requests.stream()
+                .map(requestMapper::participationRequestToResponse)
+                .toList();
     }
 
     @Override
-    public List<Request> getUsersRequests(Long requesterId, Integer page, Integer size) {
+    public List<ResponseParticipationRequestDTO> getUsersRequests(Long requesterId, Integer page, Integer size) {
         Pageable pageable = makePageRequest(page, size);
-        return requestRepository.findRequestsByRequesterId(requesterId, pageable);
+        return requestRepository.findRequestsByRequesterId(requesterId, pageable)
+                .stream()
+                .map(requestMapper::participationRequestToResponse)
+                .toList();
     }
 
 

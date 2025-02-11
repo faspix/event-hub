@@ -27,9 +27,7 @@ public class RequestController {
             @RequestHeader("X-User-Id") Long requesterId,
             @PathVariable Long eventId
     ) {
-        return requestMapper.participationRequestToResponse(
-                requestService.createRequest(requesterId, eventId)
-        );
+        return requestService.createRequest(requesterId, eventId);
     }
 
     @PatchMapping("/events/{eventId}/cancel")
@@ -37,9 +35,7 @@ public class RequestController {
             @RequestHeader("X-User-Id") Long requesterId,
             @PathVariable Long eventId
     ) {
-        return requestMapper.participationRequestToResponse(
-                requestService.cancelRequest(requesterId, eventId)
-        );
+        return requestService.cancelRequest(requesterId, eventId);
     }
 
     @GetMapping("/events/{eventId}")
@@ -49,10 +45,7 @@ public class RequestController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
-        return requestService.getRequestsToMyEvent(requesterId, eventId, page, size)
-                .stream()
-                .map(requestMapper::participationRequestToResponse)
-                .toList();
+        return requestService.getRequestsToMyEvent(requesterId, eventId, page, size);
     }
 
     @PatchMapping("/events/{eventId}")
@@ -61,10 +54,7 @@ public class RequestController {
             @PathVariable Long eventId,
             @RequestBody RequestParticipationRequestDTO requestDTO
     ) {
-        return requestService.setRequestsStatus(userId, eventId, requestDTO)
-                .stream()
-                .map(requestMapper::participationRequestToResponse)
-                .toList();
+        return requestService.setRequestsStatus(userId, eventId, requestDTO);
     }
 
     @GetMapping("/users")
@@ -74,10 +64,7 @@ public class RequestController {
             @RequestParam(defaultValue = "10") Integer size
 
     ) {
-        return requestService.getUsersRequests(userId, page, size)
-                .stream()
-                .map(requestMapper::participationRequestToResponse)
-                .toList();
+        return requestService.getUsersRequests(userId, page, size);
     }
 
 
