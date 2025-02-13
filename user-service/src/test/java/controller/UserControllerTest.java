@@ -57,7 +57,7 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(requestUserDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                ).andExpect(status().is2xxSuccessful())
+                ).andExpect(status().isCreated())
                 .andExpectAll(jsonPath("$.name", is(requestUserDTO.getName())))
                 .andExpectAll(jsonPath("$.email", is(requestUserDTO.getEmail())))
                 .andReturn();

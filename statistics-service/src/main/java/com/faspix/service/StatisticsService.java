@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface StatisticsService {
-    List<ResponseEndpointStatsDTO> statsEndpoint(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
+    List<ResponseEndpointStatsDTO> getEndpointStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
 
     void hitEndpoint(RequestEndpointStatsDTO requestDTO);
 

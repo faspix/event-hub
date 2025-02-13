@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,7 +22,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final StatisticsMapper statisticsMapper;
 
     @Override
-    public List<ResponseEndpointStatsDTO> statsEndpoint(LocalDateTime start, LocalDateTime end,
+    public List<ResponseEndpointStatsDTO> getEndpointStats(LocalDateTime start, LocalDateTime end,
                                                         List<String> uris, Boolean unique) {
         Instant startInstant = start.toInstant(ZoneOffset.UTC);
         Instant endInstant = end.toInstant(ZoneOffset.UTC);
