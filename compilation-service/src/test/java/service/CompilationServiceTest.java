@@ -98,7 +98,6 @@ public class CompilationServiceTest {
                 .thenReturn(new PageImpl<>(compilations));
 
         List<ResponseCompilationDTO> result = compilationService.findCompilations(null, 0, 10);
-        System.out.println(result);
 
         assertThat(result.size(), equalTo(compilations.size()));
         assertThat(result.get(0).getTitle(), equalTo(compilations.get(0).getTitle()));
@@ -112,7 +111,6 @@ public class CompilationServiceTest {
                 .thenReturn(new PageImpl<>(compilations));
 
         List<ResponseCompilationDTO> result = compilationService.findCompilations(true, 0, 10);
-        System.out.println(result);
 
         assertThat(result.size(), equalTo(compilations.size()));
         assertThat(result.get(0).getTitle(), equalTo(compilations.get(0).getTitle()));

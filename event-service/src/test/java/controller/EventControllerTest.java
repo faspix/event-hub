@@ -331,7 +331,6 @@ public class EventControllerTest {
                 .andReturn();
         String body = mvcResult.getResponse().getContentAsString();
         List<ResponseEventShortDTO> resultList = objectMapper.readValue(body, new TypeReference<>() {});
-        System.out.println(resultList);
         ResponseEventShortDTO result = resultList.getFirst();
 
         assertThat(result.getEventId(), equalTo(savedEvent.getEventId()));

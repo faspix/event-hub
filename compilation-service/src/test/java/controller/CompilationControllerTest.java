@@ -152,7 +152,6 @@ public class CompilationControllerTest {
 
         String body = mvcResult.getResponse().getContentAsString();
         ResponseCompilationDTO result = objectMapper.readValue(body, ResponseCompilationDTO.class);
-        System.out.println(result);
         Compilation fromRepo = compilationRepository.findById(result.getId()).get();
 
         assertThat(fromRepo.getTitle(), equalTo(requestForUpdate.getTitle()));
