@@ -9,4 +9,5 @@ include 'compilation-service'
 include 'request-service'
 include 'gateway'
 include 'config-service'
+include 'statistics-service'
 
