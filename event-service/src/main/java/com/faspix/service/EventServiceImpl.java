@@ -42,6 +42,8 @@ public class EventServiceImpl implements EventService {
 
     private final UserMapper userMapper;
 
+    private final CommentService commentService;
+
     @Override
     @Transactional
     public ResponseEventDTO createEvent(Long creatorId, RequestEventDTO eventDTO) {
@@ -80,9 +82,8 @@ public class EventServiceImpl implements EventService {
         updatedEvent.setState(event.getState());
         updatedEvent.setViews(event.getViews());
 
-        return eventMapper.eventToResponse(
-                eventRepository.save(updatedEvent)
-        );
+        eventRepository.save(updatedEvent);
+        return getResponseDTO(updatedEvent);
     }
 
     @Override
@@ -205,13 +206,17 @@ public class EventServiceImpl implements EventService {
     private ResponseEventDTO getResponseDTO(Event event) {
         Long categoryId = event.getCategoryId();
         Long initiatorId = event.getInitiatorId();
+
         ResponseCategoryDTO category = categoryServiceClient.getCategoryById(categoryId);
         ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(initiatorId)
         );
+        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
+
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
         responseDTO.setCategory(category);
         responseDTO.setInitiator(initiator);
+        responseDTO.setComments(comments);
         return responseDTO;
     }
 

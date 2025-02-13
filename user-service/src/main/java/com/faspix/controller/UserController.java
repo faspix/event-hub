@@ -2,6 +2,7 @@ package com.faspix.controller;
 
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseUserDTO;
+import com.faspix.dto.ResponseUserShortDTO;
 import com.faspix.mapper.UserMapper;
 import com.faspix.service.UserService;
 import jakarta.validation.Valid;
@@ -9,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -50,6 +54,13 @@ public class UserController {
             @PathVariable Long userId
     ) {
         return userService.findUserById(userId);
+    }
+
+    @PostMapping("/batch")
+    public List<ResponseUserShortDTO> findUserByIds(
+            @RequestBody Set<Long> userIds
+    ) {
+        return userService.findUserByIds(userIds);
     }
 
 }

@@ -49,4 +49,6 @@ public class ResponseEventDTO {
 
     private Integer views;
 
+    private List<ResponseCommentDTO> comments;
+
 }

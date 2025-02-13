@@ -3,7 +3,11 @@ package com.faspix.service;
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseCategoryDTO;
 import com.faspix.dto.ResponseUserDTO;
+import com.faspix.dto.ResponseUserShortDTO;
 import com.faspix.entity.User;
+
+import java.util.List;
+import java.util.Set;
 
 public interface UserService {
 
@@ -17,4 +21,5 @@ public interface UserService {
 
     Boolean deleteUser(Long userId);
 
+    List<ResponseUserShortDTO> findUserByIds(Set<Long> userIds);
 }

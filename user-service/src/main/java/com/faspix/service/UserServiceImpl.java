@@ -2,6 +2,7 @@ package com.faspix.service;
 
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseUserDTO;
+import com.faspix.dto.ResponseUserShortDTO;
 import com.faspix.entity.User;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
@@ -11,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +76,13 @@ public class UserServiceImpl implements UserService {
         findUserById(userId);
         userRepository.deleteById(userId);
         return true;
+    }
+
+    @Override
+    public List<ResponseUserShortDTO> findUserByIds(Set<Long> userIds) {
+        return userRepository.findAllById(userIds).stream()
+                .map(userMapper::userToShortResponse)
+                .toList();
     }
 
 }
