@@ -36,6 +36,12 @@ spring:
             - Path=/users/**
           filters:
             - StripPrefix=0
+        - id: statistics-service
+          uri: lb://statistics-service
+          predicates:
+            - Path=/statistics/**
+          filters:
+            - StripPrefix=0
 
 server:
   port: 8989

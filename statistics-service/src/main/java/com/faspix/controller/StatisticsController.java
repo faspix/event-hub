@@ -6,10 +6,9 @@ import com.faspix.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -21,16 +20,16 @@ public class StatisticsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<HttpStatus> hitEndpoint(
+    public void hitEndpoint(
             @RequestBody RequestEndpointStatsDTO requestDTO
     ) {
-        return statisticsService.hitEndpoint(requestDTO);
+        statisticsService.hitEndpoint(requestDTO);
     }
 
     @GetMapping("/stats")
-    public ResponseEndpointStatsDTO statsEndpoint(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Instant start,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Instant end,
+    public List<ResponseEndpointStatsDTO> statsEndpoint(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(required = false) List<String> uris,
             @RequestParam(defaultValue = "false") Boolean unique
     ) {
