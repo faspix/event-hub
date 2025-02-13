@@ -45,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
         );
 
         Comment comment = commentMapper.requestToComment(requestDTO);
-        comment.setAuthorId(author.getUserId());
+        comment.setAuthorId(userId);
         comment.setEvent(event);
         comment.setCreationDate(Instant.now());
 

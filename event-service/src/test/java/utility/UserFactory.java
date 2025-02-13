@@ -2,6 +2,7 @@ package utility;
 
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseUserDTO;
+import com.faspix.dto.ResponseUserShortDTO;
 
 public class UserFactory {
 
@@ -21,5 +22,11 @@ public class UserFactory {
     }
 
 
+    public static ResponseUserShortDTO makeResponseShortUser() {
+        return ResponseUserShortDTO.builder()
+                .userId(1L)
+                .name("name")
+                .build();
+    }
 
 }

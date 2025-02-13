@@ -1,0 +1,126 @@
+package service;
+
+
+import com.faspix.client.CategoryServiceClient;
+import com.faspix.client.UserServiceClient;
+import com.faspix.dto.*;
+import com.faspix.entity.Comment;
+import com.faspix.entity.Event;
+import com.faspix.enums.EventState;
+import com.faspix.exception.EventNotFoundException;
+import com.faspix.exception.ValidationException;
+import com.faspix.mapper.CommentMapper;
+import com.faspix.mapper.EventMapper;
+import com.faspix.mapper.UserMapper;
+import com.faspix.repository.CommentRepository;
+import com.faspix.repository.EventRepository;
+import com.faspix.service.CommentServiceImpl;
+import com.faspix.service.EventServiceImpl;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+import static utility.CommentFactory.*;
+import static utility.EventFactory.*;
+import static utility.UserFactory.*;
+
+@ExtendWith(MockitoExtension.class)
+public class CommentServiceTest {
+
+    @Mock
+    private CommentRepository commentRepository;
+
+    @Spy
+    private CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
+
+    @Spy
+    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+
+    @Mock
+    private EventRepository eventRepository;
+
+    @Mock
+    private UserServiceClient userServiceClient;
+
+    @InjectMocks
+    private CommentServiceImpl commentService;
+
+    @Test
+    void addCommentTest_Success() {
+        when(userServiceClient.getUserById(anyLong()))
+                .thenReturn(makeResponseUserTest());
+        when(eventRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(makeEventTest()));
+        when(commentRepository.save(any()))
+                .thenReturn(makeComment());
+
+        RequestCommentDTO requestDTO = makeRequestComment();
+        ResponseCommentDTO responseDTO = commentService.addComment(1L, 1L, requestDTO);
+
+        assertThat(responseDTO.getText(), equalTo(requestDTO.getText()));
+        verify(userServiceClient, times(1)).getUserById(anyLong());
+        verify(eventRepository, times(1)).findById(anyLong());
+        verify(commentRepository, times(1)).save(any());
+    }
+
+    @Test
+    void addCommentTest_EventNotFound_Exception() {
+        when(userServiceClient.getUserById(anyLong()))
+                .thenReturn(makeResponseUserTest());
+        when(eventRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        RequestCommentDTO requestDTO = makeRequestComment();
+        EventNotFoundException exception = assertThrowsExactly(EventNotFoundException.class,
+                () -> commentService.addComment(1L, 1L, requestDTO)
+        );
+        assertThat(exception.getMessage(), equalTo("Event with id 1 not found"));
+    }
+
+    @Test
+    void findCommentsByEventIdTest_Success() {
+        Comment comment = makeComment();
+        when(commentRepository.findCommentsByEventId(anyLong()))
+                .thenReturn(List.of(comment));
+        when(userServiceClient.getUsersByIds(any()))
+                .thenReturn(Set.of(makeResponseShortUser()));
+
+        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(1L);
+        assertThat(comments.size(), equalTo(1));
+        assertThat(comments.getFirst().getText(), equalTo(comment.getText()));
+        assertThat(comments.getFirst().getAuthor().getUserId(), equalTo(comment.getAuthorId()));
+    }
+
+    @Test
+    void findCommentsByEventIdTest_NoComments_SuccessReturnNull() {
+        when(commentRepository.findCommentsByEventId(anyLong()))
+                .thenReturn(List.of());
+
+        List<ResponseCommentDTO> responseDTO = commentService.findCommentsByEventId(1L);
+        assertThat(responseDTO, nullValue());
+    }
+
+
+
+}

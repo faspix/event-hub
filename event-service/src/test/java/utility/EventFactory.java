@@ -9,14 +9,11 @@ import com.faspix.utility.Location;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
+import static utility.UserFactory.makeResponseShortUser;
+
 public class EventFactory {
 
-    public static ResponseUserShortDTO makeResponseShortUser() {
-        return ResponseUserShortDTO.builder()
-                .userId(1L)
-                .name("name")
-                .build();
-    }
+
 
     public static Event makeEventTest() {
         return Event.builder()
