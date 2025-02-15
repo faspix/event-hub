@@ -1,13 +1,14 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5432/category_service
+    url: jdbc:postgresql://127.0.0.1:5432/request_service
     username: postgres
     password: root
   data:
     jdbc:
       dialect: postgresql
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: create
     show-sql: true
@@ -15,5 +16,5 @@ spring:
       hibernate:
         format_sql: true
 
-  server:
-    port: 9092
+server:
+  port: 9094

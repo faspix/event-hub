@@ -14,6 +14,7 @@ import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -36,6 +38,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserServiceClient userServiceClient;
 
     @Override
+    @Transactional
     public ResponseCommentDTO addComment(Long userId, Long eventId, RequestCommentDTO requestDTO) {
         ResponseUserShortDTO author = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(userId)
