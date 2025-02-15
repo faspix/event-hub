@@ -13,6 +13,7 @@ public class StatisticsFactory {
                 .id(null)
                 .ip("192.168.12.1")
                 .app("event-service")
+                .uri("/events/1")
                 .timestamp(Instant.ofEpochSecond(1000000000))
                 .build();
     }

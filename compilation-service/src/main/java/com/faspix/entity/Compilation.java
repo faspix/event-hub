@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "compilations")
 public class Compilation {
 
     @Id
@@ -23,9 +24,13 @@ public class Compilation {
     @Column(unique = true, nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private Boolean pinned;
 
     @ElementCollection
+    @CollectionTable(name = "compilation_events",
+            joinColumns = @JoinColumn(name = "compilation_id"))
+    @Column(name = "event_id")
     private List<Long> events;
 
 }

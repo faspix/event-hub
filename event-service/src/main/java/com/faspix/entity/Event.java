@@ -25,37 +25,50 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private String annotation;
 
+    @Column(nullable = false)
     private Long categoryId;
 
+    @Column(nullable = false)
     private Integer confirmedRequests;
 
+    @Column(nullable = false)
     private OffsetDateTime creationDate;
 
+    @Column(nullable = false)
     private String description;
 
-//    @Column()
+    @Column(nullable = false)
     private LocalDateTime eventDate;
 
+    @Column(nullable = false)
     private Long initiatorId;
 
     @Embedded
+    @Column(nullable = false)
     private Location location;
 
+    @Column(nullable = false)
     private Boolean paid;
 
+    @Column(nullable = false)
     private Integer participantLimit;
 
     private OffsetDateTime publishedOn;
 
+    @Column(nullable = false)
     private Boolean requestModeration;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EventState state;
 
+    @Column(nullable = false)
     private Integer views;
 
 }

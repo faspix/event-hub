@@ -21,13 +21,17 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Long eventId;
 
+    @Column(nullable = false)
     private Long requesterId;
 
+    @Column(nullable = false)
     private OffsetDateTime creationDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ParticipationRequestState state;
 
     public Request(Long eventId, Long requesterId, OffsetDateTime creationDate) {
