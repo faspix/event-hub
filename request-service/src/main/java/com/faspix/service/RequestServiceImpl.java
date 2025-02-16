@@ -31,6 +31,8 @@ public class RequestServiceImpl implements RequestService {
 
     private final EventServiceClient eventServiceClient;
 
+    private final ConfirmedRequestService confirmedRequestService;
+
     @Override
     @Transactional // TODO: ErrorResponse: Request must have status PENDING
     public ResponseParticipationRequestDTO createRequest(Long requesterId, Long eventId) {
@@ -50,9 +52,7 @@ public class RequestServiceImpl implements RequestService {
             request.setState(ParticipationRequestState.PENDING);
         } else {
             request.setState(ParticipationRequestState.CONFIRMED);
-            eventServiceClient.setConfirmedRequestsNumber(
-                    new ConfirmedRequestsDTO(eventId, event.getConfirmedRequests() + 1)
-            );
+            confirmedRequestService.sendConfirmedRequestMsg(new ConfirmedRequestsDTO(eventId, 1));
         }
 
         return requestMapper.participationRequestToResponse(
@@ -116,9 +116,7 @@ public class RequestServiceImpl implements RequestService {
 
         rejectPendingRequests(eventId, counter, limit);
 
-        // TODO: AMQP
-        Integer confirmedRequests = eventDTO.getConfirmedRequests() + counter;
-        eventServiceClient.setConfirmedRequestsNumber(new ConfirmedRequestsDTO(eventId, confirmedRequests));
+        confirmedRequestService.sendConfirmedRequestMsg(new ConfirmedRequestsDTO(eventId, counter));
 
         return requests.stream()
                 .map(requestMapper::participationRequestToResponse)

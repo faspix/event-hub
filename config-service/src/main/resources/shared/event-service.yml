@@ -15,6 +15,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cloud:
+    function:
+      definition: newConfirmedRequestConsume
+    stream:
+      bindings:
+        newConfirmedRequestConsume-in-0:
+          destination: confirmed-request-dest
+          group: confirmed-request-group
 
 server:
   port: 9091

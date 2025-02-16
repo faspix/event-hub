@@ -13,7 +13,4 @@ public interface EventServiceClient {
     @GetMapping("/events/{eventId}")
     ResponseEventDTO findEventById(@PathVariable Long eventId);
 
-    @PostMapping("/events/requests")
-    ResponseEntity<HttpStatus> setConfirmedRequestsNumber(@RequestBody ConfirmedRequestsDTO requestsDTO);
-
 }

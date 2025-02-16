@@ -95,13 +95,6 @@ public class EventController {
         return eventService.findEventsByCategoryId(catId);
     }
 
-    @PostMapping("/requests")
-    public ResponseEntity<HttpStatus> setConfirmedRequestsNumber(
-            @RequestBody ConfirmedRequestsDTO requestsDTO
-    ) {
-        return eventService.setConfirmedRequestsNumber(requestsDTO);
-    }
-
     @PatchMapping("/admin/{eventId}")
     public ResponseEventDTO adminEditEvent(
             @PathVariable Long eventId,

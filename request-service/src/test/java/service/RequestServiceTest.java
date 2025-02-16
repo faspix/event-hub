@@ -11,6 +11,7 @@ import com.faspix.exception.RequestNotFountException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
+import com.faspix.service.ConfirmedRequestService;
 import com.faspix.service.RequestServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,9 @@ public class RequestServiceTest {
     @Mock
     private EventServiceClient eventServiceClient;
 
+    @Mock
+    private ConfirmedRequestService confirmedRequestService;
+
     @InjectMocks
     private RequestServiceImpl requestService;
 
@@ -66,7 +70,7 @@ public class RequestServiceTest {
         assertThat(request.getCreationDate(), equalTo(responseParticipationRequest.getCreationDate()));
         assertThat(request.getEventId(), equalTo(responseParticipationRequest.getEventId()));
 
-        verify(eventServiceClient, times(1)).setConfirmedRequestsNumber(any());
+        verify(confirmedRequestService, times(1)).sendConfirmedRequestMsg(any());
         verify(requestRepository, times(1)).save(any());
 
     }
@@ -91,7 +95,7 @@ public class RequestServiceTest {
         assertThat(request.getCreationDate(), equalTo(responseParticipationRequest.getCreationDate()));
         assertThat(request.getEventId(), equalTo(responseParticipationRequest.getEventId()));
 
-        verify(eventServiceClient, times(1)).setConfirmedRequestsNumber(any());
+        verify(confirmedRequestService, times(1)).sendConfirmedRequestMsg(any());
         verify(requestRepository, times(1)).save(any());
     }
 
@@ -219,7 +223,7 @@ public class RequestServiceTest {
         assertEquals(ParticipationRequestState.REJECTED, updatedRequests.get(2).getState());
 
         verify(requestRepository, times(1)).saveAllAndFlush(any());
-        verify(eventServiceClient, times(1)).setConfirmedRequestsNumber(any());
+        verify(confirmedRequestService, times(1)).sendConfirmedRequestMsg(any());
     }
 
     @Test

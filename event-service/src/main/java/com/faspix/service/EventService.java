@@ -34,7 +34,7 @@ public interface EventService {
     List<ResponseEventDTO> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page, Integer size);
 
-    ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
+    void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 
     ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
 }

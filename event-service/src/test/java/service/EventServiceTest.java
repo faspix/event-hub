@@ -267,20 +267,6 @@ public class EventServiceTest {
     }
 
     @Test
-    public void setConfirmedRequestsNumberTest_Success() {
-        Event event = makeEventTest();
-        when(eventRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(event));
-
-        ResponseEntity<HttpStatus> httpStatusResponseEntity = eventService.setConfirmedRequestsNumber(ConfirmedRequestsDTO.builder()
-                .eventId(1L)
-                .count(1)
-                .build());
-
-        assertThat(httpStatusResponseEntity, equalTo(ResponseEntity.ok(HttpStatus.OK)));
-    }
-
-    @Test
     public void adminEditEventTest_Success() {
         Event event = makeEventTest();
         Event eventFromRepo = makeEventTest();

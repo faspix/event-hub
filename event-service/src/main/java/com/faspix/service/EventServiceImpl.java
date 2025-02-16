@@ -151,11 +151,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public ResponseEntity<HttpStatus> setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
+    public void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
         Event event = getEventById(requestsDTO.getEventId());
-        event.setConfirmedRequests(requestsDTO.getCount());
+        event.setConfirmedRequests(event.getConfirmedRequests() + requestsDTO.getCount());
         eventRepository.save(event);
-        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @Override

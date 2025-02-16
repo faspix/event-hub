@@ -9,3 +9,5 @@ spring:
       fail-fast: true
       password: admin
       username: user
+  profiles:
+    active: rabbit

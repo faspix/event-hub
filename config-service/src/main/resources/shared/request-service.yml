@@ -15,6 +15,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cloud:
+    function:
+      definition: newConfirmedRequestProduce
+    stream:
+      bindings:
+        newConfirmedRequestProduce-out-0:
+          destination: confirmed-request-dest
 
 server:
   port: 9094

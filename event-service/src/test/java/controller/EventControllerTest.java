@@ -384,16 +384,6 @@ public class EventControllerTest {
     }
 
     @Test
-    public void setConfirmedRequestsNumberTest() {
-        Event savedEvent = eventRepository.save(makeEventTest());
-
-        ConfirmedRequestsDTO requestDTO = new ConfirmedRequestsDTO(savedEvent.getEventId(), 5);
-        ResponseEntity<HttpStatus> response = eventController.setConfirmedRequestsNumber(requestDTO);
-
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-    }
-
-    @Test
     public void adminEditEventTest_Success() throws Exception {
         Event savedEvent = eventRepository.save(makeEventTest());
 
