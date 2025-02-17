@@ -18,4 +18,4 @@ eureka:
     prefer-ip-address: true
   server:
     wait-time-in-ms-when-sync-empty: 0
-    peer-node-read-timeout-ms: 100000
+    peer-node-read-timeout-ms: 1000
