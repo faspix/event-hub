@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "event-service")
+@FeignClient(name = "event-service", fallback = EventServiceClientFallback.class)
 public interface EventServiceClient {
 
     @GetMapping("/events/categories/{catId}")
