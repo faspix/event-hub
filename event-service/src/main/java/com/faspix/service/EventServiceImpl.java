@@ -46,7 +46,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public ResponseEventDTO createEvent(Long creatorId, RequestEventDTO eventDTO) {
+    public ResponseEventDTO createEvent(String creatorId, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
         userServiceClient.getUserById(creatorId);
@@ -64,7 +64,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public ResponseEventDTO editEvent(Long userId, Long eventId, RequestEventDTO eventDTO) {
+    public ResponseEventDTO editEvent(String userId, Long eventId, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
         Event event = getEventById(eventId);
@@ -122,7 +122,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<ResponseEventShortDTO> findAllUsersEvents(Long userId, Integer page, Integer size) {
+    public List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size) {
         Pageable pageRequest = makePageRequest(page, size);
         return eventRepository.findEventsByInitiatorId(userId, pageRequest)
                 .stream()
@@ -139,7 +139,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<ResponseEventDTO> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+    public List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page,
                                        Integer size) {
         Pageable pageRequest = makePageRequest(page, size);
@@ -204,7 +204,7 @@ public class EventServiceImpl implements EventService {
 
     private ResponseEventDTO getResponseDTO(Event event) {
         Long categoryId = event.getCategoryId();
-        Long initiatorId = event.getInitiatorId();
+        String initiatorId = event.getInitiatorId();
 
         ResponseCategoryDTO category = categoryServiceClient.getCategoryById(categoryId);
         ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
@@ -221,7 +221,7 @@ public class EventServiceImpl implements EventService {
 
     private ResponseEventShortDTO getResponseShortDTO(Event event) {
         Long categoryId = event.getCategoryId();
-        Long initiatorId = event.getInitiatorId();
+        String initiatorId = event.getInitiatorId();
         ResponseCategoryDTO category = categoryServiceClient.getCategoryById(categoryId);
         ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(initiatorId)

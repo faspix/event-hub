@@ -29,7 +29,7 @@ public class EventController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEventDTO createEvent(
-            @RequestHeader(value = "X-User-Id") Long creatorId,
+            @RequestHeader(value = "X-User-Id") String creatorId,
             @RequestBody @Valid RequestEventDTO eventDTO
     ) {
         return eventService.createEvent(creatorId, eventDTO);
@@ -37,7 +37,7 @@ public class EventController {
 
     @PatchMapping("{eventId}")
     public ResponseEventDTO editEvent(
-            @RequestHeader(value = "X-User-Id") Long userId,
+            @RequestHeader(value = "X-User-Id") String userId,
             @PathVariable Long eventId,
             @RequestBody RequestEventDTO eventDTO
     ) {
@@ -46,7 +46,7 @@ public class EventController {
 
     @GetMapping("/users/{userId}")
     public List<ResponseEventShortDTO> findAllUserEvents(
-            @PathVariable Long userId,
+            @PathVariable String userId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
@@ -70,7 +70,7 @@ public class EventController {
 
     @GetMapping("/admin/search")
     public List<ResponseEventDTO> findEventsByAdmin(
-            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<String> users,
             @RequestParam(required = false) List<EventState> states,
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,

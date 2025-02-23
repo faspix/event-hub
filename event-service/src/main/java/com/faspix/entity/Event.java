@@ -47,7 +47,7 @@ public class Event {
     private LocalDateTime eventDate;
 
     @Column(nullable = false)
-    private Long initiatorId;
+    private String initiatorId;
 
     @Embedded
     @Column(nullable = false)

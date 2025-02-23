@@ -12,8 +12,8 @@ public class EventFactory {
 
     public static ResponseUserShortDTO makeResponseShortUser() {
         return ResponseUserShortDTO.builder()
-                .userId(1L)
-                .name("name")
+                .userId("1")
+                .username("name")
                 .build();
     }
 

@@ -25,7 +25,7 @@ public class Request {
     private Long eventId;
 
     @Column(nullable = false)
-    private Long requesterId;
+    private String requesterId;
 
     @Column(nullable = false)
     private OffsetDateTime creationDate;
@@ -34,7 +34,7 @@ public class Request {
     @Column(nullable = false)
     private ParticipationRequestState state;
 
-    public Request(Long eventId, Long requesterId, OffsetDateTime creationDate) {
+    public Request(Long eventId, String requesterId, OffsetDateTime creationDate) {
         this.eventId = eventId;
         this.requesterId = requesterId;
         this.creationDate = creationDate;

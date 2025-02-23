@@ -16,7 +16,7 @@ public class ResponseParticipationRequestDTO {
 
     private Long eventId;
 
-    private Long requesterId;
+    private String requesterId;
 
     private OffsetDateTime creationDate;
 

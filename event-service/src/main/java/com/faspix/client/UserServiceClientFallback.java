@@ -12,13 +12,13 @@ import java.util.Set;
 @Slf4j
 public class UserServiceClientFallback implements UserServiceClient {
     @Override
-    public ResponseUserDTO getUserById(Long userId) {
+    public ResponseUserDTO getUserById(String userId) {
         log.error("Error during calling user service for getUserById, category id: {} ", userId);
         throw new ServiceUnavailableException("Error during calling user service");
     }
 
     @Override
-    public Set<ResponseUserShortDTO> getUsersByIds(Set<Long> userIds) {
+    public Set<ResponseUserShortDTO> getUsersByIds(Set<String> userIds) {
         log.error("Error during calling user service for getUsersByIds, category id: {} ", userIds);
         throw new ServiceUnavailableException("Error during calling user service");
     }

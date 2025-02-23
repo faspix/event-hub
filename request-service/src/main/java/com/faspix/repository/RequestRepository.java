@@ -11,9 +11,9 @@ import java.util.Optional;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
-    Request findRequestByRequesterIdAndEventId(Long userId, Long eventId);
+    Request findRequestByRequesterIdAndEventId(String userId, Long eventId);
 
-    List<Request> findRequestsByRequesterId(Long requesterId, Pageable pageable);
+    List<Request> findRequestsByRequesterId(String requesterId, Pageable pageable);
 
     List<Request> findRequestsByEventId(Long eventId, Pageable pageable);
 

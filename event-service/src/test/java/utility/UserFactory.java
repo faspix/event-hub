@@ -9,14 +9,14 @@ public class UserFactory {
 
     public static RequestUserDTO makeRequestUserTest() {
         return RequestUserDTO.builder()
-                .name("UserName")
+                .username("UserName")
                 .email("mail@mail.com")
                 .build();
     }
 
     public static ResponseUserDTO makeResponseUserTest() {
         return ResponseUserDTO.builder()
-                .name("UserName")
+                .username("UserName")
                 .email("mail@mail.com")
                 .build();
     }
@@ -24,8 +24,8 @@ public class UserFactory {
 
     public static ResponseUserShortDTO makeResponseShortUser() {
         return ResponseUserShortDTO.builder()
-                .userId(1L)
-                .name("name")
+                .userId("1")
+                .username("name")
                 .build();
     }
 

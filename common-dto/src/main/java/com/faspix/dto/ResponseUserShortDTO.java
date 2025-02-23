@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResponseUserShortDTO {
 
-    private Long userId;
+    private String userId;
 
-    private String name;
+    private String username;
 
 }

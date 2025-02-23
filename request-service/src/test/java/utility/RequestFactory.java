@@ -14,7 +14,7 @@ public class RequestFactory {
     public static Request makeRequest() {
         return Request.builder()
                 .id(null)
-                .requesterId(1L)
+                .requesterId("1")
                 .eventId(1L)
                 .state(ParticipationRequestState.PENDING)
                 .creationDate(OffsetDateTime.now())
@@ -31,7 +31,7 @@ public class RequestFactory {
     public static ResponseParticipationRequestDTO makeResponseRequest() {
         return ResponseParticipationRequestDTO.builder()
                 .id(1L)
-                .requesterId(1L)
+                .requesterId("1")
                 .eventId(1L)
                 .state(ParticipationRequestState.PENDING)
                 .creationDate(OffsetDateTime.now())

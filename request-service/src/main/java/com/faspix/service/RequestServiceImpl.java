@@ -35,7 +35,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional // TODO: ErrorResponse: Request must have status PENDING
-    public ResponseParticipationRequestDTO createRequest(Long requesterId, Long eventId) {
+    public ResponseParticipationRequestDTO createRequest(String requesterId, Long eventId) {
         if (requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId) != null)
             throw new ValidationException("User with id " + requesterId +
                     " already leave a request to participate in event with id " + eventId);
@@ -62,7 +62,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public ResponseParticipationRequestDTO cancelRequest(Long requesterId, Long eventId) {
+    public ResponseParticipationRequestDTO cancelRequest(String requesterId, Long eventId) {
         Request request = requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId);
         if (request == null) {
             throw new RequestNotFountException("User with id " + requesterId +
@@ -73,7 +73,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(Long requesterId, Long eventId, Integer page, Integer size) {
+    public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(String requesterId, Long eventId, Integer page, Integer size) {
         validateOwnership(requesterId, eventId, eventServiceClient.findEventById(eventId));
         Pageable pageRequest = makePageRequest(page, size);
         return requestRepository.findRequestsByEventId(eventId, pageRequest)
@@ -92,7 +92,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public List<ResponseParticipationRequestDTO> setRequestsStatus(Long userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
+    public List<ResponseParticipationRequestDTO> setRequestsStatus(String userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
         ResponseEventDTO eventDTO = eventServiceClient.findEventById(eventId);
         validateOwnership(userId, eventId, eventDTO);
 
@@ -124,7 +124,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<ResponseParticipationRequestDTO> getUsersRequests(Long requesterId, Integer page, Integer size) {
+    public List<ResponseParticipationRequestDTO> getUsersRequests(String requesterId, Integer page, Integer size) {
         Pageable pageable = makePageRequest(page, size);
         return requestRepository.findRequestsByRequesterId(requesterId, pageable)
                 .stream()
@@ -133,7 +133,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
 
-    private static void validateOwnership(Long userId, Long eventId, ResponseEventDTO eventDTO) {
+    private static void validateOwnership(String userId, Long eventId, ResponseEventDTO eventDTO) {
         if (! eventDTO.getInitiator().getUserId().equals(userId)) {
             throw new ValidationException("User with id " + userId + " doesn't own event with id " + eventId);
         }

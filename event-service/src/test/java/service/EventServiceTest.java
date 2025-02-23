@@ -67,7 +67,7 @@ public class EventServiceTest {
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
 
-        ResponseEventDTO event = eventService.createEvent(1L, requestEventDTO);
+        ResponseEventDTO event = eventService.createEvent("1", requestEventDTO);
 
         assertThat(event.getEventDate(), equalTo(requestEventDTO.getEventDate()));
         assertThat(event.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
@@ -89,7 +89,7 @@ public class EventServiceTest {
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
 
-        ResponseEventDTO event = eventService.createEvent(1L, requestEventDTO);
+        ResponseEventDTO event = eventService.createEvent("1", requestEventDTO);
 
         assertThat(event.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
         assertThat(event.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
@@ -108,7 +108,7 @@ public class EventServiceTest {
         requestEventDTO.setEventDate(LocalDateTime.now());
 
         ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
-                () -> eventService.createEvent(1L, requestEventDTO)
+                () -> eventService.createEvent("1", requestEventDTO)
         );
         assertEquals("Event cannot start in less than 2 hours", exception.getMessage());
     }
@@ -124,7 +124,7 @@ public class EventServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(makeEventTest()));
 
-        ResponseEventDTO updatedEvent = eventService.editEvent(1L, 1L, updateRequest);
+        ResponseEventDTO updatedEvent = eventService.editEvent("1", 1L, updateRequest);
 
 //        assertThat(updatedEvent.getEventId(), equalTo(event.getEventId()));
         assertThat(updatedEvent.getEventDate(), equalTo(event.getEventDate()));
@@ -146,7 +146,7 @@ public class EventServiceTest {
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2));
 
         ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
-                () -> eventService.editEvent(1L, 1L, requestEventDTO)
+                () -> eventService.editEvent("1", 1L, requestEventDTO)
         );
         assertEquals("Event cannot start in less than 2 hours", exception.getMessage());
     }
@@ -165,7 +165,7 @@ public class EventServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(makeEventTest()));
 
-        ResponseEventDTO updatedEvent = eventService.editEvent(1L, 1L, updateRequest);
+        ResponseEventDTO updatedEvent = eventService.editEvent("1", 1L, updateRequest);
 
         assertThat(updatedEvent.getEventDate(), equalTo(event.getEventDate()));
         assertThat(updatedEvent.getTitle(), equalTo(event.getTitle()));
@@ -183,12 +183,12 @@ public class EventServiceTest {
     public void editEventTest_UserDidntCreateEvent_Exception() {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         Event event = makeEventTest();
-        event.setInitiatorId(22L);
+        event.setInitiatorId("22");
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
         ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
-                () -> eventService.editEvent(1L, 1L, requestEventDTO)
+                () -> eventService.editEvent("1", 1L, requestEventDTO)
         );
         assertEquals("User with id 1 didn't create event with id 1", exception.getMessage());
     }
@@ -202,7 +202,7 @@ public class EventServiceTest {
                 .thenReturn(Optional.ofNullable(event));
 
         ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
-                () -> eventService.editEvent(1L, 1L, requestEventDTO)
+                () -> eventService.editEvent("1", 1L, requestEventDTO)
         );
         assertEquals("Event must not be published", exception.getMessage());
     }
@@ -259,9 +259,9 @@ public class EventServiceTest {
     @Test
     public void findAllUsersEventsTest_Success() {
         List<Event> events = List.of(makeEventTest(), makeEventTest());
-        when(eventRepository.findEventsByInitiatorId(anyLong(), any())).thenReturn(new PageImpl<>(events));
+        when(eventRepository.findEventsByInitiatorId(any(), any())).thenReturn(new PageImpl<>(events));
 
-        List<ResponseEventShortDTO> result = eventService.findAllUsersEvents(1L, 0, 10);
+        List<ResponseEventShortDTO> result = eventService.findAllUsersEvents("1", 0, 10);
 
         assertThat(result.size(), equalTo(2));
     }

@@ -63,7 +63,7 @@ public class RequestServiceTest {
         when(requestRepository.save(any()))
                 .thenReturn(responseParticipationRequest);
 
-        ResponseParticipationRequestDTO request = requestService.createRequest(2L, 1L);
+        ResponseParticipationRequestDTO request = requestService.createRequest("2", 1L);
 
         assertThat(request.getRequesterId(), equalTo(responseParticipationRequest.getRequesterId()));
         assertThat(request.getState(), equalTo(responseParticipationRequest.getState()));
@@ -88,7 +88,7 @@ public class RequestServiceTest {
         when(requestRepository.save(any()))
                 .thenReturn(responseParticipationRequest);
 
-        ResponseParticipationRequestDTO request = requestService.createRequest(2L, 1L);
+        ResponseParticipationRequestDTO request = requestService.createRequest("2", 1L);
 
         assertThat(request.getRequesterId(), equalTo(responseParticipationRequest.getRequesterId()));
         assertThat(request.getState(), equalTo(responseParticipationRequest.getState()));
@@ -107,7 +107,7 @@ public class RequestServiceTest {
                 .thenReturn(responseEventDTO);
 
         ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> requestService.createRequest(1L, 1L)
+                () -> requestService.createRequest("1", 1L)
         );
 
         assertEquals("Event initiator cannot leave a request to participate in his event"
@@ -123,7 +123,7 @@ public class RequestServiceTest {
                 .thenReturn(responseEventDTO);
 
         ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> requestService.createRequest(2L, 1L)
+                () -> requestService.createRequest("2", 1L)
         );
 
         assertEquals("User cannot participate in an unpublished event", exception.getMessage());
@@ -140,7 +140,7 @@ public class RequestServiceTest {
                 .thenReturn(responseEventDTO);
 
         ValidationException exception = assertThrowsExactly(ValidationException.class,
-                () -> requestService.createRequest(2L, 1L)
+                () -> requestService.createRequest("2", 1L)
         );
 
         assertEquals("The event has reached the limit of requests for participation", exception.getMessage());
@@ -150,9 +150,9 @@ public class RequestServiceTest {
     @Test
     public void cancelRequestTest_Success() {
         Request requestRequest = makeRequest();
-        when(requestRepository.findRequestByRequesterIdAndEventId(anyLong(), anyLong()))
+        when(requestRepository.findRequestByRequesterIdAndEventId(any(), anyLong()))
                 .thenReturn(requestRequest);
-        ResponseParticipationRequestDTO responseRequest = requestService.cancelRequest(1L, 1L);
+        ResponseParticipationRequestDTO responseRequest = requestService.cancelRequest("1", 1L);
 
         assertThat(responseRequest.getRequesterId(), equalTo(requestRequest.getRequesterId()));
         assertThat(responseRequest.getId(), equalTo(requestRequest.getId()));
@@ -161,18 +161,18 @@ public class RequestServiceTest {
         assertThat(responseRequest.getState(), equalTo(requestRequest.getState()));
 
         verify(requestRepository, times(1))
-                .findRequestByRequesterIdAndEventId(anyLong(), anyLong());
+                .findRequestByRequesterIdAndEventId(any(), anyLong());
         verify(requestRepository, times(1)).delete(any());
     }
 
 
     @Test
     public void cancelRequestTest_RequestNotFoundException() {
-        when(requestRepository.findRequestByRequesterIdAndEventId(anyLong(), anyLong()))
+        when(requestRepository.findRequestByRequesterIdAndEventId(any(), anyLong()))
                 .thenReturn(null);
 
         RequestNotFountException exception = assertThrowsExactly(RequestNotFountException.class,
-                () -> requestService.cancelRequest(1L, 1L)
+                () -> requestService.cancelRequest("1", 1L)
         );
 
         assertEquals("User with id 1 didn't leave a request to participate in event with id 1"
@@ -197,7 +197,7 @@ public class RequestServiceTest {
 
     @Test
     void setRequestsStatusTest_Success() {
-        Long userId = 1L;
+        String userId = "1";
         Long eventId = 1L;
         ResponseEventDTO eventDTO = makeResponseEventTest();
         RequestParticipationRequestDTO requestDTO = makeRequestRequest();
@@ -228,7 +228,7 @@ public class RequestServiceTest {
 
     @Test
     void SetRequestsStatusTest_UserNotOwner_Exception() {
-        Long userId = 2L;
+        String userId = "2";
         Long eventId = 1L;
 
         ResponseEventDTO eventDTO = makeResponseEventTest();
@@ -244,7 +244,7 @@ public class RequestServiceTest {
 
     @Test
     void SetRequestsStatusTest_LimitReached_Exception() {
-        Long userId = 1L;
+        String userId = "1";
         Long eventId = 1L;
         ResponseEventDTO eventDTO = makeResponseEventTest();
         RequestParticipationRequestDTO requestDTO = makeRequestRequest();

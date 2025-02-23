@@ -25,7 +25,7 @@ public class EventFactory {
                 .creationDate(OffsetDateTime.now())
                 .description("description")
                 .eventDate(LocalDateTime.MAX)
-                .initiatorId(1L)
+                .initiatorId("1")
                 .location(new Location(10.0, 10.0))
                 .paid(false)
                 .confirmedRequests(10)

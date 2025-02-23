@@ -14,8 +14,8 @@ import java.util.Set;
 public interface UserServiceClient {
 
     @GetMapping("users/{userId}")
-    ResponseUserDTO getUserById(@PathVariable Long userId);
+    ResponseUserDTO getUserById(@PathVariable String userId);
 
     @PostMapping("users/batch")
-    Set<ResponseUserShortDTO> getUsersByIds(@RequestBody Set<Long> userIds);
+    Set<ResponseUserShortDTO> getUsersByIds(@RequestBody Set<String> userIds);
 }

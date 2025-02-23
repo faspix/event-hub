@@ -15,9 +15,9 @@ import java.util.List;
 
 public interface EventService {
 
-    ResponseEventDTO createEvent(Long creatorId, RequestEventDTO eventDTO);
+    ResponseEventDTO createEvent(String creatorId, RequestEventDTO eventDTO);
 
-    ResponseEventDTO editEvent(Long userId, Long eventId, RequestEventDTO eventDTO);
+    ResponseEventDTO editEvent(String userId, Long eventId, RequestEventDTO eventDTO);
 
     List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                            LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
@@ -27,11 +27,11 @@ public interface EventService {
 
     Event getEventById(Long eventId);
 
-    List<ResponseEventShortDTO> findAllUsersEvents(Long userId, Integer page, Integer size);
+    List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size);
 
-    List<ResponseEventShortDTO> findEventsByCategoryId(Long catId);
+    List<ResponseEventShortDTO> findEventsByCategoryId(Long categoryId);
 
-    List<ResponseEventDTO> findEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+    List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page, Integer size);
 
     void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);

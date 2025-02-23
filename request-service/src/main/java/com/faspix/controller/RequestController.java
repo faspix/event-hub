@@ -24,7 +24,7 @@ public class RequestController {
     @PostMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseParticipationRequestDTO createRequest(
-            @RequestHeader("X-User-Id") Long requesterId,
+            @RequestHeader("X-User-Id") String requesterId,
             @PathVariable Long eventId
     ) {
         return requestService.createRequest(requesterId, eventId);
@@ -32,7 +32,7 @@ public class RequestController {
 
     @PatchMapping("/events/{eventId}/cancel")
     public ResponseParticipationRequestDTO cancelRequest(
-            @RequestHeader("X-User-Id") Long requesterId,
+            @RequestHeader("X-User-Id") String requesterId,
             @PathVariable Long eventId
     ) {
         return requestService.cancelRequest(requesterId, eventId);
@@ -40,7 +40,7 @@ public class RequestController {
 
     @GetMapping("/events/{eventId}")
     public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(
-            @RequestHeader("X-User-Id") Long requesterId,
+            @RequestHeader("X-User-Id") String requesterId,
             @PathVariable Long eventId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
@@ -50,7 +50,7 @@ public class RequestController {
 
     @PatchMapping("/events/{eventId}")
     public List<ResponseParticipationRequestDTO> setRequestsStatus(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") String userId,
             @PathVariable Long eventId,
             @RequestBody RequestParticipationRequestDTO requestDTO
     ) {
@@ -59,7 +59,7 @@ public class RequestController {
 
     @GetMapping("/users")
     public List<ResponseParticipationRequestDTO> getUsersRequests(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") String userId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
 

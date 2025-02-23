@@ -21,7 +21,7 @@ public class Comment {
     private Long id;
 
     @Column(nullable = false)
-    private Long authorId;
+    private String authorId;
 
     @ManyToOne
     @JoinColumn(name = "eventId", referencedColumnName = "eventId", nullable = false)

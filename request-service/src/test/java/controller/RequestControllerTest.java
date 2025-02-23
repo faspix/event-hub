@@ -85,7 +85,7 @@ public class RequestControllerTest {
         String body = mvcResult.getResponse().getContentAsString();
         ResponseParticipationRequestDTO response = objectMapper.readValue(body, ResponseParticipationRequestDTO.class);
 
-        Request savedRequest = requestRepository.findRequestByRequesterIdAndEventId(2L, 1L);
+        Request savedRequest = requestRepository.findRequestByRequesterIdAndEventId("2", 1L);
         assertThat(savedRequest.getState(), equalTo(response.getState()));
         assertThat(savedRequest.getRequesterId(), equalTo(response.getRequesterId()));
         assertThat(savedRequest.getState(), equalTo(response.getState()));
@@ -100,7 +100,7 @@ public class RequestControllerTest {
         eventDTO.setParticipantLimit(20);
         when(eventServiceClient.findEventById(anyLong()))
                 .thenReturn(eventDTO);
-        requestController.createRequest(2L, 1L);
+        requestController.createRequest("2", 1L);
 
         mockMvc.perform(post("/requests/events/{eventId}", eventId)
                         .header("X-User-Id", 2)

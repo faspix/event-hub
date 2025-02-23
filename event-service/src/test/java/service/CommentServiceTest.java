@@ -68,7 +68,7 @@ public class CommentServiceTest {
 
     @Test
     void addCommentTest_Success() {
-        when(userServiceClient.getUserById(anyLong()))
+        when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(makeEventTest()));
@@ -76,24 +76,24 @@ public class CommentServiceTest {
                 .thenReturn(makeComment());
 
         RequestCommentDTO requestDTO = makeRequestComment();
-        ResponseCommentDTO responseDTO = commentService.addComment(1L, 1L, requestDTO);
+        ResponseCommentDTO responseDTO = commentService.addComment("1", 1L, requestDTO);
 
         assertThat(responseDTO.getText(), equalTo(requestDTO.getText()));
-        verify(userServiceClient, times(1)).getUserById(anyLong());
+        verify(userServiceClient, times(1)).getUserById(any());
         verify(eventRepository, times(1)).findById(anyLong());
         verify(commentRepository, times(1)).save(any());
     }
 
     @Test
     void addCommentTest_EventNotFound_Exception() {
-        when(userServiceClient.getUserById(anyLong()))
+        when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
         RequestCommentDTO requestDTO = makeRequestComment();
         EventNotFoundException exception = assertThrowsExactly(EventNotFoundException.class,
-                () -> commentService.addComment(1L, 1L, requestDTO)
+                () -> commentService.addComment("1", 1L, requestDTO)
         );
         assertThat(exception.getMessage(), equalTo("Event with id 1 not found"));
     }

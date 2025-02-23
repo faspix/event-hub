@@ -14,7 +14,7 @@ public class CommentFactory {
     public static Comment makeComment() {
         return Comment.builder()
                 .id(null)
-                .authorId(1L)
+                .authorId("1")
                 .creationDate(Instant.now())
                 .event(makeEventTest())
                 .text("Comment text")

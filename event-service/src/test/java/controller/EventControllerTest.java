@@ -30,6 +30,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -69,7 +70,7 @@ public class EventControllerTest {
     @Test
     public void createEventTest_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
-        when(userServiceClient.getUserById(anyLong()))
+        when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
 
         MvcResult mvcResult = mockMvc.perform(post("/events")
@@ -107,7 +108,7 @@ public class EventControllerTest {
     public void createEventTest_EventStartsToSoon_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(LocalDateTime.now().plusHours(2).plusMinutes(1));
-        when(userServiceClient.getUserById(anyLong()))
+        when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
 
 
@@ -251,7 +252,7 @@ public class EventControllerTest {
     public void editEventTest_UserDidntCreateEvent_Exception() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         Event event = makeEventTest();
-        event.setInitiatorId(22L);
+        event.setInitiatorId("22");
 
         Event savedEvent = eventRepository.save(event);
 

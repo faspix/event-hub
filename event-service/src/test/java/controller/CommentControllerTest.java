@@ -80,7 +80,7 @@ public class CommentControllerTest {
         Event event = eventRepository.save(makeEventTest());
         event.setState(EventState.PUBLISHED);
         RequestCommentDTO request = makeRequestComment();
-        when(userServiceClient.getUserById(anyLong()))
+        when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
 
         MvcResult mvcResult = mockMvc.perform(post("/events/{eventId}/comment", event.getEventId())
@@ -104,7 +104,7 @@ public class CommentControllerTest {
     void addCommentTest_EventNotFound_Exception() throws Exception {
         Long userId = 1L;
         RequestCommentDTO request = makeRequestComment();
-        when(userServiceClient.getUserById(anyLong()))
+        when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
 
         mockMvc.perform(post("/events/{eventId}/comment", 1L)

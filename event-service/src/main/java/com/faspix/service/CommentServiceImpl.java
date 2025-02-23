@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public ResponseCommentDTO addComment(Long userId, Long eventId, RequestCommentDTO requestDTO) {
+    public ResponseCommentDTO addComment(String userId, Long eventId, RequestCommentDTO requestDTO) {
         ResponseUserShortDTO author = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(userId)
         );
@@ -65,10 +65,10 @@ public class CommentServiceImpl implements CommentService {
         if (comments.isEmpty())
             return null;
 
-        Set<Long> authorIds = comments.stream()
+        Set<String> authorIds = comments.stream()
                 .map(Comment::getAuthorId)
                 .collect(Collectors.toSet());
-        Map<Long, ResponseUserShortDTO> authorsMap = userServiceClient.getUsersByIds(authorIds)
+        Map<String, ResponseUserShortDTO> authorsMap = userServiceClient.getUsersByIds(authorIds)
                 .stream()
                 .collect(Collectors.toMap(ResponseUserShortDTO::getUserId, user -> user));
 

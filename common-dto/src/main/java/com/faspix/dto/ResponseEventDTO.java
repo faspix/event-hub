@@ -33,7 +33,6 @@ public class ResponseEventDTO {
     private LocalDateTime eventDate;
 
     private ResponseUserShortDTO initiator;
-//    private Integer initiatorId;
 
     private Location location;
 

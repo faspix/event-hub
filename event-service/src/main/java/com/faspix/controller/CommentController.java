@@ -17,7 +17,7 @@ public class CommentController {
     @PostMapping("{eventId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseCommentDTO addComment(
-            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-User-Id") String userId,
             @PathVariable Long eventId,
             @RequestBody RequestCommentDTO requestDTO
     ) {

@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    Page<Event> findEventsByInitiatorId(Long userId, Pageable pageable);
+    Page<Event> findEventsByInitiatorId(String userId, Pageable pageable);
 
     List<Event> findEventsByCategoryId(Long categoryId);
 
@@ -46,7 +46,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:categories IS NULL OR e.categoryId IN :categories) ")
 //            "AND (:rangeStart IS NULL OR e.eventDate >= :rangeStart) ")
 //            "AND (:rangeEnd IS NULL OR e.eventDate <= :rangeEnd) " +
-    Page<Event> searchEventAdmin(@Param("users") List<Long> users,
+    Page<Event> searchEventAdmin(@Param("users") List<String> users,
                                  @Param("states") List<EventState> states,
                                  @Param("categories") List<Long> categories,
                                  @Param("rangeStart") LocalDateTime rangeStart,

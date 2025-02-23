@@ -12,11 +12,13 @@ import lombok.NoArgsConstructor;
 public class RequestUserDTO {
 
     @NotBlank(message = "Name shouldn't be blank")
-    private String name;
+    private String username;
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email shouldn't be blank")
     private String email;
 
+    @NotBlank(message = "Password shouldn't be blank")
+    private String password;
 
 }
