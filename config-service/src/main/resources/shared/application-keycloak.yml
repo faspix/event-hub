@@ -1,0 +1,13 @@
+keycloak:
+  server-url: http://localhost:8080
+  realm: master
+  client-id: admin-cli
+  admin-username: admin
+  admin-password: admin
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/master
