@@ -1,14 +1,15 @@
 package com.faspix.controller;
 
+import com.faspix.dto.RequestUpdatePasswordDTO;
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.dto.ResponseUserShortDTO;
-import com.faspix.mapper.UserMapper;
 import com.faspix.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +22,6 @@ public class UserController {
 
     private final UserService userService;
 
-    private final UserMapper userMapper;
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseUserDTO createUser(
@@ -33,32 +32,41 @@ public class UserController {
 
     @PatchMapping
     public ResponseUserDTO editUser(
-            @RequestHeader("X-User-Id") Long userId,
+            @AuthenticationPrincipal Jwt jwt,
             @RequestBody @Valid RequestUserDTO userDTO
     ) {
-        return userService.editUser(userId, userDTO);
+        return userService.editUser(jwt.getSubject(), userDTO);
 
+    }
+
+    // TODO: return value
+    @PatchMapping("/password")
+    public void updateUserPassword(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody @Valid RequestUpdatePasswordDTO passwordDTO
+    ) {
+        userService.updateUserPassword(jwt.getSubject(), passwordDTO);
     }
 
     // TODO: return value
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(
-            @RequestHeader("X-User-Id") Long userId
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        userService.deleteUser(userId);
+        userService.deleteUser(jwt.getSubject());
     }
 
     @GetMapping("{userId}")
     public ResponseUserDTO findUserById(
-            @PathVariable Long userId
+            @PathVariable String userId
     ) {
         return userService.findUserById(userId);
     }
 
     @PostMapping("/batch")
     public List<ResponseUserShortDTO> findUserByIds(
-            @RequestBody Set<Long> userIds
+            @RequestBody Set<String> userIds
     ) {
         return userService.findUserByIds(userIds);
     }

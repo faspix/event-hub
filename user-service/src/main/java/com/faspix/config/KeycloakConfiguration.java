@@ -10,14 +10,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KeycloakConfiguration {
 
+    @Value("${keycloak.server-url}")
+    private String serverUrl;
+
+    @Value("${keycloak.realm}")
+    private String realm;
+
+    @Value("${keycloak.client-id}")
+    private String clientId;
+
+    @Value("${keycloak.admin-username}")
+    private String adminUsername;
+
+    @Value("${keycloak.admin-password}")
+    private String adminPassword;
+
     @Bean
-    Keycloak keycloak(
-        @Value("${keycloak.server-url}") String serverUrl,
-        @Value("${keycloak.realm}") String realm,
-        @Value("${keycloak.client-id}") String clientId,
-        @Value("${keycloak.admin-username}") String adminUsername,
-        @Value("${keycloak.admin-password}") String adminPassword
-    ) {
+    Keycloak keycloak() {
         return KeycloakBuilder.builder()
             .serverUrl(serverUrl)
             .realm(realm)
@@ -28,10 +37,7 @@ public class KeycloakConfiguration {
     }
 
     @Bean
-    RealmResource realmResource(
-            Keycloak keycloak,
-            @Value("${keycloak.realm}") String realm
-    ) {
+    RealmResource realmResource(Keycloak keycloak) {
         return keycloak.realm(realm);
     }
 

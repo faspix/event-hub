@@ -1,32 +1,32 @@
 package com.faspix.service;
 
+import com.faspix.dto.RequestUpdatePasswordDTO;
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.dto.ResponseUserShortDTO;
-import com.faspix.entity.User;
 import com.faspix.exception.UserAlreadyExistException;
-import com.faspix.exception.UserNotFoundException;
-import com.faspix.mapper.UserMapper;
-import com.faspix.repository.UserRepository;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    private final Keycloak keycloak;
 
     private final RealmResource realmResource;
 
@@ -39,17 +39,20 @@ public class UserServiceImpl implements UserService {
 
         UsersResource usersResource = realmResource.users();
         Response response = usersResource.create(user);
-        if (response.getStatus() != 201) {
-            throw new UserAlreadyExistException("User with username " + userDTO.getUsername() + " already exist");
+        if (response.getStatus() == HttpStatus.CONFLICT.value()) {
+            throw new UserAlreadyExistException("User with username this username or email already exist");
         }
 
-        String userId = usersResource.search(userDTO.getUsername()).get(0).getId();
+        String userId = CreatedResponseUtil.getCreatedId(response);
 
         CredentialRepresentation credential = new CredentialRepresentation();
         credential.setType(CredentialRepresentation.PASSWORD);
         credential.setValue(userDTO.getPassword());
         credential.setTemporary(false);
         usersResource.get(userId).resetPassword(credential);
+
+        RoleRepresentation roleRepresentation = realmResource.roles().get("USER").toRepresentation();
+        usersResource.get(userId).roles().realmLevel().add(Collections.singletonList(roleRepresentation));
 
         return ResponseUserDTO.builder()
                 .userId(userId)
@@ -59,30 +62,68 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUserDTO editUser(Long userId, RequestUserDTO userDTO) {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseUserDTO editUser(String userId, RequestUserDTO userDTO) {
+        UserResource userResource = realmResource.users().get(userId);
 
-    return null;
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        userRepresentation.setUsername(userDTO.getUsername());
+        userRepresentation.setEmail(userDTO.getEmail());
+
+        userResource.update(userRepresentation);
+
+    return ResponseUserDTO.builder()
+            .userId(userId)
+            .username(userDTO.getUsername())
+            .email(userDTO.getEmail())
+            .build();
     }
 
     @Override
-    public ResponseUserDTO findUserById(Long userId) {
+    @PreAuthorize("hasRole('USER')")
+    public void updateUserPassword(String userId, RequestUpdatePasswordDTO passwordDTO) {
+        UserResource userResource = realmResource.users().get(userId);
 
-        return null;
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(passwordDTO.getPassword());
+        credential.setTemporary(false);
+
+        userResource.resetPassword(credential);
     }
 
     @Override
-    public ResponseUserDTO findUserByEmail(String email) {
-        return null;
+    @PreAuthorize("hasRole('USER')")
+    public ResponseUserDTO findUserById(String userId) {
+        UserResource userResource = realmResource.users().get(userId);
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        return ResponseUserDTO.builder()
+                .userId(userRepresentation.getId())
+                .username(userRepresentation.getUsername())
+                .email(userRepresentation.getEmail())
+                .build();
     }
 
     @Override
-    public Boolean deleteUser(Long userId) {
-        return true;
+    @PreAuthorize("hasRole('USER')")
+    public void deleteUser(String userId) {
+        UserResource userResource = realmResource.users().get(userId);
+        userResource.remove();
     }
 
+    // TODO: role and batch update fix
     @Override
-    public List<ResponseUserShortDTO> findUserByIds(Set<Long> userIds) {
-        return List.of();
+    public List<ResponseUserShortDTO> findUserByIds(Set<String> userIds) {
+        return userIds.stream()
+                .map(id -> {
+                    UserResource userResource = realmResource.users().get(id);
+                    UserRepresentation userRepresentation = userResource.toRepresentation();
+                    return ResponseUserShortDTO.builder()
+                            .userId(userRepresentation.getId())
+                            .username(userRepresentation.getUsername())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
 }
