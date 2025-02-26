@@ -10,7 +10,7 @@ CREATE TABLE events (
     creation_date TIMESTAMP WITH TIME ZONE NOT NULL,
     description VARCHAR(255) NOT NULL,
     event_date TIMESTAMP NOT NULL,
-    initiator_id BIGINT NOT NULL,
+    initiator_id VARCHAR(50) NOT NULL,
     lat DOUBLE PRECISION NOT NULL,
     lon DOUBLE PRECISION NOT NULL,
     paid BOOLEAN NOT NULL,

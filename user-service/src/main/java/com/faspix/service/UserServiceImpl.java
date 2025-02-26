@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseUserDTO editUser(String userId, RequestUserDTO userDTO) {
         UserResource userResource = realmResource.users().get(userId);
 
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void updateUserPassword(String userId, RequestUpdatePasswordDTO passwordDTO) {
         UserResource userResource = realmResource.users().get(userId);
 
@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MICROSERVICE')")
     public ResponseUserDTO findUserById(String userId) {
         UserResource userResource = realmResource.users().get(userId);
         UserRepresentation userRepresentation = userResource.toRepresentation();
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void deleteUser(String userId) {
         UserResource userResource = realmResource.users().get(userId);
         userResource.remove();

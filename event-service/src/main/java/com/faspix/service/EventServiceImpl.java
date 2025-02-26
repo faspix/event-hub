@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEventDTO createEvent(String creatorId, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
@@ -64,6 +66,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEventDTO editEvent(String userId, Long eventId, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
@@ -122,6 +125,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size) {
         Pageable pageRequest = makePageRequest(page, size);
         return eventRepository.findEventsByInitiatorId(userId, pageRequest)
@@ -131,6 +135,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseEventShortDTO> findEventsByCategoryId(Long catId) {
         return eventRepository.findEventsByCategoryId(catId)
                 .stream()
@@ -139,6 +144,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page,
                                        Integer size) {
@@ -159,6 +165,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO) {
         Event event = getEventById(eventId);
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1)))

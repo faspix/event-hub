@@ -1,0 +1,13 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: microservice-client
+            client-secret: yocVL8AXRmnwAXFDtjdFgbdxqRXnOWOx
+            authorization-grant-type: client_credentials
+        provider:
+          keycloak:
+            token-uri: http://localhost:8080/realms/master/protocol/openid-connect/token

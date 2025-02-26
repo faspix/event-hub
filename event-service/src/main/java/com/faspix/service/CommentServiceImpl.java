@@ -13,6 +13,7 @@ import com.faspix.mapper.UserMapper;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseCommentDTO addComment(String userId, Long eventId, RequestCommentDTO requestDTO) {
         ResponseUserShortDTO author = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(userId)
@@ -60,6 +62,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseCommentDTO> findCommentsByEventId(Long eventId) {
         List<Comment> comments = commentRepository.findCommentsByEventId(eventId);
         if (comments.isEmpty())

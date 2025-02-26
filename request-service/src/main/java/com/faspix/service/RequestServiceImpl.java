@@ -11,6 +11,7 @@ import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional // TODO: ErrorResponse: Request must have status PENDING
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseParticipationRequestDTO createRequest(String requesterId, Long eventId) {
         if (requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId) != null)
             throw new ValidationException("User with id " + requesterId +
@@ -62,6 +64,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseParticipationRequestDTO cancelRequest(String requesterId, Long eventId) {
         Request request = requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId);
         if (request == null) {
@@ -73,6 +76,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(String requesterId, Long eventId, Integer page, Integer size) {
         validateOwnership(requesterId, eventId, eventServiceClient.findEventById(eventId));
         Pageable pageRequest = makePageRequest(page, size);
@@ -83,6 +87,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseParticipationRequestDTO findRequestById(Long requestId) {
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new RequestNotFountException("Request with id " + requestId + " not found")
@@ -92,6 +97,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseParticipationRequestDTO> setRequestsStatus(String userId, Long eventId, RequestParticipationRequestDTO requestDTO) {
         ResponseEventDTO eventDTO = eventServiceClient.findEventById(eventId);
         validateOwnership(userId, eventId, eventDTO);
@@ -124,6 +130,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseParticipationRequestDTO> getUsersRequests(String requesterId, Integer page, Integer size) {
         Pageable pageable = makePageRequest(page, size);
         return requestRepository.findRequestsByRequesterId(requesterId, pageable)
