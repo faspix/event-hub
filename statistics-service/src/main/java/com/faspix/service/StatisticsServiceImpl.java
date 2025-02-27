@@ -6,6 +6,7 @@ import com.faspix.entity.EndpointStats;
 import com.faspix.mapper.StatisticsMapper;
 import com.faspix.repository.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,6 +23,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final StatisticsMapper statisticsMapper;
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ResponseEndpointStatsDTO> getEndpointStats(LocalDateTime start, LocalDateTime end,
                                                         List<String> uris, Boolean unique) {
         Instant startInstant = start.toInstant(ZoneOffset.UTC);
@@ -32,6 +34,7 @@ public class StatisticsServiceImpl implements StatisticsService {
                 : statisticsRepository.findEndpointStats(startInstant, endInstant, uris);
     }
 
+    // TODO: role
     @Override // TODO: return value
     public void hitEndpoint(RequestEndpointStatsDTO requestDTO) {
         EndpointStats endpointStats = statisticsMapper.RequestToEndpoint(requestDTO);
