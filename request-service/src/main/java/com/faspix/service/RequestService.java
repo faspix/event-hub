@@ -14,8 +14,6 @@ public interface RequestService {
 
     List<ResponseParticipationRequestDTO> getRequestsToMyEvent(String requesterId, Long eventId, Integer page, Integer size);
 
-    ResponseParticipationRequestDTO findRequestById(Long requestId);
-
     List<ResponseParticipationRequestDTO> setRequestsStatus(String userId, Long eventId, RequestParticipationRequestDTO requestDTO);
 
     List<ResponseParticipationRequestDTO> getUsersRequests(String requesterId, Integer page, Integer size);

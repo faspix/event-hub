@@ -2,9 +2,7 @@ package com.faspix.controller;
 
 import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseParticipationRequestDTO;
-import com.faspix.mapper.RequestMapper;
 import com.faspix.service.RequestService;
-import jakarta.ws.rs.HeaderParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,8 +17,6 @@ import java.util.List;
 public class RequestController {
 
     private final RequestService requestService;
-
-    private final RequestMapper requestMapper;
 
 
     @PostMapping("/events/{eventId}")

@@ -180,22 +180,6 @@ public class RequestServiceTest {
     }
 
     @Test
-    public void findRequestByIdTest() {
-        Request requestRequest = makeRequest();
-        when(requestRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(requestRequest));
-
-        ResponseParticipationRequestDTO responseRequest = requestService.findRequestById(1L);
-
-        assertThat(responseRequest.getRequesterId(), equalTo(requestRequest.getRequesterId()));
-        assertThat(responseRequest.getId(), equalTo(requestRequest.getId()));
-        assertThat(responseRequest.getCreationDate(), equalTo(requestRequest.getCreationDate()));
-        assertThat(responseRequest.getEventId(), equalTo(requestRequest.getEventId()));
-        assertThat(responseRequest.getState(), equalTo(requestRequest.getState()));
-
-    }
-
-    @Test
     void setRequestsStatusTest_Success() {
         String userId = "1";
         Long eventId = 1L;

@@ -87,15 +87,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseParticipationRequestDTO findRequestById(Long requestId) {
-        Request request = requestRepository.findById(requestId).orElseThrow(
-                () -> new RequestNotFountException("Request with id " + requestId + " not found")
-        );
-        return requestMapper.participationRequestToResponse(request);
-    }
-
-    @Override
     @Transactional
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseParticipationRequestDTO> setRequestsStatus(String userId, Long eventId, RequestParticipationRequestDTO requestDTO) {

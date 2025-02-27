@@ -135,7 +135,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public List<ResponseEventShortDTO> findEventsByCategoryId(Long catId) {
         return eventRepository.findEventsByCategoryId(catId)
                 .stream()
