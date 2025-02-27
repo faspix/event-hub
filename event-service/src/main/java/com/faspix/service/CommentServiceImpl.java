@@ -7,7 +7,9 @@ import com.faspix.dto.ResponseUserDTO;
 import com.faspix.dto.ResponseUserShortDTO;
 import com.faspix.entity.Comment;
 import com.faspix.entity.Event;
+import com.faspix.enums.EventState;
 import com.faspix.exception.EventNotFoundException;
+import com.faspix.exception.UserAlreadyCommentThisEventException;
 import com.faspix.mapper.CommentMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.CommentRepository;
@@ -42,12 +44,19 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseCommentDTO addComment(String userId, Long eventId, RequestCommentDTO requestDTO) {
+        if (commentRepository.countCommentsByEventIdAndAuthorId(eventId, userId) > 0)
+            throw new UserAlreadyCommentThisEventException("User with id " + userId +
+                    " already comment event with id " + eventId);
+
         ResponseUserShortDTO author = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(userId)
         );
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
+
+        if (event.getState() != EventState.PUBLISHED)
+            throw new EventNotFoundException("Event with id " + eventId + " not published yet");
 
         Comment comment = commentMapper.requestToComment(requestDTO);
         comment.setAuthorId(userId);
@@ -62,7 +71,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MICROSERVICE')")
     public List<ResponseCommentDTO> findCommentsByEventId(Long eventId) {
         List<Comment> comments = commentRepository.findCommentsByEventId(eventId);
         if (comments.isEmpty())

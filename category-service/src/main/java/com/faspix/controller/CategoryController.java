@@ -17,8 +17,6 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    private final CategoryMapper categoryMapper;
-
     @GetMapping
     public List<ResponseCategoryDTO> findCategories(
             @RequestParam(defaultValue = "0") Integer page,

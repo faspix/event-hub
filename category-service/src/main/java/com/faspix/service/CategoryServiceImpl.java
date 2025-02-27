@@ -13,6 +13,7 @@ import com.faspix.utility.PageRequestMaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -51,6 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCategoryDTO createCategory(RequestCategoryDTO categoryDTO) {
         Category category = categoryMapper.requestToCategory(categoryDTO);
         try {
@@ -64,6 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCategoryDTO editCategory(Long categoryId, RequestCategoryDTO categoryDTO) {
         ResponseCategoryDTO category = findCategoryById(categoryId);
         Category updatedCategory = categoryMapper.requestToCategory(categoryDTO);
@@ -80,6 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Boolean deleteCategory(Long categoryId) {
         findCategoryById(categoryId);
         if (! eventServiceClient.findEventsByCategoryId(categoryId).isEmpty())

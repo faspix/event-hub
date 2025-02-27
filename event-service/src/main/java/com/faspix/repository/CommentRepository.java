@@ -12,4 +12,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE c.event.eventId = :eventId " +
             "ORDER BY c.creationDate")
     List<Comment> findCommentsByEventId(Long eventId);
+
+    @Query("SELECT COUNT(c) FROM Comment c " +
+            "WHERE c.event.eventId = :eventId " +
+            "AND c.authorId = :authorId ")
+    Integer countCommentsByEventIdAndAuthorId(Long eventId, String authorId);
 }
