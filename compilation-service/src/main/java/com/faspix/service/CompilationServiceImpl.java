@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCompilationDTO createCompilation(RequestCompilationDTO compilationDTO) {
 
         Compilation compilation;
@@ -75,6 +77,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCompilationDTO editCompilation(Long id, RequestCompilationDTO compilationDTO) {
         findCompilationById(id);
         Compilation updatedCompilation = compilationMapper.requestToCompilation(compilationDTO);
@@ -91,6 +94,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Boolean deleteCompilation(Long id) {
         findCompilationById(id);
         compilationRepository.deleteById(id);
