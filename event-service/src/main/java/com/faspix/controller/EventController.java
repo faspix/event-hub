@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,24 +26,22 @@ public class EventController {
 
     private final EventService eventService;
 
-    private final EventMapper eventMapper;
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEventDTO createEvent(
-            @RequestHeader(value = "X-User-Id") String creatorId,
+            @AuthenticationPrincipal Jwt jwt,
             @RequestBody @Valid RequestEventDTO eventDTO
     ) {
-        return eventService.createEvent(creatorId, eventDTO);
+        return eventService.createEvent(jwt.getSubject(), eventDTO);
     }
 
     @PatchMapping("{eventId}")
     public ResponseEventDTO editEvent(
-            @RequestHeader(value = "X-User-Id") String userId,
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable Long eventId,
             @RequestBody RequestEventDTO eventDTO
     ) {
-        return eventService.editEvent(userId, eventId, eventDTO);
+        return eventService.editEvent(jwt.getSubject(), eventId, eventDTO);
     }
 
     @GetMapping("/users/{userId}")

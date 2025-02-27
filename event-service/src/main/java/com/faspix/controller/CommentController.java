@@ -5,6 +5,8 @@ import com.faspix.dto.ResponseCommentDTO;
 import com.faspix.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,11 +19,11 @@ public class CommentController {
     @PostMapping("{eventId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseCommentDTO addComment(
-            @RequestHeader("X-User-Id") String userId,
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable Long eventId,
             @RequestBody RequestCommentDTO requestDTO
     ) {
-        return commentService.addComment(userId, eventId, requestDTO);
+        return commentService.addComment(jwt.getSubject(), eventId, requestDTO);
     }
 
 }

@@ -42,19 +42,6 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-
-//    @Bean
-//    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-//        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-//        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-//        grantedAuthoritiesConverter.setAuthoritiesClaimName("realm_access.roles");
-//
-//        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-//        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-//        return jwtAuthenticationConverter;
-//    }
-//
-
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
@@ -79,7 +66,6 @@ public class SecurityConfiguration {
                             .map(role -> ROLE_PREFIX + ((String) role).toUpperCase())
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toSet());
-                    System.out.println("--------> " + authorities);
                     return authorities;
                 }
             }

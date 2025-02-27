@@ -112,6 +112,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // TODO: role and batch update fix
+    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     @Override
     public List<ResponseUserShortDTO> findUserByIds(Set<String> userIds) {
         return userIds.stream()

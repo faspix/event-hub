@@ -62,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MICROSERVICE')")
     public List<ResponseCommentDTO> findCommentsByEventId(Long eventId) {
         List<Comment> comments = commentRepository.findCommentsByEventId(eventId);
         if (comments.isEmpty())

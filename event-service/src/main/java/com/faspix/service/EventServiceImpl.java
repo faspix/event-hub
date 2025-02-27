@@ -157,6 +157,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
         Event event = getEventById(requestsDTO.getEventId());
         event.setConfirmedRequests(event.getConfirmedRequests() + requestsDTO.getCount());
