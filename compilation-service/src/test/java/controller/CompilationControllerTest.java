@@ -11,13 +11,17 @@ import com.faspix.repository.CompilationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.discovery.converters.Auto;
+import confg.TestSecurityConfiguration;
 import org.hibernate.internal.build.AllowSysOut;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,6 +44,8 @@ import static ulitity.EventFactory.*;
 
 @SpringBootTest(classes = {CompilationApplication.class})
 @AutoConfigureMockMvc
+@Import(TestSecurityConfiguration.class)
+@WithMockUser(roles = {"USER", "ADMIN"})
 public class CompilationControllerTest {
 
     @Autowired
@@ -50,6 +56,9 @@ public class CompilationControllerTest {
 
     @MockitoBean
     private EventServiceClient eventServiceClient;
+
+    @MockitoBean
+    private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     @Autowired
     private CompilationRepository compilationRepository;

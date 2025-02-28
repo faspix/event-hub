@@ -7,12 +7,17 @@ import com.faspix.entity.EndpointStats;
 import com.faspix.repository.StatisticsRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -28,6 +33,8 @@ import static utility.StatisticsFactory.*;
 
 @SpringBootTest(classes = {StatisticsApplication.class})
 @AutoConfigureMockMvc
+@Import(TestSecurityConfiguration.class)
+@WithMockUser(roles = {"USER", "ADMIN"})
 public class StatisticsControllerTest {
 
     @Autowired
@@ -38,6 +45,9 @@ public class StatisticsControllerTest {
 
     @Autowired
     private StatisticsRepository statisticsRepository;
+
+    @MockitoBean
+    private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     @BeforeEach
     void init() {

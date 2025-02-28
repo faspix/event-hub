@@ -68,10 +68,12 @@ public class CommentServiceTest {
 
     @Test
     void addCommentTest_Success() {
+        Event event = makeEventTest();
+        event.setState(EventState.PUBLISHED);
         when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
         when(eventRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(makeEventTest()));
+                .thenReturn(Optional.ofNullable(event));
         when(commentRepository.save(any()))
                 .thenReturn(makeComment());
 
@@ -96,6 +98,22 @@ public class CommentServiceTest {
                 () -> commentService.addComment("1", 1L, requestDTO)
         );
         assertThat(exception.getMessage(), equalTo("Event with id 1 not found"));
+    }
+
+
+    @Test
+    void addCommentTest_EventNotPublished_Exception() {
+        when(userServiceClient.getUserById(any()))
+                .thenReturn(makeResponseUserTest());
+        when(eventRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(makeEventTest()));
+
+        RequestCommentDTO requestDTO = makeRequestComment();
+        EventNotFoundException exception = assertThrowsExactly(EventNotFoundException.class,
+                () -> commentService.addComment("1", 1L, requestDTO)
+        );
+        assertThat(exception.getMessage(), equalTo("Event with id 1 not published yet"));
+
     }
 
     @Test

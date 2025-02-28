@@ -75,7 +75,7 @@ public class CategoryServiceTest {
         List<ResponseCategoryDTO> result = categoryService.findCategories(0, 10);
 
         assertThat(result, hasSize(1));
-        assertThat(result.get(0).getName(), equalTo(categories.get(0).getName()));
+        assertThat(result.get(0).getName(), equalTo(categories.getFirst().getName()));
     }
 
     @Test

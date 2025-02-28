@@ -8,16 +8,22 @@ import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Category;
 import com.faspix.repository.CategoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +38,8 @@ import static utility.CategoryFactory.*;
 
 @SpringBootTest(classes = {CategoryApplication.class})
 @AutoConfigureMockMvc
+@Import(TestSecurityConfiguration.class)
+@WithMockUser(roles = {"USER", "ADMIN"})
 public class CategoryControllerTest {
 
     @Autowired
@@ -45,6 +53,9 @@ public class CategoryControllerTest {
 
     @MockitoBean
     private EventServiceClient eventServiceClient;
+
+    @MockitoBean
+    private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     @BeforeEach
     void init() {
@@ -80,6 +91,15 @@ public class CategoryControllerTest {
         mockMvc.perform(get("/categories/{categoryId}", categoryId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testSecurityContext() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication auth = context.getAuthentication();
+
+        System.out.println("Auth: " + auth);
+        System.out.println("Authorities: " + auth.getAuthorities());
     }
 
     @Test

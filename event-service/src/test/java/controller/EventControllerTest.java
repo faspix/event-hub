@@ -11,14 +11,18 @@ import com.faspix.enums.EventStateAction;
 import com.faspix.repository.EventRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -42,6 +46,8 @@ import static utility.UserFactory.*;
 @SpringBootTest(classes = {EventApplication.class})
 @AutoConfigureMockMvc
 @Transactional
+@Import(TestSecurityConfiguration.class)
+@WithMockUser(roles = {"USER", "ADMIN"})
 public class EventControllerTest {
 
     @Autowired
@@ -55,6 +61,9 @@ public class EventControllerTest {
 
     @MockitoBean
     private UserServiceClient userServiceClient;
+
+    @MockitoBean
+    private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     @MockitoBean
     private CategoryServiceClient categoryServiceClient;
@@ -75,7 +84,7 @@ public class EventControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(post("/events")
                         .content(objectMapper.writeValueAsString(requestEventDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isCreated())
@@ -114,7 +123,7 @@ public class EventControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(post("/events")
                         .content(objectMapper.writeValueAsString(requestEventDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isCreated())
@@ -149,7 +158,7 @@ public class EventControllerTest {
 
         mockMvc.perform(post("/events")
                         .content(objectMapper.writeValueAsString(requestEventDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isBadRequest());
@@ -164,7 +173,7 @@ public class EventControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(requestEventDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -202,7 +211,7 @@ public class EventControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(requestEventDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -240,7 +249,7 @@ public class EventControllerTest {
 
         mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                 .content(objectMapper.writeValueAsString(requestEventDTO))
-                .header("X-User-Id", 1)
+                .header("Authorization", "Bearer 123123")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -258,7 +267,7 @@ public class EventControllerTest {
 
         mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(requestEventDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isBadRequest());
@@ -275,7 +284,7 @@ public class EventControllerTest {
 
         mockMvc.perform(patch("/events/{eventId}", savedEvent.getEventId())
                 .content(objectMapper.writeValueAsString(requestEventDTO))
-                .header("X-User-Id", 1)
+                .header("Authorization", "Bearer 123123")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
@@ -290,7 +299,7 @@ public class EventControllerTest {
 
 
         MvcResult mvcResult = mockMvc.perform(get("/events/{eventId}", savedEvent.getEventId())
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -313,7 +322,7 @@ public class EventControllerTest {
     public void findEventByIdTest_EventNotFound_ThrowsException() throws Exception {
         Long eventId = 100L;
         mockMvc.perform(get("/events/{eventId}", eventId)
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isNotFound());
@@ -325,7 +334,7 @@ public class EventControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(get("/events/categories/{categoryId}",
                                                                         savedEvent.getCategoryId())
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -356,7 +365,7 @@ public class EventControllerTest {
         eventRepository.save(event2);
 
         MvcResult mvcResult = mockMvc.perform(get("/events/users/{eventId}", eventId)
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -373,7 +382,7 @@ public class EventControllerTest {
     public void findAllUserEventsTest_UserHasNoEvents_ReturnsEmptyList() throws Exception {
         Long eventId = 100L;
         MvcResult mvcResult = mockMvc.perform(get("/events/users/{eventId}", eventId)
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -392,7 +401,7 @@ public class EventControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(adminDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -426,7 +435,7 @@ public class EventControllerTest {
 
        mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(adminRequest))
-                        .header("X-User-Id", 1)
+                       .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isBadRequest());
@@ -442,7 +451,7 @@ public class EventControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                         .content(objectMapper.writeValueAsString(adminDTO))
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -479,7 +488,7 @@ public class EventControllerTest {
 
         mockMvc.perform(patch("/events/admin/{eventId}", savedEvent.getEventId())
                 .content(objectMapper.writeValueAsString(adminRequest))
-                .header("X-User-Id", 1)
+                .header("Authorization", "Bearer 123123")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());

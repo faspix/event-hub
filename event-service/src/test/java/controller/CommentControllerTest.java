@@ -14,14 +14,18 @@ import com.faspix.repository.EventRepository;
 import com.faspix.service.EventService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -46,6 +50,8 @@ import static utility.UserFactory.*;
 @SpringBootTest(classes = {EventApplication.class})
 @AutoConfigureMockMvc
 @Transactional
+@Import(TestSecurityConfiguration.class)
+@WithMockUser(roles = {"USER", "ADMIN"})
 public class CommentControllerTest {
 
     @Autowired
@@ -56,6 +62,9 @@ public class CommentControllerTest {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @MockitoBean
+    private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     @MockitoBean
     private UserServiceClient userServiceClient;
@@ -85,7 +94,7 @@ public class CommentControllerTest {
 
         MvcResult mvcResult = mockMvc.perform(post("/events/{eventId}/comment", event.getEventId())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-User-Id", userId)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isCreated())
@@ -109,13 +118,28 @@ public class CommentControllerTest {
 
         mockMvc.perform(post("/events/{eventId}/comment", 1L)
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-User-Id", userId)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isNotFound());
     }
 
 
+    @Test
+    void addCommentTest_EventNotPublished_Exception() throws Exception {
+        Long userId = 1L;
+        Event event = eventRepository.save(makeEventTest());
+        RequestCommentDTO request = makeRequestComment();
+        when(userServiceClient.getUserById(any()))
+                .thenReturn(makeResponseUserTest());
+
+        mockMvc.perform(post("/events/{eventId}/comment", event.getEventId())
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isNotFound());
+    }
 
 }
 

@@ -6,19 +6,26 @@ import com.faspix.controller.RequestController;
 import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseParticipationRequestDTO;
+import com.faspix.dto.ResponseUserShortDTO;
 import com.faspix.entity.Request;
 import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
 import com.faspix.repository.RequestRepository;
+import com.faspix.service.ConfirmedRequestService;
 import com.faspix.service.RequestService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,6 +47,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(classes = {RequestApplication.class})
 @AutoConfigureMockMvc
+@Import(TestSecurityConfiguration.class)
+@WithMockUser(roles = {"USER", "ADMIN"})
 public class RequestControllerTest {
 
     @Autowired
@@ -55,10 +64,22 @@ public class RequestControllerTest {
     private RequestController requestController;
 
     @MockitoBean
+    private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
+
+    @MockitoBean
+    private ConfirmedRequestService confirmedRequestService;
+
+    @MockitoBean
     private EventServiceClient eventServiceClient;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private final Jwt jwtTest = Jwt.withTokenValue("000")
+            .header("1", 1)
+            .claim("1", 1)
+            .subject("1")
+            .build();
 
     @BeforeEach
     void init() {
@@ -69,15 +90,17 @@ public class RequestControllerTest {
     public void createRequestTest_Success() throws Exception {
         Long eventId = 1L;
         Request request = makeRequest();
+        request.setRequesterId("2");
         ResponseEventDTO eventDTO = makeResponseEventTest();
         eventDTO.setParticipantLimit(20);
         eventDTO.setState(EventState.PUBLISHED);
+        eventDTO.setInitiator(ResponseUserShortDTO.builder().userId("2").username("11").build());
         when(eventServiceClient.findEventById(anyLong()))
                 .thenReturn(eventDTO);
         requestRepository.save(request);
 
         MvcResult mvcResult = mockMvc.perform(post("/requests/events/{eventId}", eventId)
-                        .header("X-User-Id", 2)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isCreated())
@@ -85,7 +108,7 @@ public class RequestControllerTest {
         String body = mvcResult.getResponse().getContentAsString();
         ResponseParticipationRequestDTO response = objectMapper.readValue(body, ResponseParticipationRequestDTO.class);
 
-        Request savedRequest = requestRepository.findRequestByRequesterIdAndEventId("2", 1L);
+        Request savedRequest = requestRepository.findRequestByRequesterIdAndEventId("1", 1L);
         assertThat(savedRequest.getState(), equalTo(response.getState()));
         assertThat(savedRequest.getRequesterId(), equalTo(response.getRequesterId()));
         assertThat(savedRequest.getState(), equalTo(response.getState()));
@@ -98,12 +121,13 @@ public class RequestControllerTest {
         ResponseEventDTO eventDTO = makeResponseEventTest();
         eventDTO.setState(EventState.PUBLISHED);
         eventDTO.setParticipantLimit(20);
+        eventDTO.setInitiator(ResponseUserShortDTO.builder().userId("2").username("11").build());
         when(eventServiceClient.findEventById(anyLong()))
                 .thenReturn(eventDTO);
-        requestController.createRequest("2", 1L);
+        requestController.createRequest(jwtTest, 1L);
 
         mockMvc.perform(post("/requests/events/{eventId}", eventId)
-                        .header("X-User-Id", 2)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isBadRequest());
@@ -116,7 +140,7 @@ public class RequestControllerTest {
         requestRepository.save(request);
 
         MvcResult mvcResult = mockMvc.perform(patch("/requests/events/{eventId}/cancel", eventId)
-                                .header("X-User-Id", request.getRequesterId())
+                                .header("Authorization", "Bearer 123123")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -131,7 +155,7 @@ public class RequestControllerTest {
     public void cancelRequestTest_RequestNotFound_Exception() throws Exception {
         Long eventId = 1L;
         mockMvc.perform(patch("/requests/events/{eventId}/cancel", eventId)
-                        .header("X-User-Id", 1)
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isNotFound());
@@ -148,7 +172,7 @@ public class RequestControllerTest {
         requestRepository.saveAll(requests);
 
         MvcResult mvcResult = mockMvc.perform(get("/requests/events/{eventId}", eventId)
-                        .header("X-User-Id", request.getRequesterId())
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
@@ -171,7 +195,7 @@ public class RequestControllerTest {
         requestDTO.setRequestIds(List.of(save.getId()));
 
         MvcResult mvcResult = mockMvc.perform(patch("/requests/events/{eventId}", eventId)
-                        .header("X-User-Id", request.getRequesterId())
+                        .header("Authorization", "Bearer 123123")
                         .content(objectMapper.writeValueAsString(requestDTO))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -189,7 +213,7 @@ public class RequestControllerTest {
         requestRepository.save(request);
 
         MvcResult mvcResult = mockMvc.perform(get("/requests/users")
-                        .header("X-User-Id", request.getRequesterId())
+                        .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
