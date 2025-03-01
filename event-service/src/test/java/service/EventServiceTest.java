@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,10 +49,10 @@ public class EventServiceTest {
     private EventServiceImpl eventService;
 
     @Mock
-    private CategoryServiceClient categoryServiceClient;
+    private EndpointStatisticsService endpointStatisticsService;
 
     @Mock
-    private EndpointStatisticsService endpointStatisticsService;
+    private CategoryServiceClient categoryServiceClient;
 
     @Mock
     private CommentService commentService;
@@ -215,7 +216,7 @@ public class EventServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        ResponseEventDTO result = eventService.findEventById(1L, null);
+        ResponseEventDTO result = eventService.findEventById(1L, new MockHttpServletRequest());
 
         assertThat(result.getEventId(), equalTo(event.getEventId()));
         assertThat(result.getEventDate(), equalTo(event.getEventDate()));
@@ -238,7 +239,7 @@ public class EventServiceTest {
                 .thenReturn(Optional.ofNullable(event));
 
         EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
-                eventService.findEventById(1L, null)
+                eventService.findEventById(1L, new MockHttpServletRequest())
         );
 
         assertEquals("Event with id 1 not published yet", exception.getMessage());
@@ -251,7 +252,7 @@ public class EventServiceTest {
                 .thenReturn(Optional.empty());
 
         EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
-                eventService.findEventById(1L, null)
+                eventService.findEventById(1L, new MockHttpServletRequest())
         );
 
         assertEquals("Event with id 1 not found", exception.getMessage());

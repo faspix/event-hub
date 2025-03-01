@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -78,7 +79,6 @@ public class CommentControllerTest {
 
     @Test
     void addCommentTest_Success() throws Exception {
-        Long userId = 1L;
         Event event = eventRepository.save(makeEventTest());
         event.setState(EventState.PUBLISHED);
         RequestCommentDTO request = makeRequestComment();
@@ -96,7 +96,9 @@ public class CommentControllerTest {
         String body = mvcResult.getResponse().getContentAsString();
         ResponseCommentDTO comment = objectMapper.readValue(body, ResponseCommentDTO.class);
 
-        ResponseCommentDTO commentFromRepo = eventController.findEventById(event.getEventId(), null).getComments().getFirst();
+        ResponseCommentDTO commentFromRepo = eventController.findEventById(event.getEventId(),
+                        new MockHttpServletRequest())
+                .getComments().getFirst();
         assertThat(comment.getId(), equalTo(commentFromRepo.getId()));
         assertThat(comment.getText(), equalTo(commentFromRepo.getText()));
     }
@@ -104,7 +106,6 @@ public class CommentControllerTest {
 
     @Test
     void addCommentTest_EventNotFound_Exception() throws Exception {
-        Long userId = 1L;
         RequestCommentDTO request = makeRequestComment();
         when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
@@ -120,7 +121,6 @@ public class CommentControllerTest {
 
     @Test
     void addCommentTest_EventNotPublished_Exception() throws Exception {
-        Long userId = 1L;
         Event event = eventRepository.save(makeEventTest());
         RequestCommentDTO request = makeRequestComment();
         when(userServiceClient.getUserById(any()))
