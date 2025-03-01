@@ -23,8 +23,16 @@ spring:
         newConfirmedRequestConsume-in-0:
           destination: confirmed-request-dest
           group: confirmed-request-group
+          consumer:
+            max-attempts: 3
         endpointStatisticsProduce-out-0:
           destination: endpoint-stats-dest
+      rabbit:
+        bindings:
+          newConfirmedRequestConsume-in-0:
+            consumer:
+              deadLetterQueueName: confirmed-request.dlq
+              republishToDlq: true
 
 server:
   port: 9091

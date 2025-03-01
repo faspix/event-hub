@@ -23,6 +23,14 @@ spring:
         endpointStatisticsConsume-in-0:
           destination: endpoint-stats-dest
           group: endpoint-stats-group
+          consumer:
+            max-attempts: 3
+      rabbit:
+        bindings:
+          endpointStatisticsConsume-in-0:
+            consumer:
+              deadLetterQueueName: endpoint-stats.dlq
+              republishToDlq: true
 
 server:
   port: 9095
