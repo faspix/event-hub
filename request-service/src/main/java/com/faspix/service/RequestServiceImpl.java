@@ -5,7 +5,7 @@ import com.faspix.dto.*;
 import com.faspix.entity.Request;
 import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
-import com.faspix.exception.RequestNotFountException;
+import com.faspix.exception.RequestNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
@@ -68,7 +68,7 @@ public class RequestServiceImpl implements RequestService {
     public ResponseParticipationRequestDTO cancelRequest(String requesterId, Long eventId) {
         Request request = requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId);
         if (request == null) {
-            throw new RequestNotFountException("User with id " + requesterId +
+            throw new RequestNotFoundException("User with id " + requesterId +
                     " didn't leave a request to participate in event with id " + eventId);
         }
         requestRepository.delete(request);

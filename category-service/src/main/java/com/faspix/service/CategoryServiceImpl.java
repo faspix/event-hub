@@ -84,11 +84,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Boolean deleteCategory(Long categoryId) {
-        findCategoryById(categoryId);
+    public void deleteCategory(Long categoryId) {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException("Category with id " + categoryId + " not found");
+        }
         if (! eventServiceClient.findEventsByCategoryId(categoryId).isEmpty())
             throw new CategoryNotEmptyException("Category with id " + categoryId + " is not empty");
+
         categoryRepository.deleteById(categoryId);
-        return true;
     }
 }

@@ -45,20 +45,23 @@ public class UserServiceImpl implements UserService {
 
         String userId = CreatedResponseUtil.getCreatedId(response);
 
-        CredentialRepresentation credential = new CredentialRepresentation();
-        credential.setType(CredentialRepresentation.PASSWORD);
-        credential.setValue(userDTO.getPassword());
-        credential.setTemporary(false);
-        usersResource.get(userId).resetPassword(credential);
+        setUserPassword(usersResource, userId, userDTO.getPassword());
 
         RoleRepresentation roleRepresentation = realmResource.roles().get("USER").toRepresentation();
         usersResource.get(userId).roles().realmLevel().add(Collections.singletonList(roleRepresentation));
-
         return ResponseUserDTO.builder()
                 .userId(userId)
                 .username(userDTO.getUsername())
                 .email(userDTO.getEmail())
                 .build();
+    }
+
+    private static void setUserPassword(UsersResource usersResource, String userId, String password) {
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(password);
+        credential.setTemporary(false);
+        usersResource.get(userId).resetPassword(credential);
     }
 
     @Override

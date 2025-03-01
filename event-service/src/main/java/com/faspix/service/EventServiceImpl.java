@@ -89,6 +89,7 @@ public class EventServiceImpl implements EventService {
         return getResponseDTO(updatedEvent);
     }
 
+    // TODO: fix
     @Override
     public List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid,
                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
@@ -156,7 +157,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
         Event event = getEventById(requestsDTO.getEventId());
         event.setConfirmedRequests(event.getConfirmedRequests() + requestsDTO.getCount());

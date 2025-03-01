@@ -7,7 +7,7 @@ import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.entity.Request;
 import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
-import com.faspix.exception.RequestNotFountException;
+import com.faspix.exception.RequestNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
@@ -22,7 +22,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -171,7 +170,7 @@ public class RequestServiceTest {
         when(requestRepository.findRequestByRequesterIdAndEventId(any(), anyLong()))
                 .thenReturn(null);
 
-        RequestNotFountException exception = assertThrowsExactly(RequestNotFountException.class,
+        RequestNotFoundException exception = assertThrowsExactly(RequestNotFoundException.class,
                 () -> requestService.cancelRequest("1", 1L)
         );
 

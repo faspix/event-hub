@@ -4,7 +4,7 @@ import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
 import com.faspix.entity.Compilation;
-import com.faspix.exception.CompilationNotFountException;
+import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
 import com.faspix.mapper.EventMapper;
 import com.faspix.repository.CompilationRepository;
@@ -132,7 +132,7 @@ public class CompilationServiceTest {
         when(compilationRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        CompilationNotFountException exception = assertThrows(CompilationNotFountException.class,
+        CompilationNotFoundException exception = assertThrows(CompilationNotFoundException.class,
                 () -> compilationService.deleteCompilation(1L)
         );
         assertEquals("Compilation with id 1 not found", exception.getMessage());

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,14 +48,12 @@ public class CommentServiceImpl implements CommentService {
         if (commentRepository.countCommentsByEventIdAndAuthorId(eventId, userId) > 0)
             throw new UserAlreadyCommentThisEventException("User with id " + userId +
                     " already comment event with id " + eventId);
-
         ResponseUserShortDTO author = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(userId)
         );
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
-
         if (event.getState() != EventState.PUBLISHED)
             throw new EventNotFoundException("Event with id " + eventId + " not published yet");
 
@@ -74,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
     public List<ResponseCommentDTO> findCommentsByEventId(Long eventId) {
         List<Comment> comments = commentRepository.findCommentsByEventId(eventId);
         if (comments.isEmpty())
-            return null;
+            return Collections.emptyList();
 
         Set<String> authorIds = comments.stream()
                 .map(Comment::getAuthorId)

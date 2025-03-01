@@ -141,8 +141,7 @@ public class CategoryServiceTest {
         when(eventServiceClient.findEventsByCategoryId(anyLong()))
                 .thenReturn(Collections.emptyList());
 
-        Boolean result = categoryService.deleteCategory(1L);
-        assertThat(result, is(true));
+        categoryService.deleteCategory(1L);
         verify(categoryRepository, times(1)).deleteById(anyLong());
     }
 

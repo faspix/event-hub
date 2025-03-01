@@ -3,11 +3,10 @@ package com.faspix.service;
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
-import com.faspix.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationAlreadyExistException;
-import com.faspix.exception.CompilationNotFountException;
+import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
 import com.faspix.mapper.EventMapper;
 import com.faspix.repository.CompilationRepository;
@@ -19,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.faspix.utility.PageRequestMaker.makePageRequest;
@@ -57,7 +55,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public ResponseCompilationDTO findCompilationById(Long id) {
         Compilation compilation = compilationRepository.findById(id).orElseThrow(
-                () -> new CompilationNotFountException("Compilation with id " + id + " not found")
+                () -> new CompilationNotFoundException("Compilation with id " + id + " not found")
         );
         return getResponseDTO(compilation);
     }
@@ -76,10 +74,16 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    public void checkCompilationExistence(Long id) {
+        if (!compilationRepository.existsById(id))
+            throw new CompilationNotFoundException("Compilation with id " + id + " not found");
+    }
+
+    @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCompilationDTO editCompilation(Long id, RequestCompilationDTO compilationDTO) {
-        findCompilationById(id);
+        checkCompilationExistence(id);
         Compilation updatedCompilation = compilationMapper.requestToCompilation(compilationDTO);
         updatedCompilation.setId(id);
         Compilation compilation;
@@ -95,10 +99,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public Boolean deleteCompilation(Long id) {
-        findCompilationById(id);
+    public void deleteCompilation(Long id) {
+        checkCompilationExistence(id);
         compilationRepository.deleteById(id);
-        return true;
     }
 
     private ResponseCompilationDTO getResponseDTO(Compilation compilation) {
@@ -108,6 +111,7 @@ public class CompilationServiceImpl implements CompilationService {
         return dto;
     }
 
+    // TODO: batch
     private List<ResponseEventShortDTO> getEventsFromEventIds(List<Long> eventIds) {
         return eventIds.stream()
                 .map(eventServiceClient::getEventById)

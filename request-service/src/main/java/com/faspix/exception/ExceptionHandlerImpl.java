@@ -10,7 +10,7 @@ public class ExceptionHandlerImpl {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ExceptionResponse handleUserNotFoundException(final RequestNotFountException e) {
+    private ExceptionResponse handleUserNotFoundException(final RequestNotFoundException e) {
         return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
     }
 

@@ -16,6 +16,8 @@ public interface CompilationService {
 
     ResponseCompilationDTO editCompilation(Long id, RequestCompilationDTO compilationDTO);
 
-    Boolean deleteCompilation(Long id);
+    void checkCompilationExistence(Long id);
+
+    void deleteCompilation(Long id);
 
 }
