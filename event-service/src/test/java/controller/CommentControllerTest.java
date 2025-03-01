@@ -5,14 +5,11 @@ import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.controller.EventController;
 import com.faspix.dto.*;
-import com.faspix.entity.Comment;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
-import com.faspix.enums.EventStateAction;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
-import com.faspix.service.EventService;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.faspix.service.EndpointStatisticsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,14 +26,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,6 +58,9 @@ public class CommentControllerTest {
 
     @MockitoBean
     private UserServiceClient userServiceClient;
+
+    @MockitoBean
+    private EndpointStatisticsService endpointStatisticsService;
 
     @MockitoBean
     private CategoryServiceClient categoryServiceClient;
@@ -103,7 +96,7 @@ public class CommentControllerTest {
         String body = mvcResult.getResponse().getContentAsString();
         ResponseCommentDTO comment = objectMapper.readValue(body, ResponseCommentDTO.class);
 
-        ResponseCommentDTO commentFromRepo = eventController.findEventById(event.getEventId()).getComments().getFirst();
+        ResponseCommentDTO commentFromRepo = eventController.findEventById(event.getEventId(), null).getComments().getFirst();
         assertThat(comment.getId(), equalTo(commentFromRepo.getId()));
         assertThat(comment.getText(), equalTo(commentFromRepo.getText()));
     }

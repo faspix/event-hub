@@ -17,12 +17,14 @@ spring:
         format_sql: true
   cloud:
     function:
-      definition: newConfirmedRequestConsume
+      definition: newConfirmedRequestConsume; endpointStatisticsProduce
     stream:
       bindings:
         newConfirmedRequestConsume-in-0:
           destination: confirmed-request-dest
           group: confirmed-request-group
+        endpointStatisticsProduce-out-0:
+          destination: endpoint-stats-dest
 
 server:
   port: 9091

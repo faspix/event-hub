@@ -12,16 +12,16 @@ import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.utility.EventSortType;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -40,6 +40,8 @@ public class EventServiceImpl implements EventService {
     private final CategoryServiceClient categoryServiceClient;
 
     private final EventRepository eventRepository;
+
+    private final EndpointStatisticsService endpointStatisticsService;
 
     private final UserMapper userMapper;
 
@@ -113,12 +115,20 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public ResponseEventDTO findEventById(Long eventId) {
+    public ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
         if (event.getState() != EventState.PUBLISHED)
             throw new EventNotFoundException("Event with id " + eventId + " not published yet");
+        endpointStatisticsService.sendEndpointStatistics(
+                RequestEndpointStatsDTO.builder()
+                        .app("event-service")
+                        .ip(httpServletRequest.getRemoteAddr())
+                        .uri(httpServletRequest.getRequestURI())
+                        .timestamp(Instant.now())
+                        .build()
+        );
         return getResponseDTO(event);
     }
 

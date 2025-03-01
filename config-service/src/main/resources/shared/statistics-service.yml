@@ -15,6 +15,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cloud:
+    function:
+      definition: endpointStatisticsConsume
+    stream:
+      bindings:
+        endpointStatisticsConsume-in-0:
+          destination: endpoint-stats-dest
+          group: endpoint-stats-group
 
 server:
   port: 9095

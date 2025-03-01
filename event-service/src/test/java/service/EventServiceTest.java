@@ -11,7 +11,7 @@ import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.service.CommentService;
-import com.faspix.service.CommentServiceImpl;
+import com.faspix.service.EndpointStatisticsService;
 import com.faspix.service.EventServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,8 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,6 +49,9 @@ public class EventServiceTest {
 
     @Mock
     private CategoryServiceClient categoryServiceClient;
+
+    @Mock
+    private EndpointStatisticsService endpointStatisticsService;
 
     @Mock
     private CommentService commentService;
@@ -214,7 +215,7 @@ public class EventServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        ResponseEventDTO result = eventService.findEventById(1L);
+        ResponseEventDTO result = eventService.findEventById(1L, null);
 
         assertThat(result.getEventId(), equalTo(event.getEventId()));
         assertThat(result.getEventDate(), equalTo(event.getEventDate()));
@@ -237,7 +238,7 @@ public class EventServiceTest {
                 .thenReturn(Optional.ofNullable(event));
 
         EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
-                eventService.findEventById(1L)
+                eventService.findEventById(1L, null)
         );
 
         assertEquals("Event with id 1 not published yet", exception.getMessage());
@@ -250,7 +251,7 @@ public class EventServiceTest {
                 .thenReturn(Optional.empty());
 
         EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
-                eventService.findEventById(1L)
+                eventService.findEventById(1L, null)
         );
 
         assertEquals("Event with id 1 not found", exception.getMessage());

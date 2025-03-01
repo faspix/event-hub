@@ -5,6 +5,7 @@ import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.utility.EventSortType;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,7 +24,7 @@ public interface EventService {
                            LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
                            Integer page, Integer size);
 
-    ResponseEventDTO findEventById(Long eventId);
+    ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest);
 
     Event getEventById(Long eventId);
 

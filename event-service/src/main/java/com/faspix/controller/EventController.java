@@ -6,6 +6,7 @@ import com.faspix.mapper.EventMapper;
 import com.faspix.service.EventService;
 import com.faspix.utility.EventSortType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -83,9 +84,10 @@ public class EventController {
 
     @GetMapping("{eventId}")
     public ResponseEventDTO findEventById(
-            @PathVariable Long eventId
+            @PathVariable Long eventId,
+            HttpServletRequest httpServletRequest
     ) {
-        return eventService.findEventById(eventId);
+        return eventService.findEventById(eventId, httpServletRequest);
     }
 
     @GetMapping("/categories/{catId}")
