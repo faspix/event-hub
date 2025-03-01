@@ -80,8 +80,8 @@ public class CompilationServiceTest {
         RequestCompilationDTO updateDTO = makeRequestCompilation();
         updateDTO.setTitle("Updated title");
 
-        when(compilationRepository.findById(anyLong()))
-                .thenReturn(Optional.of(compilation));
+        when(compilationRepository.existsById(anyLong()))
+                .thenReturn(true);
         when(compilationRepository.saveAndFlush(any()))
                 .thenReturn(compilation);
 
@@ -118,8 +118,8 @@ public class CompilationServiceTest {
 
     @Test
     public void deleteCompilationTest_Success() {
-        when(compilationRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(makeCompilation()));
+        when(compilationRepository.existsById(anyLong()))
+                .thenReturn(true);
 
         assertDoesNotThrow(
                 () -> compilationService.deleteCompilation(1L)
@@ -129,8 +129,8 @@ public class CompilationServiceTest {
 
     @Test
     public void deleteCompilationTest_NotFound() {
-        when(compilationRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
+        when(compilationRepository.existsById(anyLong()))
+                .thenReturn(false);
 
         CompilationNotFoundException exception = assertThrows(CompilationNotFoundException.class,
                 () -> compilationService.deleteCompilation(1L)

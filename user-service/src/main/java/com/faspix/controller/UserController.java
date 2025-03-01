@@ -39,7 +39,6 @@ public class UserController {
 
     }
 
-    // TODO: return value
     @PatchMapping("/password")
     public void updateUserPassword(
             @AuthenticationPrincipal Jwt jwt,
@@ -48,7 +47,6 @@ public class UserController {
         userService.updateUserPassword(jwt.getSubject(), passwordDTO);
     }
 
-    // TODO: return value
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(

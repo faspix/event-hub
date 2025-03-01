@@ -29,6 +29,6 @@ public class ResponseEventShortDTO {
 
     private Boolean paid;
 
-    private Integer views;
+    private Long views;
 
 }

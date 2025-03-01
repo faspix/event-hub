@@ -58,7 +58,7 @@ public class EventServiceImpl implements EventService {
         event.setCreationDate(OffsetDateTime.now());
         event.setInitiatorId(creatorId);
         event.setState(EventState.PENDING);
-        event.setViews(0);
+        event.setViews(0L);
 
         eventRepository.save(event);
         return getResponseDTO(event);
@@ -89,19 +89,23 @@ public class EventServiceImpl implements EventService {
         return getResponseDTO(updatedEvent);
     }
 
-    // TODO: fix
     @Override
     public List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid,
                                   LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                   Boolean onlyAvailable, EventSortType sort, Integer page, Integer size) {
-//        Sort sortType = Sort
-        Pageable pageRequest = makePageRequest(page, size,
-                Sort.by(sort.equals(EventSortType.EVENT_DATE) ? "eventDate" : "views"));
-//        sort.equals(EventSortType.EVENT_DATE) ? "eventDate" : "views"
+        Pageable pageRequest;
+        if (sort.equals(EventSortType.EVENT_DATE))
+            pageRequest = makePageRequest(page, size, Sort.by("eventDate"));
+        else
+            pageRequest = makePageRequest(page, size, Sort.by("views").descending());
 
-        System.out.println("->>>>>>>>> " + rangeEnd);
-        Page<Event> events = eventRepository.searchEvent(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, pageRequest);
+        if (rangeStart == null)
+            rangeStart = LocalDateTime.now();
+        if (rangeEnd == null)
+            rangeEnd = LocalDateTime.now().plusYears(1000);
 
+        Page<Event> events = eventRepository.searchEvent(text, categories, paid, rangeStart, rangeEnd,
+                onlyAvailable, pageRequest);
         return events
                 .stream()
                 .map(this::getResponseShortDTO)
@@ -149,6 +153,12 @@ public class EventServiceImpl implements EventService {
                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page,
                                        Integer size) {
         Pageable pageRequest = makePageRequest(page, size);
+
+        if (rangeStart == null)
+            rangeStart = LocalDateTime.now();
+        if (rangeEnd == null)
+            rangeEnd = LocalDateTime.now().plusYears(1000);
+
         return eventRepository.searchEventAdmin(users, states, categories, rangeStart, rangeEnd, pageRequest)
                 .stream()
                 .map(this::getResponseDTO)
@@ -160,6 +170,14 @@ public class EventServiceImpl implements EventService {
     public void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
         Event event = getEventById(requestsDTO.getEventId());
         event.setConfirmedRequests(event.getConfirmedRequests() + requestsDTO.getCount());
+        eventRepository.save(event);
+    }
+
+    @Override
+    @Transactional
+    public void setViews(SetViewsDTO viewsDTO) {
+        Event event = getEventById(viewsDTO.getEventId());
+        event.setViews(event.getViews() + viewsDTO.getCount());
         eventRepository.save(event);
     }
 

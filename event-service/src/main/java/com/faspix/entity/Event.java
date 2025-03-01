@@ -69,6 +69,6 @@ public class Event {
     private EventState state;
 
     @Column(nullable = false)
-    private Integer views;
+    private Long views;
 
 }

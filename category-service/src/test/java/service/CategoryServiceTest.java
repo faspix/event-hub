@@ -135,9 +135,8 @@ public class CategoryServiceTest {
 
     @Test
     public void deleteCategoryTest_Success() {
-        Category category = makeCategory();
-        when(categoryRepository.findById(anyLong()))
-                .thenReturn(Optional.of(category));
+        when(categoryRepository.existsById(anyLong()))
+                .thenReturn(true);
         when(eventServiceClient.findEventsByCategoryId(anyLong()))
                 .thenReturn(Collections.emptyList());
 
@@ -147,8 +146,8 @@ public class CategoryServiceTest {
 
     @Test
     public void deleteCategoryTest_NotFound() {
-        when(categoryRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
+        when(categoryRepository.existsById(anyLong()))
+                .thenReturn(false);
 
         CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class,
                 () -> categoryService.deleteCategory(1L)
@@ -158,9 +157,8 @@ public class CategoryServiceTest {
 
     @Test
     public void deleteCategoryTest_NotEmpty() {
-        Category category = makeCategory();
-        when(categoryRepository.findById(anyLong()))
-                .thenReturn(Optional.of(category));
+        when(categoryRepository.existsById(anyLong()))
+                .thenReturn(true);
         when(eventServiceClient.findEventsByCategoryId(anyLong()))
                 .thenReturn(List.of(ResponseEventShortDTO.builder().build()));
 

@@ -37,7 +37,7 @@ public class EventFactory {
                 .publishedOn(OffsetDateTime.now())
                 .requestModeration(false)
                 .state(EventState.PENDING)
-                .views(0)
+                .views(0L)
                 .build();
     }
 
@@ -54,7 +54,7 @@ public class EventFactory {
                 .eventDate(LocalDateTime.MAX)
                 .initiator(makeResponseShortUser())
                 .paid(false)
-                .views(0)
+                .views(0L)
                 .build();
     }
 

@@ -18,7 +18,7 @@ CREATE TABLE events (
     published_on TIMESTAMP WITH TIME ZONE,
     request_moderation BOOLEAN NOT NULL,
     state VARCHAR(255) NOT NULL,
-    views INTEGER NOT NULL,
+    views BIGINT NOT NULL,
     CONSTRAINT events_state_check
         CHECK ((state)::TEXT = ANY
                ((ARRAY ['PENDING'::CHARACTER VARYING,

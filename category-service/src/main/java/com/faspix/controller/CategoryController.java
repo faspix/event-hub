@@ -48,7 +48,6 @@ public class CategoryController {
         return categoryService.editCategory(categoryId, categoryDTO);
     }
 
-    // TODO: return value
     @DeleteMapping("{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(

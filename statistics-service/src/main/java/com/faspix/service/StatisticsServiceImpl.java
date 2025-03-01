@@ -26,6 +26,11 @@ public class StatisticsServiceImpl implements StatisticsService {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ResponseEndpointStatsDTO> getEndpointStats(LocalDateTime start, LocalDateTime end,
                                                         List<String> uris, Boolean unique) {
+        if (start == null)
+            start = LocalDateTime.now();
+        if (end == null)
+            end = LocalDateTime.now().plusYears(1000);
+
         Instant startInstant = start.toInstant(ZoneOffset.UTC);
         Instant endInstant = end.toInstant(ZoneOffset.UTC);
 
@@ -35,7 +40,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     // TODO: role
-    @Override // TODO: return value
+    @Override
     public void hitEndpoint(RequestEndpointStatsDTO requestDTO) {
         EndpointStats endpointStats = statisticsMapper.RequestToEndpoint(requestDTO);
         statisticsRepository.save(endpointStats);

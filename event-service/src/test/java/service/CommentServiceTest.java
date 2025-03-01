@@ -29,10 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -136,7 +133,7 @@ public class CommentServiceTest {
                 .thenReturn(List.of());
 
         List<ResponseCommentDTO> responseDTO = commentService.findCommentsByEventId(1L);
-        assertThat(responseDTO, nullValue());
+        assertThat(responseDTO, is(Collections.emptyList()));
     }
 
 

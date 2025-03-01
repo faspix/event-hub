@@ -46,7 +46,7 @@ public class ResponseEventDTO {
 
     private EventState state;
 
-    private Integer views;
+    private Long views;
 
     private List<ResponseCommentDTO> comments;
 

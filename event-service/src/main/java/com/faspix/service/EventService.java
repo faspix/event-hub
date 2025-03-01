@@ -37,4 +37,6 @@ public interface EventService {
     void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 
     ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
+
+    void setViews(SetViewsDTO viewsDTO);
 }
