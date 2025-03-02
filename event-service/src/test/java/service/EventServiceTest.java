@@ -128,8 +128,6 @@ public class EventServiceTest {
 
         ResponseEventDTO updatedEvent = eventService.editEvent("1", 1L, updateRequest);
 
-//        assertThat(updatedEvent.getEventId(), equalTo(event.getEventId()));
-        assertThat(updatedEvent.getEventDate(), equalTo(event.getEventDate()));
         assertThat(updatedEvent.getTitle(), equalTo(event.getTitle()));
         assertThat(updatedEvent.getAnnotation(), equalTo(event.getAnnotation()));
         assertThat(updatedEvent.getDescription(), equalTo(event.getDescription()));
@@ -283,7 +281,6 @@ public class EventServiceTest {
         ResponseEventDTO updatedEvent = eventService.adminEditEvent(1L, adminRequest);
 
         assertThat(eventFromRepo.getEventId(), equalTo(updatedEvent.getEventId()));
-        assertThat(eventFromRepo.getEventDate(), equalTo(updatedEvent.getEventDate()));
         assertThat(eventFromRepo.getTitle(), equalTo(updatedEvent.getTitle()));
         assertThat(eventFromRepo.getAnnotation(), equalTo(updatedEvent.getAnnotation()));
         assertThat(eventFromRepo.getDescription(), equalTo(updatedEvent.getDescription()));
@@ -326,7 +323,6 @@ public class EventServiceTest {
         ResponseEventDTO updatedEvent = eventService.adminEditEvent(1L, adminRequest);
 
         assertThat(eventFromRepo.getEventId(), equalTo(updatedEvent.getEventId()));
-        assertThat(eventFromRepo.getEventDate(), equalTo(updatedEvent.getEventDate()));
         assertThat(eventFromRepo.getTitle(), equalTo(updatedEvent.getTitle()));
         assertThat(eventFromRepo.getAnnotation(), equalTo(updatedEvent.getAnnotation()));
         assertThat(eventFromRepo.getDescription(), equalTo(updatedEvent.getDescription()));

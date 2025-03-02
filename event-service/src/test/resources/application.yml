@@ -3,14 +3,9 @@ spring:
     enabled: false
   config:
     import: optional:configserver:http::/localhost:8001
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
 
 
 
