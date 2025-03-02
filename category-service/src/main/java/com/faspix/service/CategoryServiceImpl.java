@@ -11,6 +11,13 @@ import com.faspix.mapper.CategoryMapper;
 import com.faspix.repository.CategoryRepository;
 import com.faspix.utility.PageRequestMaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +31,7 @@ import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
@@ -32,6 +40,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     private final EventServiceClient eventServiceClient;
+
+    private final CacheManager cacheManager;
 
     @Override
     public List<ResponseCategoryDTO> findCategories(Integer page, Integer size) {
@@ -43,6 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(value = "CategoryService::findCategoryById", key = "#categoryId")
     public ResponseCategoryDTO findCategoryById(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new CategoryNotFoundException("Category with id " + categoryId + " not found")
@@ -56,9 +67,19 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseCategoryDTO createCategory(RequestCategoryDTO categoryDTO) {
         Category category = categoryMapper.requestToCategory(categoryDTO);
         try {
-            return categoryMapper.categoryToResponse(
+            ResponseCategoryDTO responseCategory = categoryMapper.categoryToResponse(
                     categoryRepository.saveAndFlush(category)
             );
+
+            Cache cache = cacheManager.getCache("CategoryService::findCategoryById");
+            if (cache != null) {
+                cache.put(category.getCategoryId(), responseCategory);
+            } else {
+                log.error("Cache CategoryService::findCategoryById is null");
+            }
+
+            return responseCategory;
+
         } catch (DataIntegrityViolationException e) {
             throw new CategoryAlreadyExistException("Category with name '" + category.getName() + "' already exist");
         }
@@ -66,6 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CachePut(value = "CategoryService::findCategoryById", key = "#categoryId")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCategoryDTO editCategory(Long categoryId, RequestCategoryDTO categoryDTO) {
         ResponseCategoryDTO category = findCategoryById(categoryId);
@@ -83,6 +105,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "CategoryService::findCategoryById", key = "#categoryId")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteCategory(Long categoryId) {
         if (!categoryRepository.existsById(categoryId)) {

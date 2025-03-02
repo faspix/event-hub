@@ -10,4 +10,4 @@ spring:
       password: admin
       username: user
   profiles:
-    active: keycloak, keycloak-m2m
+    active: keycloak, keycloak-m2m, redis
