@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -44,6 +45,9 @@ public class EventServiceTest {
 
     @Mock
     private UserServiceClient userServiceClient;
+
+    @Mock
+    private CacheManager cacheManager;
 
     @InjectMocks
     private EventServiceImpl eventService;

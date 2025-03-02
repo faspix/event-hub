@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -47,6 +48,9 @@ public class CategoryServiceTest {
 
     @Mock
     private EventServiceClient eventServiceClient;
+
+    @Mock
+    private CacheManager cacheManager;
 
     @Spy
     private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);

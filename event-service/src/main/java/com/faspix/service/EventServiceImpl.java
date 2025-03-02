@@ -14,6 +14,9 @@ import com.faspix.repository.EventRepository;
 import com.faspix.utility.EventSortType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +33,7 @@ import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
@@ -46,6 +50,8 @@ public class EventServiceImpl implements EventService {
     private final UserMapper userMapper;
 
     private final CommentService commentService;
+
+    private final CacheManager cacheManager;
 
     @Override
     @Transactional
@@ -241,7 +247,7 @@ public class EventServiceImpl implements EventService {
         Long categoryId = event.getCategoryId();
         String initiatorId = event.getInitiatorId();
 
-        ResponseCategoryDTO category = categoryServiceClient.getCategoryById(categoryId);
+        ResponseCategoryDTO category = getCategoryById(categoryId);
         ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(initiatorId)
         );
@@ -257,7 +263,7 @@ public class EventServiceImpl implements EventService {
     private ResponseEventShortDTO getResponseShortDTO(Event event) {
         Long categoryId = event.getCategoryId();
         String initiatorId = event.getInitiatorId();
-        ResponseCategoryDTO category = categoryServiceClient.getCategoryById(categoryId);
+        ResponseCategoryDTO category = getCategoryById(categoryId);
         ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
                 userServiceClient.getUserById(initiatorId)
         );
@@ -265,6 +271,19 @@ public class EventServiceImpl implements EventService {
         responseDTO.setCategory(category);
         responseDTO.setInitiator(initiator);
         return responseDTO;
+    }
+
+    private ResponseCategoryDTO getCategoryById(Long id) {
+        ResponseCategoryDTO category;
+        Cache cache = cacheManager.getCache("CategoryService::findCategoryById");
+        if (cache != null) {
+            category = cache.get(id, ResponseCategoryDTO.class);
+        }
+        else {
+            log.info("Cache CategoryService::findCategoryById is null, requested category id: " + id);
+            category = categoryServiceClient.getCategoryById(id);
+        }
+        return category;
     }
 
 }

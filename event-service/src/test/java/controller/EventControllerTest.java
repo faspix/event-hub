@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -67,6 +68,9 @@ public class EventControllerTest {
 
     @MockitoBean
     private UserServiceClient userServiceClient;
+
+    @MockitoBean
+    private CacheManager cacheManager;
 
     @MockitoBean
     private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
