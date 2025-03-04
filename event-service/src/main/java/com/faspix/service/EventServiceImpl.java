@@ -244,13 +244,9 @@ public class EventServiceImpl implements EventService {
 
 
     private ResponseEventDTO getResponseDTO(Event event) {
-        Long categoryId = event.getCategoryId();
-        String initiatorId = event.getInitiatorId();
+        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
+        ResponseUserShortDTO initiator = getInitiatorById(event.getInitiatorId());
 
-        ResponseCategoryDTO category = getCategoryById(categoryId);
-        ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
-                userServiceClient.getUserById(initiatorId)
-        );
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
 
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
@@ -261,29 +257,35 @@ public class EventServiceImpl implements EventService {
     }
 
     private ResponseEventShortDTO getResponseShortDTO(Event event) {
-        Long categoryId = event.getCategoryId();
-        String initiatorId = event.getInitiatorId();
-        ResponseCategoryDTO category = getCategoryById(categoryId);
-        ResponseUserShortDTO initiator = userMapper.responseUserDtoToResponseUserShortDto(
-                userServiceClient.getUserById(initiatorId)
-        );
+        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
+        ResponseUserShortDTO initiator = getInitiatorById(event.getInitiatorId());
+
         ResponseEventShortDTO responseDTO = eventMapper.eventToShortResponse(event);
+
         responseDTO.setCategory(category);
         responseDTO.setInitiator(initiator);
         return responseDTO;
     }
 
     private ResponseCategoryDTO getCategoryById(Long id) {
-        ResponseCategoryDTO category;
         Cache cache = cacheManager.getCache("CategoryService::findCategoryById");
-        if (cache != null) {
-            category = cache.get(id, ResponseCategoryDTO.class);
+        if (cache == null) {
+            log.warn("Cache CategoryService::findCategoryById is null, requested category id: {}", id);
+            return categoryServiceClient.getCategoryById(id);
         }
-        else {
-            log.info("Cache CategoryService::findCategoryById is null, requested category id: " + id);
+
+        ResponseCategoryDTO category = cache.get(id, ResponseCategoryDTO.class);
+        if (category == null) {
             category = categoryServiceClient.getCategoryById(id);
+            log.debug("Category with id {} not found in cache, fetching from service", id);
         }
         return category;
+    }
+
+    private ResponseUserShortDTO getInitiatorById(String id) {
+        return userMapper.responseUserDtoToResponseUserShortDto(
+                userServiceClient.getUserById(id)
+        );
     }
 
 }

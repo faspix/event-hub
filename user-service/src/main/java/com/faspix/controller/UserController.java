@@ -1,9 +1,6 @@
 package com.faspix.controller;
 
-import com.faspix.dto.RequestUpdatePasswordDTO;
-import com.faspix.dto.RequestUserDTO;
-import com.faspix.dto.ResponseUserDTO;
-import com.faspix.dto.ResponseUserShortDTO;
+import com.faspix.dto.*;
 import com.faspix.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +33,15 @@ public class UserController {
             @RequestBody @Valid RequestUserDTO userDTO
     ) {
         return userService.editUser(jwt.getSubject(), userDTO);
+
+    }
+
+    @PatchMapping("/admin/{userId}")
+    public ResponseUserDTO adminEditUser(
+            @PathVariable String userId,
+            @RequestBody @Valid RequestUserAdminEditDTO userDTO
+    ) {
+        return userService.adminEditUser(userId, userDTO);
 
     }
 

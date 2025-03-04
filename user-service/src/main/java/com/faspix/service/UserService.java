@@ -13,6 +13,8 @@ public interface UserService {
 
     ResponseUserDTO findUserById(String userId);
 
+    ResponseUserDTO adminEditUser(String userId, RequestUserAdminEditDTO requestDTO);
+
     void updateUserPassword(String userId, RequestUpdatePasswordDTO passwordDTO);
 
     void deleteUser(String userId);
