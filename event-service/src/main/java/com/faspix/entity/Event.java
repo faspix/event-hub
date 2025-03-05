@@ -74,4 +74,7 @@ public class Event {
     @Column(nullable = false)
     private Integer likes;
 
+    @Column(nullable = false)
+    private Integer dislikes;
+
 }

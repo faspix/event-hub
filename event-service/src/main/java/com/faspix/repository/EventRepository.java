@@ -24,7 +24,25 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("UPDATE Event e " +
             "SET e.likes = e.likes + 1 " +
             "WHERE e.eventId = :eventId")
-    void updateLikes(Long eventId);
+    void addLike(Long eventId);
+
+    @Modifying
+    @Query("UPDATE Event e " +
+            "SET e.likes = e.likes - 1 " +
+            "WHERE e.eventId = :eventId")
+    void removeLike(Long eventId);
+
+    @Modifying
+    @Query("UPDATE Event e " +
+            "SET e.dislikes = e.dislikes + 1 " +
+            "WHERE e.eventId = :eventId")
+    void addDislike(Long eventId);
+
+    @Modifying
+    @Query("UPDATE Event e " +
+            "SET e.dislikes = e.dislikes - 1 " +
+            "WHERE e.eventId = :eventId")
+    void removeDislike(Long eventId);
 
     @Query("SELECT e FROM Event e WHERE " +
             "e.state = 'PUBLISHED' " +

@@ -33,6 +33,8 @@ public class EventFactory {
                 .requestModeration(false)
                 .state(EventState.PENDING)
                 .views(0L)
+                .likes(0)
+                .dislikes(0)
                 .build();
     }
 
@@ -57,6 +59,8 @@ public class EventFactory {
                 .requestModeration(false)
                 .state(EventState.PENDING)
                 .views(0L)
+                .likes(0)
+                .dislikes(0)
                 .build();
     }
 
@@ -74,6 +78,8 @@ public class EventFactory {
                 .initiator(makeResponseShortUser())
                 .paid(false)
                 .views(0L)
+                .likes(0)
+                .dislikes(0)
                 .build();
     }
 

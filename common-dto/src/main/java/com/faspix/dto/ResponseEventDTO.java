@@ -52,4 +52,6 @@ public class ResponseEventDTO {
 
     private Integer likes;
 
+    private Integer dislikes;
+
 }

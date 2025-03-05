@@ -33,4 +33,6 @@ public class ResponseEventShortDTO {
 
     private Integer likes;
 
+    private Integer dislikes;
+
 }

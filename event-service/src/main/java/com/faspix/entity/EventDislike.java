@@ -10,7 +10,7 @@ import java.time.Instant;
 @Entity
 @Data
 @NoArgsConstructor
-public class EventLike {
+public class EventDislike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class EventLike {
     @Column(nullable = false)
     private Instant creationDate;
 
-    public EventLike(String authorId, Event event) {
+    public EventDislike(String authorId, Event event) {
         this.authorId = authorId;
         this.event = event;
     }

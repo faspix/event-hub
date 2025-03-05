@@ -68,6 +68,7 @@ public class EventServiceImpl implements EventService {
         event.setState(EventState.PENDING);
         event.setViews(0L);
         event.setLikes(0);
+        event.setDislikes(0);
 
         eventRepository.save(event);
         return getResponseDTO(event);
@@ -93,6 +94,8 @@ public class EventServiceImpl implements EventService {
         updatedEvent.setInitiatorId(event.getInitiatorId());
         updatedEvent.setState(event.getState());
         updatedEvent.setViews(event.getViews());
+        updatedEvent.setLikes(event.getLikes());
+        updatedEvent.setLikes(event.getDislikes());
 
         eventRepository.save(updatedEvent);
         return getResponseDTO(updatedEvent);
