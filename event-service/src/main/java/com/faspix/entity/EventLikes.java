@@ -1,8 +1,6 @@
 package com.faspix.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,10 +9,7 @@ import java.time.Instant;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Table(name = "comments")
-public class Comment {
+public class EventLikes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +22,11 @@ public class Comment {
     @JoinColumn(name = "eventId", referencedColumnName = "eventId", nullable = false)
     private Event event;
 
-    @Column(nullable = false)
-    private String text;
-
-    @Column(nullable = false)
     private Instant creationDate;
 
-}
+    public EventLikes(String authorId, Event event) {
+        this.authorId = authorId;
+        this.event = event;
+    }
 
+}

@@ -67,6 +67,7 @@ public class EventServiceImpl implements EventService {
         event.setInitiatorId(creatorId);
         event.setState(EventState.PENDING);
         event.setViews(0L);
+        event.setLikes(0);
 
         eventRepository.save(event);
         return getResponseDTO(event);

@@ -31,4 +31,6 @@ public class ResponseEventShortDTO {
 
     private Long views;
 
+    private Integer likes;
+
 }

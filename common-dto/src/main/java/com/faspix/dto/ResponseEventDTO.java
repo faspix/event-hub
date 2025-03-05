@@ -50,4 +50,6 @@ public class ResponseEventDTO {
 
     private List<ResponseCommentDTO> comments;
 
+    private Integer likes;
+
 }

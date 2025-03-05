@@ -71,4 +71,7 @@ public class Event {
     @Column(nullable = false)
     private Long views;
 
+    @Column(nullable = false)
+    private Integer likes;
+
 }
