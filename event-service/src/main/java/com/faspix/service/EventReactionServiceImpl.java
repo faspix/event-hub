@@ -33,10 +33,10 @@ public class EventReactionServiceImpl implements EventReactionService {
         Event event = getEventById(eventId);
         if (eventLikeRepository.countLikes(event, userId) > 0)
             throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already like event with id " + eventId);
+                    + " already liked event with id " + eventId);
         if (eventDislikeRepository.countDislikes(event, userId) > 0)
             throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already dislike event with id " + eventId);
+                    + " already disliked event with id " + eventId);
 
         eventLikeRepository.save(new EventLike(userId, event));
         eventRepository.addLike(eventId);
@@ -49,10 +49,10 @@ public class EventReactionServiceImpl implements EventReactionService {
         Event event = getEventById(eventId);
         if (eventLikeRepository.countLikes(event, userId) > 0)
             throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already like event with id " + eventId);
+                    + " already liked event with id " + eventId);
         if (eventDislikeRepository.countDislikes(event, userId) > 0)
             throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already dislike event with id " + eventId);
+                    + " already disliked event with id " + eventId);
 
         eventDislikeRepository.save(new EventDislike(userId, event));
         eventRepository.addDislike(eventId);
@@ -80,7 +80,7 @@ public class EventReactionServiceImpl implements EventReactionService {
                         + " didn't dislike event with id " + eventId)
         );
         eventDislikeRepository.delete(eventDislike);
-        eventRepository.removeLike(eventId);
+        eventRepository.removeDislike(eventId);
     }
 
     private Event getEventById(Long eventId) {
