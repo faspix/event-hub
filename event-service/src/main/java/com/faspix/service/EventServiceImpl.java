@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
     public ResponseEventDTO createEvent(String creatorId, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(LocalDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
-        userServiceClient.getUserById(creatorId);
+        getUserById(creatorId);
         Event event = eventMapper.requestToEvent(eventDTO);
 
         event.setConfirmedRequests(0);
@@ -249,7 +249,7 @@ public class EventServiceImpl implements EventService {
 
     private ResponseEventDTO getResponseDTO(Event event) {
         ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
-        ResponseUserShortDTO initiator = getInitiatorById(event.getInitiatorId());
+        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
 
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
 
@@ -262,7 +262,7 @@ public class EventServiceImpl implements EventService {
 
     private ResponseEventShortDTO getResponseShortDTO(Event event) {
         ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
-        ResponseUserShortDTO initiator = getInitiatorById(event.getInitiatorId());
+        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
 
         ResponseEventShortDTO responseDTO = eventMapper.eventToShortResponse(event);
 
@@ -274,7 +274,7 @@ public class EventServiceImpl implements EventService {
     private ResponseCategoryDTO getCategoryById(Long id) {
         Cache cache = cacheManager.getCache("CategoryService::findCategoryById");
         if (cache == null) {
-            log.warn("Cache CategoryService::findCategoryById is null, requested category id: {}", id);
+            log.error("Cache CategoryService::findCategoryById is null, requested category id: {}", id);
             return categoryServiceClient.getCategoryById(id);
         }
 
@@ -286,10 +286,21 @@ public class EventServiceImpl implements EventService {
         return category;
     }
 
-    private ResponseUserShortDTO getInitiatorById(String id) {
-        return userMapper.responseUserDtoToResponseUserShortDto(
-                userServiceClient.getUserById(id)
-        );
+    private ResponseUserShortDTO getUserById(String userId) {
+        ResponseUserDTO userDTO;
+        Cache cache = cacheManager.getCache("UserService::getUserById");
+        if (cache == null) {
+            log.error("Cache UserService::getUserById is null, requested userId: {}", userId);
+            userDTO = userServiceClient.getUserById(userId);
+        } else {
+            userDTO = cache.get(userId, ResponseUserDTO.class);
+            if (userDTO == null) {
+                userDTO = userServiceClient.getUserById(userId);
+                log.debug("User with id {} not found in cache, fetching from service", userId);
+            }
+        }
+        return userMapper.responseUserDtoToResponseUserShortDto(userDTO);
     }
+
 
 }

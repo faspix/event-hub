@@ -15,6 +15,9 @@ import com.faspix.mapper.UserMapper;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
 
@@ -41,6 +45,8 @@ public class CommentServiceImpl implements CommentService {
 
     private final UserServiceClient userServiceClient;
 
+    private final CacheManager cacheManager;
+
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -48,9 +54,9 @@ public class CommentServiceImpl implements CommentService {
         if (commentRepository.countCommentsByEventIdAndAuthorId(eventId, userId) > 0)
             throw new UserAlreadyCommentThisEventException("User with id " + userId +
                     " already comment event with id " + eventId);
-        ResponseUserShortDTO author = userMapper.responseUserDtoToResponseUserShortDto(
-                userServiceClient.getUserById(userId)
-        );
+
+        ResponseUserShortDTO author = getUserById(userId);
+
         Event event = eventRepository.findById(eventId).orElseThrow(
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
@@ -90,4 +96,21 @@ public class CommentServiceImpl implements CommentService {
                 })
                 .toList();
     }
+
+    private ResponseUserShortDTO getUserById(String userId) {
+        ResponseUserDTO userDTO;
+        Cache cache = cacheManager.getCache("UserService::getUserById");
+        if (cache == null) {
+            log.error("Cache UserService::getUserById is null, requested userId: {}", userId);
+            userDTO = userServiceClient.getUserById(userId);
+        } else {
+            userDTO = cache.get(userId, ResponseUserDTO.class);
+            if (userDTO == null) {
+                userDTO = userServiceClient.getUserById(userId);
+                log.debug("User with id {} not found in cache, fetching from service", userId);
+            }
+        }
+        return userMapper.responseUserDtoToResponseUserShortDto(userDTO);
+    }
+
 }

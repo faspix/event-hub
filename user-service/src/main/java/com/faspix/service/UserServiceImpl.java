@@ -7,6 +7,7 @@ import com.faspix.roles.UserRoles;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -16,6 +17,12 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -26,10 +33,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final RealmResource realmResource;
+
+    private final CacheManager cacheManager;
 
     @Override
     public ResponseUserDTO createUser(RequestUserDTO userDTO) {
@@ -50,15 +60,26 @@ public class UserServiceImpl implements UserService {
 
         RoleRepresentation roleRepresentation = realmResource.roles().get("USER").toRepresentation();
         usersResource.get(userId).roles().realmLevel().add(Collections.singletonList(roleRepresentation));
-        return ResponseUserDTO.builder()
+
+        ResponseUserDTO responseDTO = ResponseUserDTO.builder()
                 .userId(userId)
                 .username(userDTO.getUsername())
                 .email(userDTO.getEmail())
                 .build();
+
+        Cache cache = cacheManager.getCache("UserService::getUserById");
+        if (cache != null) {
+            cache.put(userId, responseDTO);
+        } else {
+            log.error("Cache UserService::getUserById is null");
+        }
+
+        return responseDTO;
     }
 
     @Override
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @CachePut(value = "UserService::getUserById", key = "#userId")
     public ResponseUserDTO editUser(String userId, RequestUserDTO userDTO) {
         UserResource userResource = realmResource.users().get(userId);
 
@@ -89,6 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MICROSERVICE')")
+    @Cacheable(value = "UserService::getUserById", key = "#userId")
     public ResponseUserDTO findUserById(String userId) {
         UsersResource usersResource = realmResource.users();
         UserResource userResource = usersResource.get(userId);
@@ -108,6 +130,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
+    @CachePut(value = "UserService::getUserById", key = "#userId")
     public ResponseUserDTO adminEditUser(String userId, RequestUserAdminEditDTO userDTO) {
         UsersResource usersResource = realmResource.users();
         UserResource userResource = usersResource.get(userId);
@@ -148,6 +171,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @CacheEvict(value = "UserService::getUserById", key = "#userId")
     public void deleteUser(String userId) {
         UserResource userResource = realmResource.users().get(userId);
         userResource.remove();
