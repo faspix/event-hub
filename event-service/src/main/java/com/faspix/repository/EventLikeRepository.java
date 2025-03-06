@@ -9,11 +9,8 @@ import java.util.Optional;
 
 public interface EventLikeRepository extends JpaRepository<EventLike, Long> {
 
-    @Query("SELECT COUNT(e) FROM EventLike e " +
-            "WHERE e.authorId = :authorId " +
-            "AND e.event = :event")
-    Integer countLikes(Event event, String authorId);
+    Boolean existsByEventAndAuthorId(Event event, String authorId);
 
-    Optional<EventLike> findEventLikeByAuthorIdAndEvent(String authorId, Event event);
+    Optional<EventLike> findByAuthorIdAndEvent(String authorId, Event event);
     
 }

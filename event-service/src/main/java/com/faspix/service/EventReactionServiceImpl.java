@@ -10,6 +10,7 @@ import com.faspix.repository.EventDislikeRepository;
 import com.faspix.repository.EventLikeRepository;
 import com.faspix.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class EventReactionServiceImpl implements EventReactionService {
 
@@ -31,15 +33,11 @@ public class EventReactionServiceImpl implements EventReactionService {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void likeEvent(String userId, Long eventId) {
         Event event = getEventById(eventId);
-        if (eventLikeRepository.countLikes(event, userId) > 0)
-            throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already liked event with id " + eventId);
-        if (eventDislikeRepository.countDislikes(event, userId) > 0)
-            throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already disliked event with id " + eventId);
+        validateReaction(userId, eventId, event);
 
         eventLikeRepository.save(new EventLike(userId, event));
         eventRepository.addLike(eventId);
+        log.info("User {} liked event {}", userId, eventId);
     }
 
     @Override
@@ -47,27 +45,25 @@ public class EventReactionServiceImpl implements EventReactionService {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void dislikeEvent(String userId, Long eventId) {
         Event event = getEventById(eventId);
-        if (eventLikeRepository.countLikes(event, userId) > 0)
-            throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already liked event with id " + eventId);
-        if (eventDislikeRepository.countDislikes(event, userId) > 0)
-            throw new ReactionAlreadyExistException("User with id " + userId
-                    + " already disliked event with id " + eventId);
+        validateReaction(userId, eventId, event);
 
         eventDislikeRepository.save(new EventDislike(userId, event));
         eventRepository.addDislike(eventId);
+        log.info("User {} disliked event {}", userId, eventId);
     }
+
 
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void removeLikeEvent(String userId, Long eventId) {
         Event event = getEventById(eventId);
-        EventLike eventLike = eventLikeRepository.findEventLikeByAuthorIdAndEvent(userId, event).orElseThrow(
+        EventLike eventLike = eventLikeRepository.findByAuthorIdAndEvent(userId, event).orElseThrow(
                 () -> new ReactionNotExistException("User with id " + userId + " didn't like event with id " + eventId)
         );
         eventLikeRepository.delete(eventLike);
         eventRepository.removeLike(eventId);
+        log.info("User {} remove like from event {}", userId, eventId);
     }
 
     @Override
@@ -75,12 +71,13 @@ public class EventReactionServiceImpl implements EventReactionService {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void removeDislikeEvent(String userId, Long eventId) {
         Event event = getEventById(eventId);
-        EventDislike eventDislike = eventDislikeRepository.findEventDislikeByAuthorIdAndEvent(userId, event)
+        EventDislike eventDislike = eventDislikeRepository.findByAuthorIdAndEvent(userId, event)
                 .orElseThrow(() -> new ReactionNotExistException("User with id " + userId
                         + " didn't dislike event with id " + eventId)
         );
         eventDislikeRepository.delete(eventDislike);
         eventRepository.removeDislike(eventId);
+        log.info("User {} remove dislike from event {}", userId, eventId);
     }
 
     private Event getEventById(Long eventId) {
@@ -89,4 +86,12 @@ public class EventReactionServiceImpl implements EventReactionService {
         );
     }
 
+    private void validateReaction(String userId, Long eventId, Event event) {
+        if (eventLikeRepository.existsByEventAndAuthorId(event, userId))
+            throw new ReactionAlreadyExistException("User with id " + userId
+                    + " already liked event with id " + eventId);
+        if (eventDislikeRepository.existsByEventAndAuthorId(event, userId))
+            throw new ReactionAlreadyExistException("User with id " + userId
+                    + " already disliked event with id " + eventId);
+    }
 }

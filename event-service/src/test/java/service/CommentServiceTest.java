@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,9 @@ public class CommentServiceTest {
 
     @Mock
     private EventRepository eventRepository;
+
+    @Mock
+    private CacheManager cacheManager;
 
     @Mock
     private UserServiceClient userServiceClient;

@@ -53,8 +53,8 @@ public class EventReactionServiceTest {
     void likeEvent_WhenUserAlreadyLiked_ThrowsException() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.countLikes(event, userId))
-                .thenReturn(1);
+        when(eventLikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(true);
 
         ReactionAlreadyExistException exception = assertThrows(ReactionAlreadyExistException.class,
                 () -> eventReactionService.likeEvent(userId, eventId)
@@ -66,10 +66,10 @@ public class EventReactionServiceTest {
     void likeEvent_WhenUserAlreadyDisliked_ThrowsException() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.countLikes(event, userId))
-                .thenReturn(0);
-        when(eventDislikeRepository.countDislikes(event, userId))
-                .thenReturn(1);
+        when(eventLikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(false);
+        when(eventDislikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(true);
 
         ReactionAlreadyExistException exception = assertThrows(ReactionAlreadyExistException.class,
                 () -> eventReactionService.likeEvent(userId, eventId)
@@ -81,8 +81,8 @@ public class EventReactionServiceTest {
     void dislikeEvent_WhenUserAlreadyLiked_ThrowsException() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.countLikes(event, userId))
-                .thenReturn(1);
+        when(eventLikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(true);
 
         ReactionAlreadyExistException exception = assertThrows(ReactionAlreadyExistException.class,
                 () -> eventReactionService.dislikeEvent(userId, eventId)
@@ -94,10 +94,10 @@ public class EventReactionServiceTest {
     void dislikeEvent_WhenUserAlreadyDisliked_ThrowsException() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.countLikes(event, userId))
-                .thenReturn(0);
-        when(eventDislikeRepository.countDislikes(event, userId))
-                .thenReturn(1);
+        when(eventLikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(false);
+        when(eventDislikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(true);
 
         ReactionAlreadyExistException exception = assertThrows(ReactionAlreadyExistException.class,
                 () -> eventReactionService.dislikeEvent(userId, eventId)
@@ -109,10 +109,10 @@ public class EventReactionServiceTest {
     void likeEvent_Success() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.countLikes(event, userId))
-                .thenReturn(0);
-        when(eventDislikeRepository.countDislikes(event, userId))
-                .thenReturn(0);
+        when(eventLikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(false);
+        when(eventDislikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(false);
 
         eventReactionService.likeEvent(userId, eventId);
 
@@ -124,10 +124,10 @@ public class EventReactionServiceTest {
     void dislikeEvent_Success() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.countLikes(event, userId))
-                .thenReturn(0);
-        when(eventDislikeRepository.countDislikes(event, userId))
-                .thenReturn(0);
+        when(eventLikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(false);
+        when(eventDislikeRepository.existsByEventAndAuthorId(event, userId))
+                .thenReturn(false);
 
         eventReactionService.dislikeEvent(userId, eventId);
 
@@ -139,7 +139,7 @@ public class EventReactionServiceTest {
     void removeLikeEvent_WhenNoLikeExists_ThrowsException() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.findEventLikeByAuthorIdAndEvent(userId, event))
+        when(eventLikeRepository.findByAuthorIdAndEvent(userId, event))
                 .thenReturn(Optional.empty());
 
         ReactionNotExistException exception = assertThrows(ReactionNotExistException.class,
@@ -152,7 +152,7 @@ public class EventReactionServiceTest {
     void removeDislikeEvent_WhenNoLikeExists_ThrowsException() {
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventDislikeRepository.findEventDislikeByAuthorIdAndEvent(userId, event))
+        when(eventDislikeRepository.findByAuthorIdAndEvent(userId, event))
                 .thenReturn(Optional.empty());
 
         ReactionNotExistException exception = assertThrows(ReactionNotExistException.class,
@@ -167,7 +167,7 @@ public class EventReactionServiceTest {
         EventLike eventLike = new EventLike(userId, event);
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventLikeRepository.findEventLikeByAuthorIdAndEvent(userId, event))
+        when(eventLikeRepository.findByAuthorIdAndEvent(userId, event))
                 .thenReturn(Optional.of(eventLike));
 
         eventReactionService.removeLikeEvent(userId, eventId);
@@ -182,7 +182,7 @@ public class EventReactionServiceTest {
         EventDislike eventDislike = new EventDislike(userId, event);
         when(eventRepository.findById(eventId))
                 .thenReturn(Optional.of(event));
-        when(eventDislikeRepository.findEventDislikeByAuthorIdAndEvent(userId, event))
+        when(eventDislikeRepository.findByAuthorIdAndEvent(userId, event))
                 .thenReturn(Optional.of(eventDislike));
 
         eventReactionService.removeDislikeEvent(userId, eventId);
