@@ -12,9 +12,8 @@ public interface EventMapper {
 
     @Mapping(target = "initiator", ignore = true)
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "comments", ignore = true)
     ResponseEventDTO eventToResponse(Event event);
-
-    Event responseToEvent(ResponseEventDTO responseDTO);
 
     @Mapping(target = "initiator", ignore = true)
     @Mapping(target = "category", ignore = true)
@@ -23,6 +22,15 @@ public interface EventMapper {
     @Mapping(source = "paid", target = "paid", defaultValue = "false")
     @Mapping(source = "requestModeration", target = "requestModeration", defaultValue = "false")
     @Mapping(source = "participantLimit", target = "participantLimit", defaultValue = "0")
+    @Mapping(target = "eventId", ignore = true)
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "initiatorId", ignore = true)
+    @Mapping(target = "publishedOn", ignore = true)
+    @Mapping(target = "state", ignore = true)
+    @Mapping(target = "views", ignore = true)
+    @Mapping(target = "likes", ignore = true)
+    @Mapping(target = "dislikes", ignore = true)
     Event requestToEvent(RequestEventDTO eventDTO);
 
 }

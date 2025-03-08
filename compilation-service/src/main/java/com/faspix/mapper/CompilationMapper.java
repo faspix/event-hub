@@ -12,6 +12,7 @@ public interface CompilationMapper {
     @Mapping(target = "events", ignore = true)
     ResponseCompilationDTO compilationToResponse(Compilation compilation);
 
+    @Mapping(target = "id", ignore = true)
     Compilation requestToCompilation(RequestCompilationDTO compilationDTO);
 
 }

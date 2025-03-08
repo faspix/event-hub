@@ -12,7 +12,7 @@ public interface StatisticsMapper {
     @Mapping(target = "id", ignore = true)
     EndpointStats RequestToEndpoint(RequestEndpointStatsDTO requestDTO);
 
-//    @Mapping(target = )
+    @Mapping(target = "hits", ignore = true)
     ResponseEndpointStatsDTO EndpointToResponse(EndpointStats endpointStats);
 
 }
