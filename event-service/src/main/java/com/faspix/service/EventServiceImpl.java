@@ -211,7 +211,7 @@ public class EventServiceImpl implements EventService {
         if (! EventState.PENDING.equals(event.getState()))
             throw new ValidationException("Event must be in PENDING state");
 
-        updateNotNullFields(requestDTO, event);
+        eventMapper.RequestUpdateEventAdminToEvent(event, requestDTO);
 
         if (EventStateAction.PUBLISH_EVENT.equals(requestDTO.getStateAction())) {
             event.setState(EventState.PUBLISHED);
@@ -223,27 +223,6 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
 
         return getResponseDTO(event);
-    }
-
-    private static void updateNotNullFields(RequestUpdateEventAdminDTO requestDTO, Event event) {
-        if (requestDTO.getAnnotation() != null)
-            event.setAnnotation(requestDTO.getAnnotation());
-        if (requestDTO.getCategoryId() != null)
-            event.setCategoryId(requestDTO.getCategoryId());
-        if (requestDTO.getDescription() != null)
-            event.setDescription(requestDTO.getDescription());
-        if (requestDTO.getEventDate() != null)
-            event.setEventDate(requestDTO.getEventDate());
-        if (requestDTO.getLocation() != null)
-            event.setLocation(requestDTO.getLocation());
-        if (requestDTO.getPaid() != null)
-            event.setPaid(requestDTO.getPaid());
-        if (requestDTO.getParticipantLimit() != null)
-            event.setParticipantLimit(requestDTO.getParticipantLimit());
-        if (requestDTO.getRequestModeration() != null)
-            event.setRequestModeration(requestDTO.getRequestModeration());
-        if (requestDTO.getTitle() != null)
-            event.setTitle(requestDTO.getTitle());
     }
 
 

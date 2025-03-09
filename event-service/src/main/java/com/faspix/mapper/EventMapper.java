@@ -1,11 +1,11 @@
 package com.faspix.mapper;
 
 import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Event;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
@@ -33,4 +33,6 @@ public interface EventMapper {
     @Mapping(target = "dislikes", ignore = true)
     Event requestToEvent(RequestEventDTO eventDTO);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void RequestUpdateEventAdminToEvent(@MappingTarget Event event, RequestUpdateEventAdminDTO eventAdminDTO);
 }
