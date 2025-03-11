@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -179,7 +178,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ResponseUserDTO> searchUsers(String nickname, String email, int page, int size) {
-
         return userRepository.findUsers(nickname, email, page, size);
     }
 

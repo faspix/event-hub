@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 public interface EventService {
 
@@ -40,4 +41,6 @@ public interface EventService {
     ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
 
     void setViews(SetViewsDTO viewsDTO);
+
+    List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids);
 }

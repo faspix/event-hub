@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
@@ -199,6 +200,13 @@ public class EventServiceImpl implements EventService {
         Event event = getEventById(viewsDTO.getEventId());
         event.setViews(event.getViews() + viewsDTO.getCount());
         eventRepository.save(event);
+    }
+
+    @Override
+    public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids) {
+        return eventRepository.findAllById(ids).stream()
+                .map(eventMapper::eventToShortResponse)
+                .toList();
     }
 
     @Override

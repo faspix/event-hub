@@ -16,8 +16,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final static String FIND_USERS_SQL =
@@ -41,8 +39,8 @@ public class UserRepository {
     public List<ResponseUserDTO> findUsers(String nickname, String email, int page, int size) {
         int offset = page * size;
         Map<String, Object> params = new HashMap<>();
-        params.put("nickname", "%" + nickname + "%");
-        params.put("email", "%" + email + "%");
+        params.put("nickname", nickname == null ? "%" : "%" + nickname + "%");
+        params.put("email", email == null ? "%" : "%" + email + "%");
         params.put("size", size);
         params.put("offset", offset);
 

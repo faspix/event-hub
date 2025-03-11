@@ -105,17 +105,10 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     private ResponseCompilationDTO getResponseDTO(Compilation compilation) {
-        List<ResponseEventShortDTO> events = getEventsFromEventIds(compilation.getEvents());
+        List<ResponseEventShortDTO> events = eventServiceClient.getEventsByIds(compilation.getEvents());
         ResponseCompilationDTO dto = compilationMapper.compilationToResponse(compilation);
         dto.setEvents(events);
         return dto;
     }
 
-    // TODO: batch
-    private List<ResponseEventShortDTO> getEventsFromEventIds(List<Long> eventIds) {
-        return eventIds.stream()
-                .map(eventServiceClient::getEventById)
-                .map(eventMapper::eventToShortEvent)
-                .toList();
-    }
 }

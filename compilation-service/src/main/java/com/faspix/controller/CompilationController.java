@@ -49,7 +49,6 @@ public class CompilationController {
         return compilationService.editCompilation(compId, compilationDTO);
     }
 
-    // TODO: return value
     @DeleteMapping("{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(

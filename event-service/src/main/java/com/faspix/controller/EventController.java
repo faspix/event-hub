@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/events")
@@ -103,6 +104,13 @@ public class EventController {
             @RequestBody RequestUpdateEventAdminDTO requestDTO
     ) {
         return eventService.adminEditEvent(eventId, requestDTO);
+    }
+
+    @PostMapping("/batch")
+    public List<ResponseEventShortDTO> findUserByIds(
+            @RequestBody Set<Long> ids
+    ) {
+        return eventService.findEventsByIds(ids);
     }
 
 }
