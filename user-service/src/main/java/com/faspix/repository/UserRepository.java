@@ -6,10 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,48 +14,33 @@ public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final static String FIND_USERS_SQL = "" +
-            "SELECT u.id userId, u.email, u.username, kr.name role FROM user_entity u " +
-            "JOIN user_role_mapping ur ON u.id = ur.user_id " +
-            "JOIN keycloak_role kr on kr.id = ur.role_id " +
-            "WHERE u.username != 'service-account-microservice-client' " +
-            "LIMIT ? OFFSET ?";
+    private final static String FIND_USERS_SQL =
+            "SELECT u.id userId, u.username, u.email, " +
+             "STRING_AGG(kr.name, ', ' ORDER BY kr.name) AS roles " +
+             "FROM user_entity u " +
+             "JOIN user_role_mapping ur ON u.id = ur.user_id " +
+             "JOIN keycloak_role kr ON kr.id = ur.role_id " +
+             "WHERE (lower(u.username) LIKE lower(concat('%', ?, '%')) " +
+             "OR lower(u.email) LIKE lower(concat('%', ?, '%'))) " +
+             "GROUP BY u.id, u.username, u.email " +
+             "LIMIT ? OFFSET ?";
 
 
-    public List<ResponseUserDTO> findUsers(int page, int size) {
-        Map<String, ResponseUserDTO> userMap = new HashMap<>();
-
+    public List<ResponseUserDTO> findUsers(String nickname, String email, int page, int size) {
         int offset = page * size;
         PreparedStatementSetter preparedStatement = ps -> {
-            ps.setInt(1, size);
-            ps.setInt(2, offset);
+            ps.setString(1, nickname);
+            ps.setString(2, email);
+            ps.setInt(3, size);
+            ps.setInt(4, offset);
         };
-
-        jdbcTemplate.query(FIND_USERS_SQL, preparedStatement, (rs, rowNum) -> {
-            String userId = rs.getString("userId");
-            String email = rs.getString("email");
-            String username = rs.getString("username");
-            String role = rs.getString("role");
-
-            ResponseUserDTO user = userMap.get(userId);
-            if (user == null) {
-                user = ResponseUserDTO.builder()
-                        .userId(userId)
-                        .email(email)
-                        .username(username)
-                        .roles(new ArrayList<>())
-                        .build();
-                userMap.put(userId, user);
-            }
-
-            if (!user.getRoles().contains(role)) {
-                user.getRoles().add(role);
-            }
-
-            return null;
-        });
-
-        return new ArrayList<>(userMap.values());
+        return jdbcTemplate.query(FIND_USERS_SQL, preparedStatement, (rs, rowNum) -> ResponseUserDTO.builder()
+                .userId(rs.getString("userId"))
+                .email(rs.getString("email"))
+                .username(rs.getString("username"))
+                .roles(Arrays.asList(rs.getString("roles").split(",\\s*")))
+                .build()
+        );
     }
 
 

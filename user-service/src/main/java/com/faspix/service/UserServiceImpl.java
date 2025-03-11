@@ -178,9 +178,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public List<ResponseUserDTO> searchUsers(int page, int size) {
+    public List<ResponseUserDTO> searchUsers(String nickname, String email, int page, int size) {
 
-        return userRepository.findUsers(page, size);
+        return userRepository.findUsers(nickname, email, page, size);
     }
 
     // TODO: role and batch update fix
