@@ -33,6 +33,12 @@ public class ExceptionHandlerImpl {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ExceptionResponse handleResourceNotFoundException(final ResourceNotFoundException e) {
+        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ExceptionResponse handleGeneralException(final Exception e) {
         e.printStackTrace();

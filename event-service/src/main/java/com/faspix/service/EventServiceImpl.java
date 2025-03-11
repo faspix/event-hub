@@ -7,6 +7,7 @@ import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
 import com.faspix.exception.EventNotFoundException;
+import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
@@ -131,7 +132,7 @@ public class EventServiceImpl implements EventService {
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
         if (event.getState() != EventState.PUBLISHED)
-            throw new EventNotFoundException("Event with id " + eventId + " not published yet");
+            throw new EventNotPublishedException("Event with id " + eventId + " not published yet");
         endpointStatisticsService.sendEndpointStatistics(
                 RequestEndpointStatsDTO.builder()
                         .app("event-service")

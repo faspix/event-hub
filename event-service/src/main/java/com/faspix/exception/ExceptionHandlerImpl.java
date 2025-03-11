@@ -10,13 +10,19 @@ public class ExceptionHandlerImpl {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    private ExceptionResponse handleUserNotFoundException(final EventNotFoundException e) {
+    private ExceptionResponse handleEventNotFoundException(final EventNotFoundException e) {
+        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ExceptionResponse handleEventNotPublishedException(final EventNotPublishedException e) {
         return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    private ExceptionResponse handleUserNotFoundException(final ValidationException e) {
+    private ExceptionResponse handleValidationException(final ValidationException e) {
         return new ExceptionResponse(HttpStatus.BAD_REQUEST, e);
     }
 
