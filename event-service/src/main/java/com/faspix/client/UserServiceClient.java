@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Set;
 
-@FeignClient(name = "user-service", fallback = UserServiceClientFallback.class)
+@FeignClient(name = "user-service",
+        fallback = UserServiceClientFallback.class)
 public interface UserServiceClient {
 
     @GetMapping("users/{userId}")

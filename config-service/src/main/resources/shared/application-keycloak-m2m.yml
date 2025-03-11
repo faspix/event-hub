@@ -6,7 +6,7 @@ spring:
           keycloak:
             provider: keycloak
             client-id: microservice-client
-            client-secret: UW095IqmDykIC5fPzVyKi3oknGNZjnAL
+            client-secret: 7VHsq2tQnRPyqVhsbN83PZ5Sns1eadoN
             authorization-grant-type: client_credentials
         provider:
           keycloak:

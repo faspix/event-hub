@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 
 @Configuration
 @RequiredArgsConstructor
-public class FeignConfiguration implements RequestInterceptor {
+public class FeignSecurityConfiguration implements RequestInterceptor {
 
     private final OAuth2AuthorizedClientManager authorizedClientManager;
 
