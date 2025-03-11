@@ -6,6 +6,7 @@ import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.exception.EventNotFoundException;
+import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
@@ -235,12 +236,12 @@ public class EventServiceTest {
     }
 
     @Test
-    public void findEventByIdTest_EventNotFound_Exception() {
+    public void findEventByIdTest_EventNotPublished_Exception() {
         Event event = makeEventTest();
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
+        EventNotPublishedException exception = Assertions.assertThrowsExactly(EventNotPublishedException.class, () ->
                 eventService.findEventById(1L, new MockHttpServletRequest())
         );
 
@@ -249,7 +250,7 @@ public class EventServiceTest {
 
 
     @Test
-    public void findEventByIdTest_EventNotPublished_Exception() {
+    public void findEventByIdTest_EventNotFound_Exception() {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 

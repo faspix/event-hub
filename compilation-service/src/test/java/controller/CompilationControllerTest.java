@@ -87,8 +87,8 @@ public class CompilationControllerTest {
     @Test
     public void createCompilationTest_Success() throws Exception {
         RequestCompilationDTO requestDTO = makeRequestCompilation();
-        when(eventServiceClient.getEventById(anyLong()))
-                .thenReturn(makeResponseEventTest());
+        when(eventServiceClient.getEventsByIds(List.of()))
+                .thenReturn(List.of(makeShortResponseEventTest()));
 
         MvcResult mvcResult = mockMvc.perform(post("/compilations")
                         .content(objectMapper.writeValueAsString(requestDTO))
@@ -112,8 +112,9 @@ public class CompilationControllerTest {
     @Test
     public void createCompilationTest_CompilationAlreadyExist_Exception() throws Exception {
         RequestCompilationDTO requestDTO = makeRequestCompilation();
-        when(eventServiceClient.getEventById(anyLong()))
-                .thenReturn(makeResponseEventTest());
+        when(eventServiceClient.getEventsByIds(List.of()))
+                .thenReturn(List.of(makeShortResponseEventTest()));
+
 
         mockMvc.perform(post("/compilations")
                         .content(objectMapper.writeValueAsString(requestDTO))
