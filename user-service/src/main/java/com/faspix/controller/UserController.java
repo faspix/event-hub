@@ -36,6 +36,14 @@ public class UserController {
 
     }
 
+    @GetMapping
+    public List<ResponseUserDTO> searchUsers(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "20") Integer size
+    ) {
+        return userService.searchUsers(page, size);
+    }
+
     @PatchMapping("/admin/{userId}")
     public ResponseUserDTO adminEditUser(
             @PathVariable String userId,

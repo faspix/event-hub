@@ -36,7 +36,7 @@ public class CompilationController {
     public List<ResponseCompilationDTO> findCompilations(
             @RequestParam(required = false) Boolean pinned,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         return compilationService.findCompilations(pinned, page, size);
     }

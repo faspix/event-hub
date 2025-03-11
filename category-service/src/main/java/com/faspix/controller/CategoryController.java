@@ -20,7 +20,7 @@ public class CategoryController {
     @GetMapping
     public List<ResponseCategoryDTO> findCategories(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         return categoryService.findCategories(page, size);
     }

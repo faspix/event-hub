@@ -49,7 +49,7 @@ public class EventController {
     public List<ResponseEventShortDTO> findAllUserEvents(
             @PathVariable String userId,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         return eventService.findAllUsersEvents(userId, page, size);
     }
@@ -64,7 +64,7 @@ public class EventController {
             @RequestParam(defaultValue = "false") Boolean onlyAvailable,
             @RequestParam(defaultValue = "EVENT_DATE") EventSortType sort,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         return eventService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, page, size);
     }
@@ -77,7 +77,7 @@ public class EventController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         return eventService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, page, size);
     }

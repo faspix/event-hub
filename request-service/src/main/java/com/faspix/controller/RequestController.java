@@ -41,7 +41,7 @@ public class RequestController {
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable Long eventId,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         return requestService.getRequestsToMyEvent(jwt.getSubject(), eventId, page, size);
     }
@@ -59,7 +59,7 @@ public class RequestController {
     public List<ResponseParticipationRequestDTO> getUsersRequests(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
 
     ) {
         return requestService.getUsersRequests(jwt.getSubject(), page, size);

@@ -3,15 +3,13 @@ package com.faspix.service;
 import com.faspix.dto.*;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
-import com.faspix.roles.UserRoles;
+import com.faspix.repository.UserRepository;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.CreatedResponseUtil;
-import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -22,7 +20,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -40,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final RealmResource realmResource;
 
     private final CacheManager cacheManager;
+
+    private final UserRepository userRepository;
 
     @Override
     public ResponseUserDTO createUser(RequestUserDTO userDTO) {
@@ -175,6 +174,13 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
         UserResource userResource = realmResource.users().get(userId);
         userResource.remove();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public List<ResponseUserDTO> searchUsers(int page, int size) {
+
+        return userRepository.findUsers(page, size);
     }
 
     // TODO: role and batch update fix
