@@ -183,20 +183,10 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUsers(nickname, email, page, size);
     }
 
-    // TODO: role and batch update fix
     @PreAuthorize("hasAnyRole('MICROSERVICE')")
     @Override
     public List<ResponseUserShortDTO> findUserByIds(Set<String> userIds) {
-        return userIds.stream()
-                .map(id -> {
-                    UserResource userResource = realmResource.users().get(id);
-                    UserRepresentation userRepresentation = userResource.toRepresentation();
-                    return ResponseUserShortDTO.builder()
-                            .userId(userRepresentation.getId())
-                            .username(userRepresentation.getUsername())
-                            .build();
-                })
-                .collect(Collectors.toList());
+        return userRepository.findAll(userIds);
     }
 
     private static void updateUser(RequestUserAdminEditDTO userDTO, UserRepresentation userRepresentation) {
