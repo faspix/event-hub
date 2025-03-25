@@ -1,22 +1,17 @@
 package service;
 
 
-import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Comment;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.exception.EventNotFoundException;
-import com.faspix.exception.ValidationException;
 import com.faspix.mapper.CommentMapper;
-import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
-import com.faspix.repository.CommentRepository;
-import com.faspix.repository.EventRepository;
+import com.faspix.dao.CommentRepository;
+import com.faspix.dao.EventRepository;
 import com.faspix.service.CommentServiceImpl;
-import com.faspix.service.EventServiceImpl;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -25,11 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;

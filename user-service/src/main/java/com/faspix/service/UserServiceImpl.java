@@ -3,7 +3,7 @@ package com.faspix.service;
 import com.faspix.dto.*;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
-import com.faspix.repository.UserRepository;
+import com.faspix.dao.UserDAO;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     private final CacheManager cacheManager;
 
-    private final UserRepository userRepository;
+    private final UserDAO userDAO;
 
     @Override
     public ResponseUserDTO createUser(RequestUserDTO userDTO) {
@@ -178,13 +178,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ResponseUserDTO> searchUsers(String nickname, String email, int page, int size) {
-        return userRepository.findUsers(nickname, email, page, size);
+        return userDAO.findUsers(nickname, email, page, size);
     }
 
     @PreAuthorize("hasAnyRole('MICROSERVICE')")
     @Override
     public List<ResponseUserShortDTO> findUserByIds(Set<String> userIds) {
-        return userRepository.findAll(userIds);
+        return userDAO.findAll(userIds);
     }
 
     private static void updateUser(RequestUserAdminEditDTO userDTO, UserRepresentation userRepresentation) {
@@ -209,7 +209,6 @@ public class UserServiceImpl implements UserService {
         usersResource.get(userId).resetPassword(credential);
     }
 
-    // TODO: fix service roles
     private static List<String> getUserRoles(String userId, UsersResource usersResource) {
         return usersResource
                 .get(userId)
@@ -218,8 +217,6 @@ public class UserServiceImpl implements UserService {
                 .listAll()
                 .stream()
                 .map(RoleRepresentation::toString)
-//                .map(UserRoles::valueOf)
-//                .map(Enum::toString)
                 .toList();
     }
 

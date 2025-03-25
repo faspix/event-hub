@@ -8,7 +8,7 @@ import com.faspix.enums.ParticipationRequestState;
 import com.faspix.exception.RequestNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
-import com.faspix.repository.RequestRepository;
+import com.faspix.dao.RequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;

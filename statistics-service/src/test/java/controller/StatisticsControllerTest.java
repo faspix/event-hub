@@ -4,7 +4,7 @@ import com.faspix.StatisticsApplication;
 import com.faspix.dto.RequestEndpointStatsDTO;
 import com.faspix.dto.ResponseEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
-import com.faspix.repository.StatisticsRepository;
+import com.faspix.dao.StatisticsRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;

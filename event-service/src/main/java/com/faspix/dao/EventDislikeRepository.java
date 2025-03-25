@@ -1,4 +1,4 @@
-package com.faspix.repository;
+package com.faspix.dao;
 
 import com.faspix.entity.Event;
 import com.faspix.entity.EventDislike;

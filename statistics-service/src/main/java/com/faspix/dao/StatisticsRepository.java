@@ -1,4 +1,4 @@
-package com.faspix.repository;
+package com.faspix.dao;
 
 import com.faspix.dto.ResponseEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;

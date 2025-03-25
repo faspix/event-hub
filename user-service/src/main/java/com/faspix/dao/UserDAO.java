@@ -1,10 +1,8 @@
-package com.faspix.repository;
+package com.faspix.dao;
 
 import com.faspix.dto.ResponseUserDTO;
 import com.faspix.dto.ResponseUserShortDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,7 +12,7 @@ import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepository {
+public class UserDAO {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -24,7 +22,9 @@ public class UserRepository {
                     "FROM user_entity u " +
                     "JOIN user_role_mapping ur ON u.id = ur.user_id " +
                     "JOIN keycloak_role kr ON kr.id = ur.role_id " +
-                    "WHERE (lower(u.username) LIKE lower(:nickname) " +
+                    "WHERE u.username != 'service-account-microservice-client' " +
+                    "AND kr.name != 'default-roles-master' " +
+                    "AND (lower(u.username) LIKE lower(:nickname) " +
                     "OR lower(u.email) LIKE lower(:email)) " +
                     "GROUP BY u.id, u.username, u.email " +
                     "LIMIT :size OFFSET :offset";

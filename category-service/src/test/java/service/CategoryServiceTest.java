@@ -9,7 +9,7 @@ import com.faspix.exception.CategoryAlreadyExistException;
 import com.faspix.exception.CategoryNotEmptyException;
 import com.faspix.exception.CategoryNotFoundException;
 import com.faspix.mapper.CategoryMapper;
-import com.faspix.repository.CategoryRepository;
+import com.faspix.dao.CategoryRepository;
 import com.faspix.service.CategoryServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
