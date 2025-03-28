@@ -13,15 +13,40 @@ repositories {
 }
 
 publishing {
+    repositories {
+        maven {
+            name = 'nexus'
+            url = uri("http://localhost:8231/repository/eventhub-shared-lib/")  // URL вашего репозитория в Nexus
+            credentials {
+                username = 'eventhub-user'
+                password = '123123'
+            }
+            allowInsecureProtocol = true
+        }
+    }
+
     publications {
         mavenJava(MavenPublication) {
             from components.java
+            groupId = 'com.faspix'
+            artifactId = 'common-dto'
+            version = '0.0.1'
         }
     }
-    repositories {
-        mavenLocal()
-    }
 }
+
+
+
+//publishing {
+//    publications {
+//        mavenJava(MavenPublication) {
+//            from components.java
+//        }
+//    }
+//    repositories {
+//        mavenLocal()
+//    }
+//}
 
 
 dependencies {

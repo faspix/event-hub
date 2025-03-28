@@ -8,9 +8,18 @@ group = 'com.faspix'
 version = '1.0-SNAPSHOT'
 
 repositories {
+    maven {
+        url = uri("http://localhost:8231/repository/eventhub-shared-lib/")
+        credentials {
+            username = "eventhub-user-readonly"
+            password = "123123"
+        }
+        allowInsecureProtocol = true
+    }
     mavenCentral()
-    mavenLocal()
 }
+
+
 
 configurations {
     compileOnly {

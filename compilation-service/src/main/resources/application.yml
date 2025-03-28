@@ -2,10 +2,9 @@ spring:
   application:
     name: compilation-service
   config:
-    import: configserver:http://localhost:8001
+    import: configserver:http://config-service:8001
   cloud:
     config:
-      uri: http://localhost:8001
       fail-fast: true
       password: admin
       username: user

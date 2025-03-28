@@ -1,7 +1,87 @@
 services:
+
+  config-service:
+    restart: unless-stopped
+    build: ../config-service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgresdb
+    networks:
+      - backend
+
+  registry:
+    restart: unless-stopped
+    build: ../registry
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-service
+    networks:
+      - backend
+
+  category-service:
+    restart: unless-stopped
+    build: ../category-service
+    depends_on:
+      - registry
+    networks:
+      - backend
+
+  compilation-service:
+    restart: unless-stopped
+    build: ../compilation-service
+    depends_on:
+      - registry
+    networks:
+      - backend
+
+  event-service:
+    restart: unless-stopped
+    build: ../event-service
+    depends_on:
+      - registry
+    networks:
+      - backend
+
+  gateway:
+    restart: unless-stopped
+    build: ../gateway
+    ports:
+      - "8989:8989"
+    depends_on:
+      - registry
+    networks:
+      - backend
+
+
+  request-service:
+    restart: unless-stopped
+    build: ../request-service
+    depends_on:
+      - registry
+    networks:
+      - backend
+
+  statistics-service:
+    restart: unless-stopped
+    build: ../statistics-service
+    depends_on:
+      - registry
+    networks:
+      - backend
+
+  user-service:
+    restart: unless-stopped
+    build: ../user-service
+    depends_on:
+      - registry
+    networks:
+      - backend
+
   postgresdb:
     image: postgres:17.4
-    restart: always
+    restart: unless-stopped
     ports:
       - "7744:5432"
     environment:
@@ -16,9 +96,9 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.2
-    restart: always
+    restart: unless-stopped
     environment:
-      KC_HOSTNAME: localhost
+      KC_HOSTNAME: keycloak
       KC_HOSTNAME_PORT: 7080
       KC_HOSTNAME_STRICT_BACKCHANNEL: true
       KEYCLOAK_ADMIN: admin
@@ -48,7 +128,7 @@ services:
 
   redis:
     image: redis:7.4.2
-    restart: always
+    restart: unless-stopped
     container_name: redis-container
     ports:
       - "6379:6379"
@@ -59,12 +139,23 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    restart: always
+    restart: unless-stopped
     ports:
       - "5672:5672"
       - "15672:15672"
     networks:
       - backend
+
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    ports:
+      - "8231:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    environment:
+      - INSTALL4J_ADD_VM_PARAMS=-Xms512m -Xmx2g
+    restart: unless-stopped
 
 volumes:
   redis-data:
@@ -72,6 +163,8 @@ volumes:
   postgresdb-data:
     driver: local
   keycloak-data:
+    driver: local
+  nexus-data:
     driver: local
 
 networks:

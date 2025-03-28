@@ -2,7 +2,7 @@ spring:
   application:
     name: registry
   config:
-      import: configserver:http://localhost:8001
+      import: configserver:http://config-service:8001
   cloud:
     config:
       fail-fast: true

@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:7744/compilation_service
+    url: jdbc:postgresql://postgresdb:5432/compilation_service
     username: admin
     password: admin
   data:

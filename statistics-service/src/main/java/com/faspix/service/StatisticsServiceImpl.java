@@ -39,7 +39,6 @@ public class StatisticsServiceImpl implements StatisticsService {
                 : statisticsRepository.findEndpointStats(startInstant, endInstant, uris);
     }
 
-    // TODO: role
     @Override
     public void hitEndpoint(RequestEndpointStatsDTO requestDTO) {
         EndpointStats endpointStats = statisticsMapper.RequestToEndpoint(requestDTO);

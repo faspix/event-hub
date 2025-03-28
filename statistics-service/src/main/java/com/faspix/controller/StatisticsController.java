@@ -18,6 +18,7 @@ public class StatisticsController {
 
     private final StatisticsService statisticsService;
 
+    // TODO: remove / fix
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public void hitEndpoint(
