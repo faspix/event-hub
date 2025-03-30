@@ -3,8 +3,8 @@ services:
   config-service:
     restart: unless-stopped
     build: ../config-service
-    ports:
-      - "8001:8001"
+#    ports:
+#      - "8001:8001"
     depends_on:
       - postgresdb
     networks:
@@ -25,6 +25,7 @@ services:
     build: ../category-service
     depends_on:
       - registry
+      - config-service
     networks:
       - backend
 
@@ -33,6 +34,7 @@ services:
     build: ../compilation-service
     depends_on:
       - registry
+      - config-service
     networks:
       - backend
 
@@ -41,6 +43,7 @@ services:
     build: ../event-service
     depends_on:
       - registry
+      - config-service
     networks:
       - backend
 
@@ -51,15 +54,16 @@ services:
       - "8989:8989"
     depends_on:
       - registry
+      - config-service
     networks:
       - backend
-
 
   request-service:
     restart: unless-stopped
     build: ../request-service
     depends_on:
       - registry
+      - config-service
     networks:
       - backend
 
@@ -68,6 +72,7 @@ services:
     build: ../statistics-service
     depends_on:
       - registry
+      - config-service
     networks:
       - backend
 
@@ -76,6 +81,7 @@ services:
     build: ../user-service
     depends_on:
       - registry
+      - config-service
     networks:
       - backend
 
@@ -148,14 +154,58 @@ services:
 
   nexus:
     image: sonatype/nexus3
-    container_name: nexus
+    restart: unless-stopped
     ports:
       - "8231:8081"
     volumes:
       - nexus-data:/nexus-data
     environment:
       - INSTALL4J_ADD_VM_PARAMS=-Xms512m -Xmx2g
+
+
+  elasticsearch:
+    image: elasticsearch:8.17.1
+    container_name: elasticsearch
     restart: unless-stopped
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data/
+    environment:
+      - xpack.security.enabled=false  # Disable security for local development
+      - ES_JAVA_OPTS=-Xmx256m -Xms256m
+      - discovery.type=single-node
+    ports:
+      - '9200:9200'
+    networks:
+      - backend
+
+  logstash:
+    image: logstash:8.17.1
+    container_name: logstash
+    restart: unless-stopped
+    volumes:
+      - ./config/logstash.conf:/logstash_dir/pipeline/logstash.conf
+    command: logstash -f /logstash_dir/pipeline/logstash.conf
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+    ports:
+      - '5044:5044'
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend
+
+  kibana:
+    image: kibana:8.17.1
+    container_name: kibana
+    restart: unless-stopped
+    ports:
+      - '5601:5601'
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend
 
 volumes:
   redis-data:
@@ -165,6 +215,8 @@ volumes:
   keycloak-data:
     driver: local
   nexus-data:
+    driver: local
+  elastic-data:
     driver: local
 
 networks:
