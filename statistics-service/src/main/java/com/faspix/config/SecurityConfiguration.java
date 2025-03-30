@@ -21,6 +21,7 @@ public class SecurityConfiguration {
                         AbstractHttpConfigurer::disable
                 )
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(HttpMethod.GET, "/actuator/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->

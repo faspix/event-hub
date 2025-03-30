@@ -15,12 +15,19 @@ ext {
     set('springCloudVersion', "2024.0.0")
 }
 
+
+// Monitoring
 dependencies {
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.github.openfeign:feign-micrometer:13.5'
     implementation 'io.micrometer:micrometer-tracing-bridge-brave:1.5.0-M3'
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.0'
+}
+
+// Other
+dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     implementation "org.springframework.cloud:spring-cloud-starter-config"
-    implementation 'net.logstash.logback:logstash-logback-encoder:8.0'
 }
 
 dependencyManagement {

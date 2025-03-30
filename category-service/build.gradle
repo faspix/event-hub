@@ -62,11 +62,16 @@ dependencies {
 
 }
 
-// Other
+// Monitoring
 dependencies {
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.github.openfeign:feign-micrometer:13.5'
     implementation 'io.micrometer:micrometer-tracing-bridge-brave:1.5.0-M3'
     implementation 'net.logstash.logback:logstash-logback-encoder:8.0'
+}
+
+// Other
+dependencies {
     implementation 'com.faspix:common-dto:0.0.1'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
     compileOnly 'org.projectlombok:lombok'

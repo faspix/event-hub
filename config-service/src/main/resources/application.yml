@@ -11,5 +11,16 @@ spring:
       password: admin
       name: user
 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 server:
   port: 8001

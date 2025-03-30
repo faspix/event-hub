@@ -2,6 +2,17 @@ logging:
   level:
     org.springframework.security: DEBUG
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+
 eureka:
   instance:
     preferIpAddress: true
