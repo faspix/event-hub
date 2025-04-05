@@ -206,6 +206,7 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.53.4
+    restart: unless-stopped
     container_name: prometheus
     ports:
       - "9090:9090"
@@ -216,6 +217,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.6.0
+    restart: unless-stopped
     container_name: grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin

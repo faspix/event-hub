@@ -21,8 +21,6 @@ public class SecurityConfiguration {
                         csrf.disable()
                 )
                 .authorizeExchange(exchanges -> exchanges
-//                        .pathMatchers(HttpMethod.POST,"/users").permitAll()
-//                        .pathMatchers(HttpMethod.GET, "/events/**").permitAll()
                         .pathMatchers("/statistics/**").hasAnyRole("ADMIN")
                         .anyExchange().permitAll()
                 )
