@@ -38,14 +38,15 @@ jobs:
 
       - name: Accept EULA and set initial password
         run: |
-          INITIAL_PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
+          PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
+          echo $PASSWORD
           echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
-          echo "REPOSITORY_PASSWORD=admin" >> $GITHUB_ENV
+          echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
     
           curl -X POST http://localhost:8231/service/rest/v1/security/users/admin/change-password \
-          -u admin:$INITIAL_PASSWORD \
-          -H "Content-Type: text/plain" \
-          -d "${{ env.REPOSITORY_PASSWORD }}"
+            -u admin:$REPOSITORY_PASSWORD \
+            -H "Content-Type: text/plain" \
+            -d "${{ env.REPOSITORY_PASSWORD }}"
 
       - name: Create eventhub-shared-lib Repository
         run: |
