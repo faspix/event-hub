@@ -1,17 +1,12 @@
-name: Test Microservices
+name: Publish common-dto
 
 on:
   push:
     branches:
       - master
-      - main
-  pull_request:
-    branches:
-      - master
-      - main
 
 jobs:
-  test-microservices:
+  publish-common-dto:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
@@ -48,7 +43,8 @@ jobs:
               }' \
             http://localhost:8231/service/rest/v1/system/eula
 
-      - name: Create eventhub-shared-lib repository
+
+      - name: Create eventhub-shared-lib Repository
         run: |
           curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST \
             -H "Content-Type: application/json" \
@@ -70,6 +66,14 @@ jobs:
                 }' \
             http://localhost:8231/service/rest/v1/repositories/maven/hosted
 
+      - name: Test repository write access
+        run: |
+          curl -v -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
+          -X PUT \
+          -H "Content-Type: text/plain" \
+          -d "test" \
+          http://localhost:8231/repository/eventhub-shared-lib/test.txt
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -85,24 +89,3 @@ jobs:
           ./../gradlew publish \
           -PREPOSITORY_WRITE_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_WRITE_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Run tests and generate coverage report
-        run: |
-          ./gradlew clean test jacocoRootReport \
-#          ./gradlew test --no-daemon \
-          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
-          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
-
-      - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@v1.3
-        with:
-          coverage-reports: ./build/reports/jacoco/jacocoRootReport/jacoco.xml
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
