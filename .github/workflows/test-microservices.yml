@@ -1,4 +1,4 @@
-name: Publish common-dto
+name: Test Microservices
 
 on:
   push:
@@ -32,6 +32,18 @@ jobs:
           PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
           echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
           echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
+          echo "repository_username=admin" >> $GITHUB_OUTPUT
+          echo "repository_password=$PASSWORD" >> $GITHUB_OUTPUT
+
+      - name: Accept EULA and set initial password
+        run: |
+          curl -u $REPOSITORY_USERNAME:$REPOSITORY_PASSWORD -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "disclaimer": "Use of Sonatype Nexus Repository - Community Edition is governed by the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula. By returning the value from ‘accepted:false’ to ‘accepted:true’, you acknowledge that you have read and agree to the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula.",
+              "accepted": true
+              }' \
+            http://localhost:8231/service/rest/v1/system/eula
 
       - name: Create eventhub-shared-lib Repository
         run: |
@@ -68,5 +80,19 @@ jobs:
         run: |
           cd common-dto
           ./../gradlew publish \
-          -PrepositoryWriteUsername=${{ env.REPOSITORY_USERNAME }} \
-          -PrepositoryWritePassword=${{ env.REPOSITORY_PASSWORD }}
+          -PREPOSITORY_WRITE_USERNAME=${{ env.REPOSITORY_USERNAME }} \
+          -PREPOSITORY_WRITE_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
+
+  test-microservices:
+    needs: publish-common-dto
+    runs-on: ubuntu-latest
+
+    env:
+      REPOSITORY_USERNAME: ${{ needs.job1.outputs.repository_username }}
+      REPOSITORY_PASSWORD: ${{ needs.job1.outputs.repository_password }}
+
+    steps:
+      - name: test2
+        run: |
+          echo $REPOSITORY_USERNAME
+          echo $REPOSITORY_PASSWORD
