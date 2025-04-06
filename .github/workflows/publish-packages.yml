@@ -68,5 +68,6 @@ jobs:
         run: |
           cd common-dto
           ./../gradlew publish \
-          -PrepositoryWriteUsername=${{ env.REPOSITORY_USERNAME }} \
-          -PrepositoryWritePassword=${{ env.REPOSITORY_PASSWORD }}
+          -PREPOSITORY_WRITE_USERNAME=${{ env.REPOSITORY_USERNAME }} \
+          -PREPOSITORY_WRITE_PASSWORD=${{ env.REPOSITORY_PASSWORD }} \ 
+          --info
