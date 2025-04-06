@@ -55,6 +55,14 @@ jobs:
                 }' \
             http://localhost:8231/service/rest/v1/repositories/maven/hosted
 
+      - name: Accept Nexus EULA
+        run: |
+          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
+          -X POST \
+          -H "Content-Type: application/json" \
+          -d '{"eulaAccepted": true}' \
+          http://localhost:8231/service/rest/v1/status/writable
+
       - name: Test repository write access
         run: |
           curl -v -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
