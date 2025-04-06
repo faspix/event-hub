@@ -33,6 +33,14 @@ jobs:
           echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
           echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
 
+      - name: Accept Nexus EULA
+        run: |
+          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
+          -X POST \
+          -H "Content-Type: application/json" \
+          -d '{"eulaAccepted": true}' \
+          http://localhost:8231/service/rest/v1/status/writable
+
       - name: Create eventhub-shared-lib Repository
         run: |
           curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST \
@@ -54,14 +62,6 @@ jobs:
                   "format": "maven2"
                 }' \
             http://localhost:8231/service/rest/v1/repositories/maven/hosted
-
-      - name: Accept Nexus EULA
-        run: |
-          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
-          -X POST \
-          -H "Content-Type: application/json" \
-          -d '{"eulaAccepted": true}' \
-          http://localhost:8231/service/rest/v1/status/writable
 
       - name: Test repository write access
         run: |
