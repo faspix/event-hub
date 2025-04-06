@@ -1,4 +1,4 @@
-name: Publish common-dto
+name: Test Microservices
 
 on:
   push:
@@ -32,6 +32,8 @@ jobs:
           PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
           echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
           echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
+          echo "repository_username=admin" >> $GITHUB_OUTPUT
+          echo "repository_password=$PASSWORD" >> $GITHUB_OUTPUT
 
       - name: Accept EULA and set initial password
         run: |
@@ -42,7 +44,6 @@ jobs:
               "accepted": true
               }' \
             http://localhost:8231/service/rest/v1/system/eula
-
 
       - name: Create eventhub-shared-lib Repository
         run: |
@@ -66,14 +67,6 @@ jobs:
                 }' \
             http://localhost:8231/service/rest/v1/repositories/maven/hosted
 
-      - name: Test repository write access
-        run: |
-          curl -v -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
-          -X PUT \
-          -H "Content-Type: text/plain" \
-          -d "test" \
-          http://localhost:8231/repository/eventhub-shared-lib/test.txt
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -89,3 +82,17 @@ jobs:
           ./../gradlew publish \
           -PREPOSITORY_WRITE_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_WRITE_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
+
+  test-microservices:
+    needs: publish-common-dto
+    runs-on: ubuntu-latest
+
+    env:
+      REPOSITORY_USERNAME: ${{ needs.job1.outputs.repository_username }}
+      REPOSITORY_PASSWORD: ${{ needs.job1.outputs.repository_password }}
+
+    steps:
+      - name: test2
+        run: |
+          echo $REPOSITORY_USERNAME
+          echo $REPOSITORY_PASSWORD
