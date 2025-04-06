@@ -55,6 +55,14 @@ jobs:
                 }' \
             http://localhost:8231/service/rest/v1/repositories/maven/hosted
 
+      - name: Test repository write access
+        run: |
+          curl -v -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
+          -X PUT \
+          -H "Content-Type: text/plain" \
+          -d "test" \
+          http://localhost:8231/repository/eventhub-shared-lib/test.txt
+
       - name: Checkout code
         uses: actions/checkout@v4
 

@@ -25,7 +25,7 @@ publishing {
                         ? project.property("REPOSITORY_WRITE_PASSWORD")
                         : ""
             }
-            println "Using credentials: username=${credentials.username}, password=${credentials.password?.replaceAll('.', '*')}"
+            println "Using credentials: username=${credentials.username}, password=${credentials.password}"
             allowInsecureProtocol = true
         }
     }
