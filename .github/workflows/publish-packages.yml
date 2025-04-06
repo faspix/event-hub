@@ -27,18 +27,25 @@ jobs:
             exit 1
           fi
 
-      - name: Accept Nexus EULA
-        run: |
-          curl -X PUT \
-          -H "Content-Type: application/json" \
-          -d '{"eulaAccepted": true}' \
-          http://localhost:8231/v1/eula/accept
+#      - name: Get Nexus Admin Password
+#        run: |
+#          PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
+#          echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
+#          echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
 
-      - name: Get Nexus Admin Password
+      - name: Wait for Nexus repository
+        run: sleep 20
+
+      - name: Accept EULA and set initial password
         run: |
-          PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
+          INITIAL_PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
           echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
-          echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
+          echo "REPOSITORY_PASSWORD=admin" >> $GITHUB_ENV
+    
+          curl -X POST http://localhost:8231/service/rest/v1/security/users/admin/change-password \
+          -u admin:$INITIAL_PASSWORD \
+          -H "Content-Type: text/plain" \
+          -d "${{ env.REPOSITORY_PASSWORD }}"
 
       - name: Create eventhub-shared-lib Repository
         run: |
