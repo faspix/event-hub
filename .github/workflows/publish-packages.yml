@@ -42,7 +42,13 @@ jobs:
                   "online": true,
                   "storage": {
                     "blobStoreName": "default",
-                    "strictContentTypeValidation": true
+                    "strictContentTypeValidation": true,
+                    "writePolicy": "ALLOW"
+                  },
+                  "maven": {
+                    "versionPolicy": "RELEASE",
+                    "layoutPolicy": "STRICT",
+                    "contentDisposition": "INLINE"
                   },
                   "type": "hosted",
                   "format": "maven2"
