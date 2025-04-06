@@ -90,7 +90,11 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Build
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build --no-daemon \
+          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
+          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
 
       - name: Run tests with Gradle
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test --no-daemon \
+          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
+          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
