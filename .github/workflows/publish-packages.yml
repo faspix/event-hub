@@ -48,7 +48,7 @@ jobs:
             -H "Content-Type: text/plain" \
             -d "${{ env.REPOSITORY_PASSWORD }}"
       
-          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST 'https://localhost:8081/service/rest/v1/system/eula' -d '{"disclaimer": "Use of Sonatype Nexus Repository - Community Edition is governed by the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula. By returning the value from ‘accepted:false’ to ‘accepted:true’, you acknowledge that you have read and agree to the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula.", "accepted": true}'
+          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST 'https://localhost:8231/service/rest/v1/system/eula' -d '{"disclaimer": "Use of Sonatype Nexus Repository - Community Edition is governed by the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula. By returning the value from ‘accepted:false’ to ‘accepted:true’, you acknowledge that you have read and agree to the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula.", "accepted": true}'
 
       - name: Create eventhub-shared-lib Repository
         run: |
