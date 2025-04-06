@@ -27,30 +27,15 @@ jobs:
             exit 1
           fi
 
-#      - name: Get Nexus Admin Password
-#        run: |
-#          PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
-#          echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
-#          echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
-
-      - name: Wait for Nexus repository
-        run: sleep 20
+      - name: Get Nexus Admin Password
+        run: |
+          PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
+          echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
+          echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
 
       - name: Accept EULA and set initial password
         run: |
-          PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
-          echo $PASSWORD
-          echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
-          echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
-    
-          curl -X POST http://localhost:8231/service/rest/v1/security/users/admin/change-password \
-            -u admin:$REPOSITORY_PASSWORD \
-            -H "Content-Type: text/plain" \
-            -d "${{ env.REPOSITORY_PASSWORD }}"
-      
-          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST 'http://localhost:8231/service/rest/v1/system/eula' -d '{"disclaimer": "Use of Sonatype Nexus Repository - Community Edition is governed by the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula. By returning the value from ‘accepted:false’ to ‘accepted:true’, you acknowledge that you have read and agree to the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula.", "accepted": true}'
-
-          curl -u admin:$PASSWORD -X POST \
+          curl -u $REPOSITORY_USERNAME:$REPOSITORY_PASSWORD -X POST \
             -H "Content-Type: application/json" \
             -d '{
               "disclaimer": "Use of Sonatype Nexus Repository - Community Edition is governed by the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula. By returning the value from ‘accepted:false’ to ‘accepted:true’, you acknowledge that you have read and agree to the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula.",
