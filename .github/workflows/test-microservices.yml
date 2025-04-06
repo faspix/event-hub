@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  publish-common-dto:
+  test-microservices:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
@@ -32,8 +32,6 @@ jobs:
           PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
           echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
           echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
-          echo "repository_username=admin" >> $GITHUB_OUTPUT
-          echo "repository_password=$PASSWORD" >> $GITHUB_OUTPUT
 
       - name: Accept EULA and set initial password
         run: |
@@ -83,16 +81,16 @@ jobs:
           -PREPOSITORY_WRITE_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_WRITE_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
 
-  test-microservices:
-    needs: publish-common-dto
-    runs-on: ubuntu-latest
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-    env:
-      REPOSITORY_USERNAME: ${{ needs.job1.outputs.repository_username }}
-      REPOSITORY_PASSWORD: ${{ needs.job1.outputs.repository_password }}
+      - name: Build
+        run: ./gradlew build --no-daemon
 
-    steps:
-      - name: test2
-        run: |
-          echo $REPOSITORY_USERNAME
-          echo $REPOSITORY_PASSWORD
+      - name: Run tests with Gradle
+        run: ./gradlew test --no-daemon
