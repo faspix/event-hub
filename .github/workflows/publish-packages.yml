@@ -55,6 +55,15 @@ jobs:
                 }' \
             http://localhost:8231/service/rest/v1/repositories/maven/hosted
 
+      - name: Verify repository creation
+        run: |
+          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
+          http://localhost:8231/service/rest/v1/repositories
+
+      - name: Wait for Nexus repository
+        run: sleep 30
+
+
       - name: Checkout code
         uses: actions/checkout@v4
 
