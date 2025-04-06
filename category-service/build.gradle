@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
+
 group = 'com.faspix'
 version = '1.0-SNAPSHOT'
 
@@ -11,8 +12,12 @@ repositories {
     maven {
         url = uri("http://localhost:8231/repository/eventhub-shared-lib/")
         credentials {
-            username = "eventhub-user-readonly"
-            password = "123123"
+            username = project.hasProperty("REPOSITORY_USERNAME")
+                    ? project.property("REPOSITORY_USERNAME")
+                    : ""
+            password = project.hasProperty("REPOSITORY_PASSWORD")
+                    ? project.property("REPOSITORY_PASSWORD")
+                    : ""
         }
         allowInsecureProtocol = true
     }

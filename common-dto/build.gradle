@@ -16,10 +16,14 @@ publishing {
     repositories {
         maven {
             name = 'nexus'
-            url = uri("http://localhost:8231/repository/eventhub-shared-lib/")  // URL вашего репозитория в Nexus
+            url = uri("http://localhost:8231/repository/eventhub-shared-lib/")
             credentials {
-                username = 'eventhub-user'
-                password = '123123'
+                username = project.hasProperty("REPOSITORY_WRITE_USERNAME")
+                        ? project.property("REPOSITORY_WRITE_USERNAME")
+                        : ""
+                password = project.hasProperty("REPOSITORY_WRITE_PASSWORD")
+                        ? project.property("REPOSITORY_WRITE_PASSWORD")
+                        : ""
             }
             allowInsecureProtocol = true
         }
