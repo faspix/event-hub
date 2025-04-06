@@ -14,15 +14,15 @@ jobs:
 
       - name: Run Nexus Container
         run: |
-          docker run -d -p 8081:8081 --name nexus sonatype/nexus3:3.78.2
+          docker run -d -p 8231:8081 --name nexus sonatype/nexus3:3.78.2
           for i in {1..30}; do
-            if curl -s http://localhost:8081 > /dev/null; then
+            if curl -s http://localhost:8231 > /dev/null; then
               echo "Nexus is up!"
               break
             fi
             sleep 10
           done
-          if ! curl -s http://localhost:8081 > /dev/null; then
+          if ! curl -s http://localhost:8231 > /dev/null; then
             echo "Nexus failed to start in time"
             exit 1
           fi
@@ -32,6 +32,22 @@ jobs:
           PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
           echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
           echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
+
+      - name: Create eventhub-shared-lib Repository
+        run: |
+          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+                  "name": "eventhub-shared-lib",
+                  "online": true,
+                  "storage": {
+                    "blobStoreName": "default",
+                    "strictContentTypeValidation": true
+                  },
+                  "type": "hosted",
+                  "format": "maven2"
+                }' \
+            http://localhost:8231/service/rest/v1/repositories/maven/hosted
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,6 +61,6 @@ jobs:
       - name: Publish common-dto to Nexus
         run: |
           cd common-dto
-          ./../gradlew publish 
-          -PrepositoryUsername=${{ env.REPOSITORY_USERNAME }}
-          -PrepositoryPassword=${{ env.REPOSITORY_PASSWORD }}
+          ./../gradlew publish \
+          -PrepositoryWriteUsername=${{ env.REPOSITORY_USERNAME }} \
+          -PrepositoryWritePassword=${{ env.REPOSITORY_PASSWORD }}
