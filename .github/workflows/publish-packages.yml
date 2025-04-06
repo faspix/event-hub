@@ -55,14 +55,6 @@ jobs:
                 }' \
             http://localhost:8231/service/rest/v1/repositories/maven/hosted
 
-      - name: Wait for Nexus repository
-        run: sleep 50
-
-      - name: Verify repository configuration
-        run: |
-          curl -v -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} \
-          http://localhost:8231/service/rest/v1/repositories/eventhub-shared-lib
-
       - name: Checkout code
         uses: actions/checkout@v4
 
