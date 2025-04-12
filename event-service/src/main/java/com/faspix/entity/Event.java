@@ -69,9 +69,6 @@ public class Event {
     private EventState state;
 
     @Column(nullable = false)
-    private Long views;
-
-    @Column(nullable = false)
     private Integer likes;
 
     @Column(nullable = false)

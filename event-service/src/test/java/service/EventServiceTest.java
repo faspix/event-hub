@@ -1,6 +1,7 @@
 package service;
 
 import com.faspix.client.CategoryServiceClient;
+import com.faspix.client.StatisticsServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
@@ -55,6 +56,9 @@ public class EventServiceTest {
 
     @Mock
     private EndpointStatisticsService endpointStatisticsService;
+
+    @Mock
+    private StatisticsServiceClient statisticsServiceClient;
 
     @Mock
     private CategoryServiceClient categoryServiceClient;
@@ -139,7 +143,6 @@ public class EventServiceTest {
         assertThat(updatedEvent.getLocation(), equalTo(event.getLocation()));
         assertThat(updatedEvent.getPaid(), equalTo(event.getPaid()));
         assertThat(updatedEvent.getState(), equalTo(event.getState()));
-        assertThat(updatedEvent.getViews(), equalTo(event.getViews()));
 
         verify(eventRepository, times(1)).save(any());
     }
@@ -179,7 +182,6 @@ public class EventServiceTest {
         assertThat(updatedEvent.getLocation(), equalTo(event.getLocation()));
         assertThat(updatedEvent.getPaid(), equalTo(event.getPaid()));
         assertThat(updatedEvent.getState(), equalTo(event.getState()));
-        assertThat(updatedEvent.getViews(), equalTo(event.getViews()));
 
         verify(eventRepository, times(1)).save(any());
     }
@@ -231,8 +233,6 @@ public class EventServiceTest {
         assertThat(result.getPublishedOn(), equalTo(event.getPublishedOn()));
         assertThat(result.getPaid(), equalTo(event.getPaid()));
         assertThat(result.getState(), equalTo(event.getState()));
-        assertThat(result.getViews(), equalTo(event.getViews()));
-
     }
 
     @Test
@@ -292,7 +292,6 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getLocation(), equalTo(updatedEvent.getLocation()));
         assertThat(eventFromRepo.getPaid(), equalTo(updatedEvent.getPaid()));
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
-        assertThat(eventFromRepo.getViews(), equalTo(updatedEvent.getViews()));
 
         verify(eventRepository, times(1)).save(any());
     }
@@ -334,7 +333,6 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getLocation(), equalTo(updatedEvent.getLocation()));
         assertThat(eventFromRepo.getPaid(), equalTo(updatedEvent.getPaid()));
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
-        assertThat(eventFromRepo.getViews(), equalTo(updatedEvent.getViews()));
 
         verify(eventRepository, times(1)).save(any());
     }

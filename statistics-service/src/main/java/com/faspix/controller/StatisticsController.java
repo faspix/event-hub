@@ -6,6 +6,7 @@ import com.faspix.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,15 +18,6 @@ import java.util.List;
 public class StatisticsController {
 
     private final StatisticsService statisticsService;
-
-    // TODO: remove / fix
-    @PostMapping("/hit")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void hitEndpoint(
-            @RequestBody RequestEndpointStatsDTO requestDTO
-    ) {
-        statisticsService.hitEndpoint(requestDTO);
-    }
 
     @GetMapping("/stats")
     public List<ResponseEndpointStatsDTO> getEndpointStats(

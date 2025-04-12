@@ -70,22 +70,22 @@ public class StatisticsControllerTest {
         statisticsRepository.deleteAll();
     }
 
-    @Test
-    void hitEndpointTest_Success() throws Exception {
-        RequestEndpointStatsDTO request = makeRequestEndpoint();
-
-        mockMvc.perform(post("/statistics/hit")
-                        .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                ).andExpect(status().isCreated());
-
-        EndpointStats fromRepo = statisticsRepository.findAll().getFirst();
-        assertThat(request.getApp(), equalTo(fromRepo.getApp()));
-        assertThat(request.getIp(), equalTo(fromRepo.getIp()));
-        assertThat(request.getUri(), equalTo(fromRepo.getUri()));
-        assertThat(request.getTimestamp(), equalTo(fromRepo.getTimestamp()));
-    }
+//    @Test
+//    void hitEndpointTest_Success() throws Exception {
+//        RequestEndpointStatsDTO request = makeRequestEndpoint();
+//
+//        mockMvc.perform(post("/statistics/hit")
+//                        .content(objectMapper.writeValueAsString(request))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON)
+//                ).andExpect(status().isCreated());
+//
+//        EndpointStats fromRepo = statisticsRepository.findAll().getFirst();
+//        assertThat(request.getApp(), equalTo(fromRepo.getApp()));
+//        assertThat(request.getIp(), equalTo(fromRepo.getIp()));
+//        assertThat(request.getUri(), equalTo(fromRepo.getUri()));
+//        assertThat(request.getTimestamp(), equalTo(fromRepo.getTimestamp()));
+//    }
 
     @Test
     void getEndpointStatsTest_Success() throws Exception {
