@@ -10,7 +10,7 @@ import com.faspix.dto.ResponseUserShortDTO;
 import com.faspix.entity.Request;
 import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
-import com.faspix.dao.RequestRepository;
+import com.faspix.repository.RequestRepository;
 import com.faspix.service.ConfirmedRequestService;
 import com.faspix.service.RequestService;
 import com.fasterxml.jackson.core.type.TypeReference;

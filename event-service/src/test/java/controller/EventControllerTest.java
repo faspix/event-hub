@@ -8,7 +8,7 @@ import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
-import com.faspix.dao.EventRepository;
+import com.faspix.repository.EventRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;

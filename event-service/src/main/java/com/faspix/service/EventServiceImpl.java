@@ -11,7 +11,7 @@ import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
-import com.faspix.dao.EventRepository;
+import com.faspix.repository.EventRepository;
 import com.faspix.utility.EventSortType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

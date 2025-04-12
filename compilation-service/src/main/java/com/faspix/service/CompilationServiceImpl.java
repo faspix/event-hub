@@ -9,7 +9,7 @@ import com.faspix.exception.CompilationAlreadyExistException;
 import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
 import com.faspix.mapper.EventMapper;
-import com.faspix.dao.CompilationRepository;
+import com.faspix.repository.CompilationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;

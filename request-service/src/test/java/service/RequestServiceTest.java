@@ -10,7 +10,7 @@ import com.faspix.enums.ParticipationRequestState;
 import com.faspix.exception.RequestNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
-import com.faspix.dao.RequestRepository;
+import com.faspix.repository.RequestRepository;
 import com.faspix.service.ConfirmedRequestService;
 import com.faspix.service.RequestServiceImpl;
 import org.junit.jupiter.api.Test;
