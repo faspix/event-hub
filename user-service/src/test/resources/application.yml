@@ -1,0 +1,12 @@
+spring:
+  liquibase:
+    enabled: false
+  config:
+    import: optional:configserver:http::/localhost:8001
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+eureka:
+  client:
+    enabled: false
