@@ -2,6 +2,7 @@ package controller;
 
 import com.faspix.EventApplication;
 import com.faspix.client.CategoryServiceClient;
+import com.faspix.client.StatisticsServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.controller.EventController;
 import com.faspix.dto.*;
@@ -65,6 +66,9 @@ public class EventControllerTest {
 
     @MockitoBean
     private UserServiceClient userServiceClient;
+
+    @MockitoBean
+    private StatisticsServiceClient statisticsServiceClient;
 
     @MockitoBean
     private CacheManager cacheManager;
@@ -332,7 +336,6 @@ public class EventControllerTest {
         assertThat(result.getLocation(), equalTo(savedEvent.getLocation()));
         assertThat(result.getPaid(), equalTo(savedEvent.getPaid()));
         assertThat(result.getState(), equalTo(savedEvent.getState()));
-        assertThat(result.getViews(), equalTo(savedEvent.getViews()));
     }
 
     @Test
@@ -365,7 +368,6 @@ public class EventControllerTest {
         assertThat(result.getAnnotation(), equalTo(savedEvent.getAnnotation()));
         assertThat(result.getEventDate(), equalTo(savedEvent.getEventDate()));
         assertThat(result.getPaid(), equalTo(savedEvent.getPaid()));
-        assertThat(result.getViews(), equalTo(savedEvent.getViews()));
     }
 
     @Test

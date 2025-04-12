@@ -1,6 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.client.CategoryServiceClient;
+import com.faspix.client.StatisticsServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
@@ -45,6 +46,8 @@ public class EventServiceImpl implements EventService {
 
     private final CategoryServiceClient categoryServiceClient;
 
+    private final StatisticsServiceClient statisticsServiceClient;
+
     private final EventRepository eventRepository;
 
     private final EndpointStatisticsService endpointStatisticsService;
@@ -68,7 +71,6 @@ public class EventServiceImpl implements EventService {
         event.setCreationDate(OffsetDateTime.now());
         event.setInitiatorId(creatorId);
         event.setState(EventState.PENDING);
-        event.setViews(0L);
         event.setLikes(0);
         event.setDislikes(0);
 
@@ -95,7 +97,6 @@ public class EventServiceImpl implements EventService {
         updatedEvent.setCreationDate(event.getCreationDate());
         updatedEvent.setInitiatorId(event.getInitiatorId());
         updatedEvent.setState(event.getState());
-        updatedEvent.setViews(event.getViews());
         updatedEvent.setLikes(event.getLikes());
         updatedEvent.setLikes(event.getDislikes());
 
@@ -133,6 +134,13 @@ public class EventServiceImpl implements EventService {
         );
         if (event.getState() != EventState.PUBLISHED)
             throw new EventNotPublishedException("Event with id " + eventId + " not published yet");
+
+        Cache cache = cacheManager.getCache("EventService::getEventViewsById");
+        if (cache == null) {
+            log.error("Cache EventService::getEventViewsById is null");
+        } else {
+            cache.put(eventId, getViewsById(eventId) + 1);
+        }
         endpointStatisticsService.sendEndpointStatistics(
                 RequestEndpointStatsDTO.builder()
                         .app("event-service")
@@ -195,13 +203,6 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
     }
 
-    @Override
-    @Transactional
-    public void setViews(SetViewsDTO viewsDTO) {
-        Event event = getEventById(viewsDTO.getEventId());
-        event.setViews(event.getViews() + viewsDTO.getCount());
-        eventRepository.save(event);
-    }
 
     @Override
     public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids) {
@@ -238,10 +239,12 @@ public class EventServiceImpl implements EventService {
     private ResponseEventDTO getResponseDTO(Event event) {
         ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
         ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
+        Long views = getViewsById(event.getEventId());
 
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
 
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
+        responseDTO.setViews(views);
         responseDTO.setCategory(category);
         responseDTO.setInitiator(initiator);
         responseDTO.setComments(comments);
@@ -251,12 +254,37 @@ public class EventServiceImpl implements EventService {
     private ResponseEventShortDTO getResponseShortDTO(Event event) {
         ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
         ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
+        Long views = getViewsById(event.getEventId());
 
         ResponseEventShortDTO responseDTO = eventMapper.eventToShortResponse(event);
 
+        responseDTO.setViews(views);
         responseDTO.setCategory(category);
         responseDTO.setInitiator(initiator);
         return responseDTO;
+    }
+
+    private Long getViewsById(Long eventId) {
+        Cache cache = cacheManager.getCache("EventService::getEventViewsById");
+        if (cache == null) {
+            log.error("Cache EventService::getEventViewsById is null, requested eventId id: {}", eventId);
+            return fetchEventViewsFromDB(eventId);
+        }
+
+        Long views = cache.get(eventId, Long.class);
+        if (views != null) {
+            return views;
+        }
+
+        log.debug("Views for event with id {} not found in cache, fetching from statistics service", eventId);
+        return fetchEventViewsFromDB(eventId);
+    }
+
+    private Long fetchEventViewsFromDB(Long eventId) {
+        List<ResponseEndpointStatsDTO> statsById = statisticsServiceClient.getStatsById(eventId);
+        return (statsById == null || statsById.isEmpty())
+                ? null
+                : statsById.getFirst().getHits();
     }
 
     private ResponseCategoryDTO getCategoryById(Long id) {

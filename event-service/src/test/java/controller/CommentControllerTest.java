@@ -2,6 +2,7 @@ package controller;
 
 import com.faspix.EventApplication;
 import com.faspix.client.CategoryServiceClient;
+import com.faspix.client.StatisticsServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.controller.EventController;
 import com.faspix.dto.*;
@@ -72,6 +73,9 @@ public class CommentControllerTest {
 
     @MockitoBean
     private EndpointStatisticsService endpointStatisticsService;
+
+    @MockitoBean
+    private StatisticsServiceClient statisticsServiceClient;
 
     @MockitoBean
     private CategoryServiceClient categoryServiceClient;

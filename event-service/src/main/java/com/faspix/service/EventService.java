@@ -40,7 +40,5 @@ public interface EventService {
 
     ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
 
-    void setViews(SetViewsDTO viewsDTO);
-
     List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids);
 }

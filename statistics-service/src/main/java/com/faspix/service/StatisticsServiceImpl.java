@@ -23,7 +23,7 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final StatisticsMapper statisticsMapper;
 
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('MICROSERVICE', 'ADMIN')")
     public List<ResponseEndpointStatsDTO> getEndpointStats(LocalDateTime start, LocalDateTime end,
                                                         List<String> uris, Boolean unique) {
         if (start == null)

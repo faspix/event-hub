@@ -28,7 +28,6 @@ public interface EventMapper {
     @Mapping(target = "initiatorId", ignore = true)
     @Mapping(target = "publishedOn", ignore = true)
     @Mapping(target = "state", ignore = true)
-    @Mapping(target = "views", ignore = true)
     @Mapping(target = "likes", ignore = true)
     @Mapping(target = "dislikes", ignore = true)
     Event requestToEvent(RequestEventDTO eventDTO);
