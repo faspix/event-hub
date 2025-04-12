@@ -5,7 +5,7 @@ import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
 import com.faspix.entity.Compilation;
-import com.faspix.dao.CompilationRepository;
+import com.faspix.repository.CompilationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;

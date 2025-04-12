@@ -1,4 +1,4 @@
-package com.faspix.dao;
+package com.faspix.repository;
 
 import com.faspix.entity.Request;
 import com.faspix.enums.ParticipationRequestState;

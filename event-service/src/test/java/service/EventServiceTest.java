@@ -10,7 +10,7 @@ import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
-import com.faspix.dao.EventRepository;
+import com.faspix.repository.EventRepository;
 import com.faspix.service.CommentService;
 import com.faspix.service.EndpointStatisticsService;
 import com.faspix.service.EventServiceImpl;

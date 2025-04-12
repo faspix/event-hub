@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   test-microservices:
@@ -43,7 +46,7 @@ jobs:
               }' \
             http://localhost:8231/service/rest/v1/system/eula
 
-      - name: Create eventhub-shared-lib Repository
+      - name: Create eventhub-shared-lib repository
         run: |
           curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST \
             -H "Content-Type: application/json" \
@@ -89,13 +92,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build
-        run: |
-          ./gradlew build --no-daemon \
-          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
-          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
+#      - name: Build
+#        run: |
+#          ./gradlew build --no-daemon \
+#          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
+#          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
 
-      - name: Run tests with Gradle
+      - name: Run tests
         run: |
           ./gradlew test --no-daemon \
           -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \

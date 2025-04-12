@@ -1,4 +1,4 @@
-package com.faspix.dao;
+package com.faspix.repository;
 
 import com.faspix.entity.Compilation;
 import org.springframework.data.domain.Page;

@@ -8,7 +8,7 @@ import com.faspix.exception.CategoryAlreadyExistException;
 import com.faspix.exception.CategoryNotEmptyException;
 import com.faspix.exception.CategoryNotFoundException;
 import com.faspix.mapper.CategoryMapper;
-import com.faspix.dao.CategoryRepository;
+import com.faspix.repository.CategoryRepository;
 import com.faspix.utility.PageRequestMaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

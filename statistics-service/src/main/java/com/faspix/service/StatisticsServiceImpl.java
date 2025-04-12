@@ -4,7 +4,7 @@ import com.faspix.dto.RequestEndpointStatsDTO;
 import com.faspix.dto.ResponseEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
 import com.faspix.mapper.StatisticsMapper;
-import com.faspix.dao.StatisticsRepository;
+import com.faspix.repository.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
