@@ -167,7 +167,7 @@ services:
     volumes:
       - elastic-data:/usr/share/elasticsearch/data/
     environment:
-      - xpack.security.enabled=false  # Disable security for local development
+      - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xmx256m -Xms256m
       - discovery.type=single-node
     ports:
