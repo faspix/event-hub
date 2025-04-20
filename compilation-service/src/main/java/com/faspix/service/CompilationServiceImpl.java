@@ -11,6 +11,12 @@ import com.faspix.mapper.CompilationMapper;
 import com.faspix.mapper.EventMapper;
 import com.faspix.repository.CompilationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +30,7 @@ import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class CompilationServiceImpl implements CompilationService {
 
@@ -35,24 +42,38 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final EventServiceClient eventServiceClient;
 
+    private final CacheManager cacheManager;
+
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCompilationDTO createCompilation(RequestCompilationDTO compilationDTO) {
 
         Compilation compilation;
+        ResponseCompilationDTO responseDTO;
         try {
             compilation = compilationRepository.saveAndFlush(
                     compilationMapper.requestToCompilation(compilationDTO)
             );
+
+            responseDTO = getResponseDTO(compilation);
+
+            Cache cache = cacheManager.getCache("CompilationService::findCompilationById");
+            if (cache != null) {
+                cache.put(compilation.getId(), responseDTO);
+            } else {
+                log.error("Cache CompilationService::findCompilationById is null");
+            }
+
         } catch (DataIntegrityViolationException e) {
             throw new CompilationAlreadyExistException(
                     "Compilation with title '" + compilationDTO.getTitle() + "' already exist");
         }
-        return getResponseDTO(compilation);
+        return responseDTO;
     }
 
     @Override
+    @Cacheable(value = "CompilationService::findCompilationById", key = "#id")
     public ResponseCompilationDTO findCompilationById(Long id) {
         Compilation compilation = compilationRepository.findById(id).orElseThrow(
                 () -> new CompilationNotFoundException("Compilation with id " + id + " not found")
@@ -82,6 +103,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
+    @CachePut(value = "CompilationService::findCompilationById", key = "#id")
     public ResponseCompilationDTO editCompilation(Long id, RequestCompilationDTO compilationDTO) {
         checkCompilationExistence(id);
         Compilation updatedCompilation = compilationMapper.requestToCompilation(compilationDTO);
@@ -99,6 +121,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
+    @CacheEvict(value = "CompilationService::findCompilationById", key = "#id")
     public void deleteCompilation(Long id) {
         checkCompilationExistence(id);
         compilationRepository.deleteById(id);

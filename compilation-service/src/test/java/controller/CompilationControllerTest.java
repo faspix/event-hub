@@ -10,9 +10,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -54,6 +56,9 @@ public class CompilationControllerTest {
 
     @MockitoBean
     private EventServiceClient eventServiceClient;
+
+    @MockitoBean
+    private CacheManager cacheManager;
 
     @MockitoBean
     private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;

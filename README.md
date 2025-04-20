@@ -22,7 +22,7 @@ The system is built using a modular microservices architecture and includes the 
 * **Event Service** - manages the creation, updating, and retrieval of event information.
 * **Category Service** - handles categorization of events for better filtering and organization.
 * **Compilation Service** - allows the creation of thematic collections or selections of events.
-* **Request Service** - allows the creation of thematic collections or selections of events.
+* **Request Service** – manages user participation requests and their statuses.
 * **Statistics Service** - collects and provides analytics on events.
 * **User Service** - manages user profiles and authentication data.
 * **API Gateway** - serves as a single entry point for client interactions with the system.
@@ -31,23 +31,29 @@ The system is built using a modular microservices architecture and includes the 
 
 ## Tech Stack
 
-* REST API
-* Spring Cloud
+### Core Frameworks & Tools
 * Spring Boot
+* Spring Cloud
 * Spring Security
 * Spring Data JPA
 * Spring Data JDBC
-* Mapstruct
-* Keycloak
+* MapStruct
+* Liquibase
+
+### Infrastructure & DevOps
+* Docker & Docker Compose
 * RabbitMQ
 * Redis
 * PostgreSQL
+* Keycloak
 * Elasticsearch
-* ELK Stack
-* Prometheus
+
+### Monitoring & Logging
 * Micrometer
-* Grafana
+* Prometheus & Grafana
+* ELK Stack
+
+### Testing
 * JUnit
-* Liquibase 
-* Docker
+
 
