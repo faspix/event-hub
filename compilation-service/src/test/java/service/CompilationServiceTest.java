@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -41,6 +42,9 @@ public class CompilationServiceTest {
 
     @Mock
     private EventServiceClient eventServiceClient;
+
+    @Mock
+    private CacheManager cacheManager;
 
     @Spy
     private CompilationMapper compilationMapper = Mappers.getMapper(CompilationMapper.class);

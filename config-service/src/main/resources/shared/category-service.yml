@@ -7,6 +7,10 @@ spring:
   data:
     jdbc:
       dialect: postgresql
+    redis:
+      host: redis
+      port: 6379
+      password:
   jpa:
     open-in-view: false
     hibernate:
@@ -15,6 +19,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cache:
+    type: redis
+    cache-names: redis-cache
+
 
 server:
   port: 9092
