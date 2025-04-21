@@ -22,6 +22,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import utility.UserFactory;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -249,6 +250,62 @@ public class UserServiceTest {
 
         assertThrows(UserAlreadyExistException.class, () -> userService.createUser(requestDTO));
         verify(usersResource, times(1)).create(any(UserRepresentation.class));
+    }
+
+    @Test
+    public void adminEditUser_RemoveRole_Success() {
+        String userId = "1";
+        RequestUserAdminEditDTO requestDTO = RequestUserAdminEditDTO.builder()
+                .username("NewUsername")
+                .email("newEmail@mail.com")
+                .removeRole(UserRoles.USER)
+                .build();
+        UserRepresentation userRepresentation = new UserRepresentation();
+        RoleRepresentation roleRepresentation = new RoleRepresentation();
+
+        when(realmResource.users()).thenReturn(usersResource);
+        when(usersResource.get(userId)).thenReturn(userResource);
+        when(userResource.toRepresentation()).thenReturn(userRepresentation);
+        when(realmResource.roles()).thenReturn(rolesResource);
+        when(rolesResource.get("USER")).thenReturn(roleResource);
+        when(roleResource.toRepresentation()).thenReturn(roleRepresentation);
+        when(userResource.roles()).thenReturn(roleMappingResource);
+        when(roleMappingResource.realmLevel()).thenReturn(mock(RoleScopeResource.class));
+        when(userResource.roles().realmLevel().listAll())
+                .thenReturn(Collections.singletonList(roleRepresentation));
+
+        ResponseUserDTO result = userService.adminEditUser(userId, requestDTO);
+
+        assertThat(result.getUsername(), equalTo(requestDTO.getUsername()));
+        assertThat(result.getEmail(), equalTo(requestDTO.getEmail()));
+        verify(userResource, times(1)).update(any(UserRepresentation.class));
+        verify(usersResource.get(userId).roles().realmLevel(), times(1)).remove(anyList());
+    }
+
+
+    @Test
+    public void setUserPassword_Success() throws Exception {
+        String userId = "1";
+        String password = "testPassword123";
+
+        when(usersResource.get(userId)).thenReturn(userResource);
+
+        doAnswer(invocation -> {
+            CredentialRepresentation credential = invocation.getArgument(0);
+            assertThat(credential.getType(), equalTo(CredentialRepresentation.PASSWORD));
+            assertThat(credential.getValue(), equalTo(password));
+            assertThat(credential.isTemporary(), equalTo(false));
+            return null;
+        }).when(userResource).resetPassword(any(CredentialRepresentation.class));
+
+        Method setUserPasswordMethod = UserServiceImpl.class
+                .getDeclaredMethod("setUserPassword", UsersResource.class, String.class, String.class);
+        setUserPasswordMethod.setAccessible(true);
+
+        setUserPasswordMethod.invoke(null, usersResource, userId, password);
+
+        verify(usersResource, times(1)).get(userId);
+        verify(userResource, times(1)).resetPassword(any(CredentialRepresentation.class));
     }
 
 }
