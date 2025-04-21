@@ -1,6 +1,110 @@
 plugins {
-    id 'java'
+    id 'jacoco'
 }
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def findDuplicateClasses() {
+    def classMap = [:]
+    subprojects.each { subproject ->
+        if (subproject.plugins.hasPlugin('java')) {
+            def classesDir = file("${subproject.buildDir}/classes/java/main")
+            if (classesDir.exists()) {
+                classesDir.eachFileRecurse(groovy.io.FileType.FILES) { file ->
+                    if (file.name.endsWith('.class')) {
+                        def className = file.path.replace(classesDir.path, '')
+                                .replace(File.separator, '/')
+                                .replace('.class', '')
+                                .substring(1)
+                        classMap.computeIfAbsent(className, { [] }) << file.path
+                    }
+                }
+            }
+        }
+    }
+
+    def duplicates = classMap.findAll { className, paths -> paths.size() > 1 }
+    def duplicateClassNames = duplicates.keySet().collect { it + '.class' }
+
+    return duplicateClassNames
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    jacocoTestReport {
+        afterEvaluate {
+            def duplicates = findDuplicateClasses()
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: duplicates)
+            }))
+        }
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+            csv.required.set(false)
+        }
+    }
+
+    jacocoTestCoverageVerification {
+        afterEvaluate {
+            def duplicates = findDuplicateClasses()
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: duplicates)
+            }))
+        }
+    }
+}
+
+task jacocoRootReport(type: JacocoReport) {
+    group = "Verification"
+    description = "Generates aggregated JaCoCo coverage report"
+
+    def sourceDirs = files()
+    def classDirs = files()
+    def execFiles = files()
+
+    subprojects.each { subproject ->
+        if (subproject.plugins.hasPlugin('java')) {
+            def execFile = file("${subproject.buildDir}/jacoco/test.exec")
+            def classesDir = file("${subproject.buildDir}/classes/java/main")
+            def hasCoverage = execFile.exists() && classesDir.exists()
+
+            if (hasCoverage) {
+                def sourceSet = subproject.sourceSets.main
+                sourceDirs += files(sourceSet.allSource.srcDirs)
+                classDirs += files(sourceSet.output.classesDirs)
+
+                dependsOn subproject.tasks.named("test")
+                execFiles += execFile
+            }
+        }
+    }
+
+    executionData.setFrom(execFiles)
+    sourceDirectories.setFrom(sourceDirs)
+
+    afterEvaluate {
+        def duplicates = findDuplicateClasses()
+        classDirectories.setFrom(files(classDirs).collect {
+            fileTree(dir: it, exclude: duplicates)
+        })
+    }
+
+    reports {
+        html.required.set(false)
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+}
+
 
 
 def loadEnv(String path) {
