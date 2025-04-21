@@ -94,13 +94,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-#      - name: Build
-#        run: |
-#          ./gradlew build --no-daemon \
-#          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
-#          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
-
-      - name: Run tests
+      - name: Run tests and generate coverage report
         run: |
           ./gradlew clean test jacocoRootReport \
 #          ./gradlew test --no-daemon \
