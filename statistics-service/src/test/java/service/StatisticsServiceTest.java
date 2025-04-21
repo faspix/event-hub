@@ -50,6 +50,37 @@ public class StatisticsServiceTest {
     }
 
     @Test
+    public void getEndpointStatsTest_nullStart_Success() {
+            ResponseEndpointStatsDTO repoResponse = makeResponseEndpoint();
+            when(statisticsRepository.findEndpointStats(any(), any(), any()))
+                    .thenReturn(List.of(repoResponse));
+
+            List<ResponseEndpointStatsDTO> result = statisticsService.getEndpointStats(null, LocalDateTime.MAX,
+                    List.of("/events/1"), false);
+
+            assertThat(result.getFirst().getUri(), equalTo(repoResponse.getUri()));
+            assertThat(result.getFirst().getApp(), equalTo(repoResponse.getApp()));
+            assertThat(result.getFirst().getHits(), equalTo(repoResponse.getHits()));
+            verify(statisticsRepository, times(1)).findEndpointStats(any(), any(), any());
+    }
+
+    @Test
+    public void getEndpointStatsTest_nullEnd_Success() {
+            ResponseEndpointStatsDTO repoResponse = makeResponseEndpoint();
+            when(statisticsRepository.findEndpointStats(any(), any(), any()))
+                    .thenReturn(List.of(repoResponse));
+
+            List<ResponseEndpointStatsDTO> result = statisticsService.getEndpointStats(LocalDateTime.MIN, null,
+                    List.of("/events/1"), false);
+
+            assertThat(result.getFirst().getUri(), equalTo(repoResponse.getUri()));
+            assertThat(result.getFirst().getApp(), equalTo(repoResponse.getApp()));
+            assertThat(result.getFirst().getHits(), equalTo(repoResponse.getHits()));
+            verify(statisticsRepository, times(1)).findEndpointStats(any(), any(), any());
+    }
+
+
+    @Test
     public void getEndpointStatsTest_UniqueIP_Success() {
         ResponseEndpointStatsDTO repoResponse = makeResponseEndpoint();
         when(statisticsRepository.findEndpointStatsDistinct(any(), any(), any()))
