@@ -35,10 +35,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -513,6 +513,91 @@ public class EventControllerTest {
         ).andExpect(status().isBadRequest());
 
     }
+
+    @Test
+    public void findEventsByIdsTest_Success() throws Exception {
+        Event event1 = makeEventTest();
+        event1.setState(EventState.PUBLISHED);
+        eventRepository.save(event1);
+
+        Event event2 = makeEventTest();
+        event2.setState(EventState.PUBLISHED);
+        eventRepository.save(event2);
+
+        Set<Long> eventIds = Set.of(event1.getEventId(), event2.getEventId());
+
+        MvcResult mvcResult = mockMvc.perform(post("/events/batch")
+                        .content(objectMapper.writeValueAsString(eventIds))
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(events.size(), equalTo(2));
+        assertThat(events, hasItems(
+                hasProperty("eventId", is(event1.getEventId())),
+                hasProperty("eventId", is(event2.getEventId()))
+        ));
+    }
+
+    @Test
+    public void findEventsByIdsTest_EmptyList() throws Exception {
+        Set<Long> eventIds = Set.of();
+
+        MvcResult mvcResult = mockMvc.perform(post("/events/batch")
+                        .content(objectMapper.writeValueAsString(eventIds))
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(events.size(), equalTo(0));
+    }
+
+    @Test
+    public void findEventsTest_NoResults() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/events")
+                        .param("text", "NonExistentEvent")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(events.size(), equalTo(0));
+    }
+
+    @Test
+    public void findEventsByAdminTest_NoResults() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/events/admin/search")
+                        .param("users", "999")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(events.size(), equalTo(0));
+    }
+
 
 
 }
