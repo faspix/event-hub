@@ -2,10 +2,12 @@ package service;
 
 import com.faspix.dao.UserDAO;
 import com.faspix.dto.*;
+import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
 import com.faspix.roles.UserRoles;
 import com.faspix.service.UserServiceImpl;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.keycloak.admin.client.resource.*;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.http.HttpStatus;
 import utility.UserFactory;
 
 import java.util.Collections;
@@ -57,7 +60,13 @@ public class UserServiceTest {
     private RolesResource rolesResource;
 
     @Mock
+    private RoleResource roleResource;
+
+    @Mock
     private Cache cache;
+
+    @Mock
+    private Response response;
 
 
     @Test
@@ -225,4 +234,21 @@ public class UserServiceTest {
         assertThat(result.getFirst().getUsername(), equalTo(responseDTO.getUsername()));
         verify(userDAO, times(1)).findAll(userIds);
     }
+
+    @Test
+    public void createUser_UserAlreadyExists_ThrowsException() {
+        RequestUserDTO requestDTO = RequestUserDTO.builder()
+                .username("testuser")
+                .email("test@example.com")
+                .password("password123")
+                .build();
+
+        when(realmResource.users()).thenReturn(usersResource);
+        when(usersResource.create(any(UserRepresentation.class))).thenReturn(response);
+        when(response.getStatus()).thenReturn(HttpStatus.CONFLICT.value());
+
+        assertThrows(UserAlreadyExistException.class, () -> userService.createUser(requestDTO));
+        verify(usersResource, times(1)).create(any(UserRepresentation.class));
+    }
+
 }
