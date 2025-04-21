@@ -100,6 +100,13 @@ jobs:
 
       - name: Run tests
         run: |
-          ./gradlew test --no-daemon \
+          ./gradlew clean test jacocoRootReport \
+#          ./gradlew test --no-daemon \
           -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
+
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1.3
+        with:
+          coverage-reports: ./build/reports/jacoco/jacocoRootReport/jacoco.xml
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
