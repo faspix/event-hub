@@ -98,10 +98,9 @@ jobs:
 #          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
 #          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
 
-      - name: Run tests
+      - name: Run tests and generate coverage report
         run: |
-          ./gradlew clean test jacocoRootReport \
-#          ./gradlew test --no-daemon \
+          ./gradlew clean test jacocoRootReport --no-daemon \
           -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
 
