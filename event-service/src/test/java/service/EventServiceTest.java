@@ -15,6 +15,7 @@ import com.faspix.repository.EventRepository;
 import com.faspix.service.CommentService;
 import com.faspix.service.EndpointStatisticsService;
 import com.faspix.service.EventServiceImpl;
+import com.faspix.utility.EventSortType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +25,15 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -336,5 +340,78 @@ public class EventServiceTest {
 
         verify(eventRepository, times(1)).save(any());
     }
+
+
+    @Test
+    public void findEventsTest_SortByEventDate_Success() {
+        List<Event> events = List.of(makeEventTest());
+        Page<Event> eventPage = new PageImpl<>(events);
+        when(eventRepository.searchEvent(anyString(), anyList(), anyBoolean(), any(), any(), anyBoolean(), any()))
+                .thenReturn(eventPage);
+
+        List<ResponseEventShortDTO> result = eventService.findEvents(
+                "test", List.of(1L), true, null, null, true,
+                EventSortType.EVENT_DATE, 0, 10);
+
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));;
+    }
+
+    @Test
+    public void findEventsTest_SortByViews_Success() {
+        List<Event> events = List.of(makeEventTest());
+        Page<Event> eventPage = new PageImpl<>(events);
+        when(eventRepository.searchEvent(anyString(), anyList(), anyBoolean(), any(), any(), anyBoolean(), any()))
+                .thenReturn(eventPage);
+
+        List<ResponseEventShortDTO> result = eventService.findEvents(
+                "test", List.of(1L), true, null, null, true, EventSortType.VIEWS, 0, 10);
+
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
+    }
+
+    @Test
+    public void findEventsAdminTest_Success() {
+        List<Event> events = List.of(makeEventTest());
+        Page<Event> eventPage = new PageImpl<>(events);
+        when(eventRepository.searchEventAdmin(anyList(), anyList(), anyList(), any(), any(), any()))
+                .thenReturn(eventPage);
+
+        List<ResponseEventDTO> result = eventService.findEventsAdmin(
+                List.of("1"), List.of(EventState.PENDING), List.of(1L), null, null, 0, 10);
+
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
+    }
+
+    @Test
+    public void setConfirmedRequestsNumberTest_Success() {
+        Event event = makeEventTest();
+        event.setConfirmedRequests(5);
+        ConfirmedRequestsDTO requestsDTO = new ConfirmedRequestsDTO(1L, 3);
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(eventRepository.save(any())).thenReturn(event);
+
+        eventService.setConfirmedRequestsNumber(requestsDTO);
+
+        assertThat(event.getConfirmedRequests(), equalTo(8));
+        verify(eventRepository).save(event);
+    }
+
+    @Test
+    public void findEventsByIdsTest_Success() {
+        List<Event> events = List.of(makeEventTest());
+        Set<Long> eventIds = Set.of(1L);
+        when(eventRepository.findAllById(eventIds)).thenReturn(events);
+
+        List<ResponseEventShortDTO> result = eventService.findEventsByIds(eventIds);
+
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
+        verify(eventRepository).findAllById(eventIds);
+    }
+
+
 
 }

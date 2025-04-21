@@ -1,6 +1,8 @@
 package service;
 
+import com.faspix.dto.RequestEndpointStatsDTO;
 import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.entity.EndpointStats;
 import com.faspix.mapper.StatisticsMapper;
 import com.faspix.repository.StatisticsRepository;
 import com.faspix.service.StatisticsServiceImpl;
@@ -60,6 +62,21 @@ public class StatisticsServiceTest {
         assertThat(result.getFirst().getApp(), equalTo(repoResponse.getApp()));
         assertThat(result.getFirst().getHits(), equalTo(repoResponse.getHits()));
         verify(statisticsRepository, times(1)).findEndpointStatsDistinct(any(), any(), any());
+    }
+
+        @Test
+    void hitEndpoint_validRequestDTO_Success() {
+        RequestEndpointStatsDTO requestDTO = RequestEndpointStatsDTO.builder().build();
+        EndpointStats endpointStats = new EndpointStats();
+
+        when(statisticsMapper.RequestToEndpoint(requestDTO)).thenReturn(endpointStats);
+        when(statisticsRepository.save(endpointStats)).thenReturn(endpointStats);
+
+        statisticsService.hitEndpoint(requestDTO);
+
+        verify(statisticsMapper).RequestToEndpoint(requestDTO);
+        verify(statisticsRepository).save(endpointStats);
+        verifyNoMoreInteractions(statisticsMapper, statisticsRepository);
     }
 
 }
