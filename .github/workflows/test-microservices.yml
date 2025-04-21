@@ -102,7 +102,7 @@ jobs:
 
       - name: Run tests and generate coverage report
         run: |
-          ./gradlew clean test jacocoRootReport --no-daemon \
+          ./gradlew clean test jacocoRootReport \
           -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
 
