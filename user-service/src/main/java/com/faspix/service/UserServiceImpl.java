@@ -112,12 +112,7 @@ public class UserServiceImpl implements UserService {
     public ResponseUserDTO findUserById(String userId) {
         UsersResource usersResource = realmResource.users();
         UserResource userResource = usersResource.get(userId);
-        UserRepresentation userRepresentation;
-        try {
-            userRepresentation = userResource.toRepresentation();
-        } catch (NotFoundException e) {
-            throw new UserNotFoundException("User with id " + userId + " not found");
-        }
+        UserRepresentation userRepresentation = getUserRepresentation(userId, userResource);
         return ResponseUserDTO.builder()
                 .userId(userRepresentation.getId())
                 .username(userRepresentation.getUsername())
@@ -133,13 +128,7 @@ public class UserServiceImpl implements UserService {
         UsersResource usersResource = realmResource.users();
         UserResource userResource = usersResource.get(userId);
 
-        UserRepresentation userRepresentation;
-        try {
-            userRepresentation = userResource.toRepresentation();
-        } catch (NotFoundException e) {
-            throw new UserNotFoundException("User with id " + userId + " not found");
-        }
-
+        UserRepresentation userRepresentation = getUserRepresentation(userId, userResource);
         updateUser(userDTO, userRepresentation);
 
         userResource.update(userRepresentation);
@@ -207,6 +196,16 @@ public class UserServiceImpl implements UserService {
         credential.setValue(password);
         credential.setTemporary(false);
         usersResource.get(userId).resetPassword(credential);
+    }
+
+    private static UserRepresentation getUserRepresentation(String userId, UserResource userResource) {
+        UserRepresentation userRepresentation;
+        try {
+            userRepresentation = userResource.toRepresentation();
+        } catch (NotFoundException e) {
+            throw new UserNotFoundException("User with id " + userId + " not found");
+        }
+        return userRepresentation;
     }
 
     private static List<String> getUserRoles(String userId, UsersResource usersResource) {
