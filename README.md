@@ -1,6 +1,7 @@
 # Event hub
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1daac95c97d64c7aa9ebe534fd3ab57f)](https://app.codacy.com/gh/faspix/event-hub/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![CodeFactor](https://www.codefactor.io/repository/github/faspix/event-hub/badge)](https://www.codefactor.io/repository/github/faspix/event-hub)
 
 **Event Hub** is a microservices-based application that allows users to share interesting events and find companions to attend them together.
 
