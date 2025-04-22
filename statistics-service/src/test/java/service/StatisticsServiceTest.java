@@ -32,7 +32,7 @@ public class StatisticsServiceTest {
     private StatisticsServiceImpl statisticsService;
 
     @Spy
-    private StatisticsMapper statisticsMapper = Mappers.getMapper(StatisticsMapper.class);
+    private final StatisticsMapper statisticsMapper = Mappers.getMapper(StatisticsMapper.class);
 
     @Test
     public void getEndpointStatsTest_Success() {
