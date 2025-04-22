@@ -53,7 +53,7 @@ public class CategoryServiceTest {
     private CacheManager cacheManager;
 
     @Spy
-    private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
+    private final CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
 
     @Test

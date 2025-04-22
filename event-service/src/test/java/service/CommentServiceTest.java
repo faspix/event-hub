@@ -41,10 +41,10 @@ public class CommentServiceTest {
     private CommentRepository commentRepository;
 
     @Spy
-    private CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
+    private final CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
 
     @Spy
-    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Mock
     private EventRepository eventRepository;

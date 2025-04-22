@@ -71,10 +71,10 @@ public class EventServiceTest {
     private CommentService commentService;
 
     @Spy
-    private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
+    private final EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
     @Spy
-    private UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Test
     public void createEventTest_Success() {

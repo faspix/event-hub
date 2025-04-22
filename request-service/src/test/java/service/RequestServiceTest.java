@@ -48,7 +48,7 @@ public class RequestServiceTest {
     private RequestServiceImpl requestService;
 
     @Spy
-    private RequestMapper requestMapper = Mappers.getMapper(RequestMapper.class);
+    private final RequestMapper requestMapper = Mappers.getMapper(RequestMapper.class);
 
     @Test
     public void createRequestTest_NoModeration_Success() {

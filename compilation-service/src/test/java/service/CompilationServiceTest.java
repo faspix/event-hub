@@ -47,10 +47,10 @@ public class CompilationServiceTest {
     private CacheManager cacheManager;
 
     @Spy
-    private CompilationMapper compilationMapper = Mappers.getMapper(CompilationMapper.class);
+    private final CompilationMapper compilationMapper = Mappers.getMapper(CompilationMapper.class);
 
     @Spy
-    private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
+    private final EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
     @Test
     public void createCompilationTest_Success() {
