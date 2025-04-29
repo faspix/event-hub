@@ -1,10 +1,16 @@
 package service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
+import com.faspix.entity.EventIndex;
 import com.faspix.enums.EventState;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.EventNotPublishedException;
@@ -13,9 +19,7 @@ import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
-import com.faspix.service.CommentService;
-import com.faspix.service.EndpointStatisticsService;
-import com.faspix.service.EventServiceImpl;
+import com.faspix.service.*;
 import com.faspix.utility.EventSortType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -61,7 +66,13 @@ public class EventServiceTest {
     private EventServiceImpl eventService;
 
     @Mock
+    private SearchResponse<EventIndex> searchResponse;
+
+    @Mock
     private EndpointStatisticsService endpointStatisticsService;
+
+    @Mock
+    private ElasticsearchClient elasticsearchClient;
 
     @Mock
     private StatisticsServiceClient statisticsServiceClient;
@@ -71,6 +82,15 @@ public class EventServiceTest {
 
     @Mock
     private CommentService commentService;
+
+    @InjectMocks
+    private SearchServiceImpl searchService;
+
+    @Mock
+    private HitsMetadata<EventIndex> hitsMetadata;
+
+    @Mock
+    private Hit<EventIndex> hit;
 
     @Mock
     private EventSearchRepository eventSearchRepository;
@@ -275,7 +295,7 @@ public class EventServiceTest {
         List<Event> events = List.of(makeEventTest(), makeEventTest());
         when(eventRepository.findEventsByInitiatorId(any(), any())).thenReturn(new PageImpl<>(events));
 
-        List<ResponseEventShortDTO> result = eventService.findAllUsersEvents("1", 0, 10);
+        List<ResponseEventShortDTO> result = searchService.findAllUsersEvents("1", 0, 10);
 
         assertThat(result.size(), equalTo(2));
     }
@@ -346,35 +366,50 @@ public class EventServiceTest {
         verify(eventRepository, times(1)).save(any());
     }
 
-// TODO: FIX!!!
-//    @Test
-//    public void findEventsTest_SortByEventDate_Success() {
-//        List<Event> events = List.of(makeEventTest());
-//        Page<Event> eventPage = new PageImpl<>(events);
-//        when(eventRepository.searchEvent(anyString(), anyList(), anyBoolean(), any(), any(), anyBoolean(), any()))
-//                .thenReturn(eventPage);
-//
-//        List<ResponseEventShortDTO> result = eventService.findEvents(
-//                "test", List.of(1L), true, null, null, true,
-//                EventSortType.EVENT_DATE, 0, 10);
-//
-//        assertThat(result.size(), equalTo(1));
-//        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));;
-//    }
-//
-//    @Test
-//    public void findEventsTest_SortByViews_Success() {
-//        List<Event> events = List.of(makeEventTest());
-//        Page<Event> eventPage = new PageImpl<>(events);
-//        when(eventRepository.searchEvent(anyString(), anyList(), anyBoolean(), any(), any(), anyBoolean(), any()))
-//                .thenReturn(eventPage);
-//
-//        List<ResponseEventShortDTO> result = eventService.findEvents(
-//                "test", List.of(1L), true, null, null, true, EventSortType.VIEWS, 0, 10);
-//
-//        assertThat(result.size(), equalTo(1));
-//        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
-//    }
+    @Test
+    public void findEventsTest_SortByEventDate_Success() throws IOException {
+        List<Event> events = List.of(makeEventTest());
+        when(eventRepository.findAllById(any()))
+                .thenReturn(events);
+        when(hit.id()).thenReturn("1");
+        when(hitsMetadata.hits())
+                .thenReturn(List.of(hit));
+        when(searchResponse.hits())
+                .thenReturn(hitsMetadata);
+        when(elasticsearchClient.search(any(SearchRequest.class), eq(EventIndex.class)))
+                .thenReturn(searchResponse);
+
+
+
+        List<ResponseEventShortDTO> result = searchService.findEvents(
+                "test", List.of(1L), true, null, null, true,
+                EventSortType.EVENT_DATE, 0, 10);
+
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));;
+    }
+
+    @Test
+    public void findEventsTest_SortByViews_Success() throws IOException {
+        List<Event> events = List.of(makeEventTest());
+        when(eventRepository.findAllById(any()))
+                .thenReturn(events);
+        when(hit.id()).thenReturn("1");
+        when(hitsMetadata.hits())
+                .thenReturn(List.of(hit));
+        when(searchResponse.hits())
+                .thenReturn(hitsMetadata);
+        when(elasticsearchClient.search(any(SearchRequest.class), eq(EventIndex.class)))
+                .thenReturn(searchResponse);
+
+
+        List<ResponseEventShortDTO> result = searchService.findEvents(
+                "test", List.of(1L), true, null, null, true,
+                EventSortType.VIEWS, 0, 10);
+
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
+    }
 
     @Test
     public void findEventsAdminTest_Success() {
@@ -383,7 +418,7 @@ public class EventServiceTest {
         when(eventRepository.searchEventAdmin(anyList(), anyList(), anyList(), any(), any(), any()))
                 .thenReturn(eventPage);
 
-        List<ResponseEventDTO> result = eventService.findEventsAdmin(
+        List<ResponseEventDTO> result = searchService.findEventsAdmin(
                 List.of("1"), List.of(EventState.PENDING), List.of(1L), null, null, 0, 10);
 
         assertThat(result.size(), equalTo(1));

@@ -4,6 +4,7 @@ import com.faspix.dto.*;
 import com.faspix.enums.EventState;
 import com.faspix.mapper.EventMapper;
 import com.faspix.service.EventService;
+import com.faspix.service.SearchService;
 import com.faspix.utility.EventSortType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,8 @@ import java.util.Set;
 public class EventController {
 
     private final EventService eventService;
+
+    private final SearchService searchService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,7 +55,7 @@ public class EventController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return eventService.findAllUsersEvents(userId, page, size);
+        return searchService.findAllUsersEvents(userId, page, size);
     }
 
     // @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ssXXX")
@@ -68,7 +71,7 @@ public class EventController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return eventService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, page, size);
+        return searchService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, page, size);
     }
 
     @GetMapping("/admin/search")
@@ -76,12 +79,12 @@ public class EventController {
             @RequestParam(required = false) List<String> users,
             @RequestParam(required = false) List<EventState> states,
             @RequestParam(required = false) List<Long> categories,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+            @RequestParam(required = false) OffsetDateTime rangeStart,
+            @RequestParam(required = false) OffsetDateTime rangeEnd,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return eventService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, page, size);
+        return searchService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, page, size);
     }
 
     @GetMapping("{eventId}")

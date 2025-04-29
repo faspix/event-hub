@@ -10,6 +10,7 @@ import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
+import com.faspix.repository.EventSearchRepository;
 import com.faspix.service.EndpointStatisticsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
@@ -67,6 +68,9 @@ public class CommentControllerTest {
 
     @MockitoBean
     private UserServiceClient userServiceClient;
+
+    @MockitoBean
+    private EventSearchRepository eventSearchRepository;
 
     @MockitoBean
     private CacheManager cacheManager;

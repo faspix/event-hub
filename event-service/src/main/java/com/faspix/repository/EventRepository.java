@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -51,8 +52,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> searchEventAdmin(@Param("users") List<String> users,
                                  @Param("states") List<EventState> states,
                                  @Param("categories") List<Long> categories,
-                                 @Param("rangeStart") LocalDateTime rangeStart,
-                                 @Param("rangeEnd") LocalDateTime rangeEnd,
+                                 @Param("rangeStart") OffsetDateTime rangeStart,
+                                 @Param("rangeEnd") OffsetDateTime rangeEnd,
                                  Pageable pageable);
 
 
