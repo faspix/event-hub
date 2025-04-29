@@ -10,6 +10,9 @@ on:
       - master
       - main
 
+permissions:
+  contents: read
+
 jobs:
   test-microservices:
     runs-on: ubuntu-latest
