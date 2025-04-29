@@ -14,6 +14,10 @@ spring:
   cache:
     type: redis
     cache-names: redis-cache
+  elasticsearch:
+#    client:
+#      reactive: false
+    uris: http://elasticsearch:9200
   jpa:
     open-in-view: false
     hibernate:

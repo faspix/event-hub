@@ -21,8 +21,8 @@ public interface EventService {
 
     ResponseEventDTO editEvent(String userId, Long eventId, RequestEventDTO eventDTO);
 
-    List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                           LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
+    List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid, OffsetDateTime rangeStart,
+                           OffsetDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
                            Integer page, Integer size);
 
     ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest);

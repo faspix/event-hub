@@ -1,8 +1,8 @@
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework: DEBUG
-    com.faspix: DEBUG
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
+#    org.springframework: DEBUG
+#    com.faspix: DEBUG
 
 management:
   endpoints:

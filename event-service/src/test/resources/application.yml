@@ -6,7 +6,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-
+  elasticsearch:
+    uris: http://localhost:9200
 
 
 eureka:

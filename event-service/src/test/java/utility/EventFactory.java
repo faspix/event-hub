@@ -2,6 +2,7 @@ package utility;
 
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
+import com.faspix.entity.EventIndex;
 import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
 import com.faspix.utility.Location;
@@ -13,7 +14,19 @@ import static utility.UserFactory.makeResponseShortUser;
 
 public class EventFactory {
 
-
+    public static EventIndex makeEventIndex() {
+        return new EventIndex(
+                1L,
+                "title",
+                "annotation",
+                1L,
+                OffsetDateTime.now().plusYears(1000),
+                false,
+                EventState.PUBLISHED,
+                2,
+                1
+        );
+    }
 
     public static Event makeEventTest() {
         return Event.builder()
@@ -24,7 +37,7 @@ public class EventFactory {
                 .participantLimit(10)
                 .creationDate(OffsetDateTime.now())
                 .description("description")
-                .eventDate(LocalDateTime.now().plusYears(1000))
+                .eventDate(OffsetDateTime.now().plusYears(1000))
                 .initiatorId("1")
                 .location(new Location(10.0, 10.0))
                 .paid(false)
@@ -49,7 +62,7 @@ public class EventFactory {
                 .participantLimit(2)
                 .creationDate(OffsetDateTime.now())
                 .description("description")
-                .eventDate(LocalDateTime.now().plusYears(1000))
+                .eventDate(OffsetDateTime.now().plusYears(1000))
                 .initiator(makeResponseShortUser())
                 .location(new Location(10.0, 10.0))
                 .paid(false)
@@ -73,7 +86,7 @@ public class EventFactory {
                         .name("category")
                         .build())
                 .confirmedRequests(2)
-                .eventDate(LocalDateTime.now().plusYears(1000))
+                .eventDate(OffsetDateTime.now().plusYears(1000))
                 .initiator(makeResponseShortUser())
                 .paid(false)
                 .views(0L)
@@ -88,7 +101,7 @@ public class EventFactory {
                 .annotation("annotation")
                 .categoryId(1L)
                 .description("description")
-                .eventDate(LocalDateTime.now().plusYears(1000))
+                .eventDate(OffsetDateTime.now().plusYears(1000))
                 .location(new Location(10.0, 10.0))
                 .paid(false)
                 .participantLimit(10)
@@ -101,7 +114,7 @@ public class EventFactory {
                 .annotation("annotation")
                 .categoryId(1L)
                 .description("description")
-                .eventDate(LocalDateTime.now().plusYears(1000))
+                .eventDate(OffsetDateTime.now().plusYears(1000))
                 .location(new Location(10.0, 10.0))
                 .paid(false)
                 .participantLimit(10)

@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -29,8 +30,7 @@ public class RequestEventDTO {
     private String description;
 
     @NotNull(message = "Event date shouldn't be null")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime eventDate;
+    private OffsetDateTime eventDate;
 
     @NotNull(message = "Location shouldn't be null")
     private Location location;
