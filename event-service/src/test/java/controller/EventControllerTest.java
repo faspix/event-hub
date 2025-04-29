@@ -82,7 +82,7 @@ public class EventControllerTest {
     @MockitoBean
     private CategoryServiceClient categoryServiceClient;
 
-    @MockitoBean
+    @Autowired
     private EventSearchRepository eventSearchRepository;
 
     @Autowired

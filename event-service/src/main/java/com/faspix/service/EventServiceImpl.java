@@ -1,15 +1,10 @@
 package com.faspix.service;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
 import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
-import com.faspix.entity.EventIndex;
 import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
 import com.faspix.exception.EventNotFoundException;
@@ -19,8 +14,6 @@ import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
-import com.faspix.utility.EventSortType;
-import com.faspix.utility.SafeElasticSearch;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,8 +57,6 @@ public class EventServiceImpl implements EventService {
     private final CacheManager cacheManager;
 
     private final EventSearchRepository eventSearchRepository;
-
-    private final SafeElasticSearch safeElasticSearch;
 
     @Override
     @Transactional
@@ -120,136 +111,6 @@ public class EventServiceImpl implements EventService {
         return getResponseDTO(updatedEvent);
     }
 
-    @Override
-    public List<ResponseEventShortDTO> findEvents(String text,
-                                                  List<Long> categories,
-                                                  Boolean paid,
-                                                  OffsetDateTime rangeStart,
-                                                  OffsetDateTime rangeEnd,
-                                                  Boolean onlyAvailable,
-                                                  EventSortType sort,
-                                                  Integer from,
-                                                  Integer size
-    ) {
-
-        BoolQuery boolQuery = QueryBuilders.bool()
-                .must(m ->m
-                        .term(t -> t
-                                .field("state")
-                                .value("PUBLISHED")
-                        )
-                )
-                .should(m -> {
-                    if (!text.isBlank()) {
-                        return m.match(q -> q
-                                .field("title")
-                                .query(text)
-                                .fuzziness("AUTO")
-                        );
-                    } else {
-                        return m.matchAll(ma -> ma);
-                    }
-                }).should(m -> {
-                    if (!text.isBlank()) {
-                        return m.match(q -> q
-                                .field("annotation")
-                                .query(text)
-                                .fuzziness("AUTO")
-                        );
-                    } else {
-                        return m.matchAll(ma -> ma);
-                    }
-                }).filter(f -> {
-                    if (paid != null) {
-                        return f.term(t -> t
-                            .field("paid")
-                            .value(paid)
-                        );
-                    } else {
-                        return f.matchAll(m -> m);
-                    }
-                }).filter(f -> {
-                    if (rangeStart != null) {
-                        return f.range(r -> r
-                                .date(d -> d
-                                        .field("eventDate")
-                                        .gte(rangeStart.toString())
-                                )
-                        );
-                    } else {
-                        return f.range(r -> r
-                                .date(d -> d
-                                        .field("eventDate")
-                                        .gte(LocalDateTime.now().toString())
-                                )
-                        );
-                    }
-                }).filter(f -> {
-                    if (rangeEnd != null) {
-                        return f.range(r -> r
-                                .date(d -> d
-                                        .field("eventDate")
-                                        .lte(rangeEnd.toString())
-                                )
-                        );
-                    } else {
-                        return f.matchAll(m -> m);
-                    }
-                }).filter(f -> {
-                    if (onlyAvailable) {
-                        return f.bool(b -> b
-                                .should(s -> s
-                                        .term(t -> t
-                                                .field("participantLimit").value(0)
-                                        )
-                                )
-                                .should(s -> s.script(sc -> sc
-                                        .script(scr -> scr
-                                                .source("doc['participantLimit'].size() > 0 && doc['confirmedRequests'].size() > 0 && doc['confirmedRequests'].value < doc['participantLimit'].value")
-                                                .lang("painless")
-                                        )
-                                ))
-                                .minimumShouldMatch("1")
-                        );
-                    } else {
-                        return f.matchAll(m -> m);
-                    }
-                })
-                .filter(f -> {
-                    if (categories != null && !categories.isEmpty()) {
-                        return f.terms(t -> t
-                                .field("categoryId")
-                                .terms(terms -> terms
-                                        .value(categories.stream()
-                                                .map(FieldValue::of)
-                                                .toList()
-                                        )
-                                )
-                        );
-                    } else {
-                        return f.matchAll(m -> m);
-                    }
-                })
-//                .minimumShouldMatch("0")
-                .build();
-
-        SearchResponse<EventIndex> searchResponse = safeElasticSearch.search(s -> s
-                        .index("events")
-                        .query(q -> q.bool(boolQuery))
-                        .from(from)
-                        .size(size)
-                , EventIndex.class);
-
-        List<Long> eventIds = searchResponse.hits().hits().stream()
-            .map(hit -> Long.valueOf(hit.id()))
-            .toList();
-
-        List<Event> events = eventRepository.findAllById(eventIds);
-        return events
-                .stream()
-                .map(this::getResponseShortDTO)
-                .toList();
-    }
 
     @Override
     public ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest) {
@@ -283,15 +144,7 @@ public class EventServiceImpl implements EventService {
         );
     }
 
-    @Override
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
-        return eventRepository.findEventsByInitiatorId(userId, pageRequest)
-                .stream()
-                .map(this::getResponseShortDTO)
-                .toList();
-    }
+
 
     @Override
     public List<ResponseEventShortDTO> findEventsByCategoryId(Long catId) {
@@ -301,23 +154,6 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-    @Override
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
-                                       LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page,
-                                       Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
-
-        if (rangeStart == null)
-            rangeStart = LocalDateTime.now();
-        if (rangeEnd == null)
-            rangeEnd = LocalDateTime.now().plusYears(1000);
-
-        return eventRepository.searchEventAdmin(users, states, categories, rangeStart, rangeEnd, pageRequest)
-                .stream()
-                .map(this::getResponseDTO)
-                .toList();
-    }
 
     @Override
     @Transactional
@@ -380,18 +216,7 @@ public class EventServiceImpl implements EventService {
         return responseDTO;
     }
 
-    private ResponseEventShortDTO getResponseShortDTO(Event event) {
-        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
-        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
-        Long views = getViewsById(event.getEventId());
 
-        ResponseEventShortDTO responseDTO = eventMapper.eventToShortResponse(event);
-
-        responseDTO.setViews(views);
-        responseDTO.setCategory(category);
-        responseDTO.setInitiator(initiator);
-        return responseDTO;
-    }
 
     private Long getViewsById(Long eventId) {
         Cache cache = cacheManager.getCache("EventService::getEventViewsById");

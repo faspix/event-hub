@@ -1,0 +1,319 @@
+package com.faspix.service;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.util.ObjectBuilder;
+import com.faspix.client.CategoryServiceClient;
+import com.faspix.client.StatisticsServiceClient;
+import com.faspix.client.UserServiceClient;
+import com.faspix.dto.*;
+import com.faspix.entity.Event;
+import com.faspix.entity.EventIndex;
+import com.faspix.enums.EventState;
+import com.faspix.mapper.EventMapper;
+import com.faspix.mapper.UserMapper;
+import com.faspix.repository.CommentRepository;
+import com.faspix.repository.EventRepository;
+import com.faspix.utility.EventSortType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.function.Function;
+
+import static com.faspix.utility.PageRequestMaker.makePageRequest;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class SearchServiceImpl implements SearchService {
+
+    private final ElasticsearchClient elasticsearchClient;
+
+    private final EventRepository eventRepository;
+
+    private final CommentService commentService;
+
+    private final EventMapper eventMapper;
+
+    private final CacheManager cacheManager;
+
+    private final UserMapper userMapper;
+
+    private final CategoryServiceClient categoryServiceClient;
+
+    private final StatisticsServiceClient statisticsServiceClient;
+
+    private final UserServiceClient userServiceClient;
+
+    private <TDocument> SearchResponse<TDocument> safeElasticSearch(Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> fn, Class<TDocument> tDocumentClass) {
+        try {
+            return elasticsearchClient.search((SearchRequest)((ObjectBuilder)fn.apply(new SearchRequest.Builder())).build(), tDocumentClass);
+        } catch (IOException | ElasticsearchException e) {
+            log.error("Elasticsearch search failed: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to search in Elasticsearch", e);
+        }
+    }
+
+    @Override
+    public List<ResponseEventShortDTO> findEvents(String text,
+                                                  List<Long> categories,
+                                                  Boolean paid,
+                                                  OffsetDateTime rangeStart,
+                                                  OffsetDateTime rangeEnd,
+                                                  Boolean onlyAvailable,
+                                                  EventSortType sort,
+                                                  Integer from,
+                                                  Integer size
+    ) {
+
+        BoolQuery boolQuery = QueryBuilders.bool()
+                .must(m ->m
+                        .term(t -> t
+                                .field("state")
+                                .value("PUBLISHED")
+                        )
+                )
+                .should(m -> {
+                    if (!text.isBlank()) {
+                        return m.match(q -> q
+                                .field("title")
+                                .query(text)
+                                .fuzziness("AUTO")
+                        );
+                    } else {
+                        return m.matchAll(ma -> ma);
+                    }
+                }).should(m -> {
+                    if (!text.isBlank()) {
+                        return m.match(q -> q
+                                .field("annotation")
+                                .query(text)
+                                .fuzziness("AUTO")
+                        );
+                    } else {
+                        return m.matchAll(ma -> ma);
+                    }
+                }).filter(f -> {
+                    if (paid != null) {
+                        return f.term(t -> t
+                                .field("paid")
+                                .value(paid)
+                        );
+                    } else {
+                        return f.matchAll(m -> m);
+                    }
+                }).filter(f -> {
+                    if (rangeStart != null) {
+                        return f.range(r -> r
+                                .date(d -> d
+                                        .field("eventDate")
+                                        .gte(rangeStart.toString())
+                                )
+                        );
+                    } else {
+                        return f.range(r -> r
+                                .date(d -> d
+                                        .field("eventDate")
+                                        .gte(OffsetDateTime.now().toString())
+                                )
+                        );
+                    }
+                }).filter(f -> {
+                    if (rangeEnd != null) {
+                        return f.range(r -> r
+                                .date(d -> d
+                                        .field("eventDate")
+                                        .lte(rangeEnd.toString())
+                                )
+                        );
+                    } else {
+                        return f.matchAll(m -> m);
+                    }
+                }).filter(f -> {
+                    if (onlyAvailable) {
+                        return f.bool(b -> b
+                                .should(s -> s
+                                        .term(t -> t
+                                                .field("participantLimit").value(0)
+                                        )
+                                )
+                                .should(s -> s.script(sc -> sc
+                                        .script(scr -> scr
+                                                .source("doc['participantLimit'].size() > 0 && doc['confirmedRequests'].size() > 0 && doc['confirmedRequests'].value < doc['participantLimit'].value")
+                                                .lang("painless")
+                                        )
+                                ))
+                                .minimumShouldMatch("1")
+                        );
+                    } else {
+                        return f.matchAll(m -> m);
+                    }
+                })
+                .filter(f -> {
+                    if (categories != null && !categories.isEmpty()) {
+                        return f.terms(t -> t
+                                .field("categoryId")
+                                .terms(terms -> terms
+                                        .value(categories.stream()
+                                                .map(FieldValue::of)
+                                                .toList()
+                                        )
+                                )
+                        );
+                    } else {
+                        return f.matchAll(m -> m);
+                    }
+                })
+//                .minimumShouldMatch("0")
+                .build();
+
+        SearchResponse<EventIndex> searchResponse = safeElasticSearch(s -> s
+                        .index("events")
+                        .query(q -> q.bool(boolQuery))
+                        .from(from)
+                        .size(size)
+                , EventIndex.class);
+
+        List<Long> eventIds = searchResponse.hits().hits().stream()
+                .map(hit -> Long.valueOf(hit.id()))
+                .toList();
+
+        List<Event> events = eventRepository.findAllById(eventIds);
+        return events
+                .stream()
+                .map(this::getResponseShortDTO)
+                .toList();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
+                                                  OffsetDateTime rangeStart, OffsetDateTime rangeEnd, Integer page,
+                                                  Integer size) {
+        Pageable pageRequest = makePageRequest(page, size);
+
+        if (rangeStart == null)
+            rangeStart = OffsetDateTime.now();
+        if (rangeEnd == null)
+            rangeEnd = OffsetDateTime.now().plusYears(1000);
+
+        return eventRepository.searchEventAdmin(users, states, categories, rangeStart, rangeEnd, pageRequest)
+                .stream()
+                .map(this::getResponseDTO)
+                .toList();
+    }
+
+
+        @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size) {
+        Pageable pageRequest = makePageRequest(page, size);
+        return eventRepository.findEventsByInitiatorId(userId, pageRequest)
+                .stream()
+                .map(this::getResponseShortDTO)
+                .toList();
+    }
+
+        private ResponseEventShortDTO getResponseShortDTO(Event event) {
+        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
+        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
+        Long views = getViewsById(event.getEventId());
+
+        ResponseEventShortDTO responseDTO = eventMapper.eventToShortResponse(event);
+
+        responseDTO.setViews(views);
+        responseDTO.setCategory(category);
+        responseDTO.setInitiator(initiator);
+        return responseDTO;
+    }
+
+
+    private Long getViewsById(Long eventId) {
+        Cache cache = cacheManager.getCache("EventService::getEventViewsById");
+        if (cache == null) {
+            log.error("Cache EventService::getEventViewsById is null, requested eventId id: {}", eventId);
+            return fetchEventViewsFromDB(eventId);
+        }
+
+        Long views = cache.get(eventId, Long.class);
+        if (views != null) {
+            return views;
+        }
+
+        log.debug("Views for event with id {} not found in cache, fetching from statistics service", eventId);
+        return fetchEventViewsFromDB(eventId);
+    }
+
+    private Long fetchEventViewsFromDB(Long eventId) {
+        List<ResponseEndpointStatsDTO> statsById = statisticsServiceClient.getStatsById(eventId);
+        return (statsById == null || statsById.isEmpty())
+                ? 0
+                : statsById.getFirst().getHits();
+    }
+
+
+private ResponseCategoryDTO getCategoryById(Long id) {
+        Cache cache = cacheManager.getCache("CategoryService::findCategoryById");
+        if (cache == null) {
+            log.error("Cache CategoryService::findCategoryById is null, requested category id: {}", id);
+            return categoryServiceClient.getCategoryById(id);
+        }
+
+        ResponseCategoryDTO category = cache.get(id, ResponseCategoryDTO.class);
+        if (category == null) {
+            category = categoryServiceClient.getCategoryById(id);
+            log.debug("Category with id {} not found in cache, fetching from service", id);
+        }
+        return category;
+    }
+
+    private ResponseUserShortDTO getUserById(String userId) {
+        ResponseUserDTO userDTO;
+        Cache cache = cacheManager.getCache("UserService::getUserById");
+        if (cache == null) {
+            log.error("Cache UserService::getUserById is null, requested userId: {}", userId);
+            userDTO = userServiceClient.getUserById(userId);
+        } else {
+            userDTO = cache.get(userId, ResponseUserDTO.class);
+            if (userDTO == null) {
+                userDTO = userServiceClient.getUserById(userId);
+                log.debug("User with id {} not found in cache, fetching from service", userId);
+            }
+        }
+        return userMapper.responseUserDtoToResponseUserShortDto(userDTO);
+    }
+
+
+
+    private ResponseEventDTO getResponseDTO(Event event) {
+        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
+        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
+        Long views = getViewsById(event.getEventId());
+
+        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
+
+        ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
+        responseDTO.setViews(views);
+        responseDTO.setCategory(category);
+        responseDTO.setInitiator(initiator);
+        responseDTO.setComments(comments);
+        return responseDTO;
+    }
+
+
+}

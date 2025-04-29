@@ -9,6 +9,7 @@ import com.faspix.entity.EventLike;
 import com.faspix.repository.EventDislikeRepository;
 import com.faspix.repository.EventLikeRepository;
 import com.faspix.repository.EventRepository;
+import com.faspix.repository.EventSearchRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
 import jakarta.transaction.Transactional;
@@ -61,6 +62,9 @@ public class EventReactionControllerTest {
 
     @MockitoBean
     private StatisticsServiceClient statisticsServiceClient;
+
+    @MockitoBean
+    private EventSearchRepository eventSearchRepository;
 
     @Autowired
     private ObjectMapper objectMapper;

@@ -34,7 +34,6 @@ public class EventIndex {
     private Long categoryId;
 
     @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime eventDate;
 
     @Field(type = FieldType.Boolean)

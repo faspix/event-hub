@@ -21,20 +21,11 @@ public interface EventService {
 
     ResponseEventDTO editEvent(String userId, Long eventId, RequestEventDTO eventDTO);
 
-    List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid, OffsetDateTime rangeStart,
-                           OffsetDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
-                           Integer page, Integer size);
-
     ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest);
 
     Event getEventById(Long eventId);
 
-    List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size);
-
     List<ResponseEventShortDTO> findEventsByCategoryId(Long categoryId);
-
-    List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
-                                LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer page, Integer size);
 
     void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 
