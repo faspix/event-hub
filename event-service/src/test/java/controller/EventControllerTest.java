@@ -449,17 +449,19 @@ public class EventControllerTest {
 
         Event result = eventRepository.findById(savedEvent.getEventId()).get();
 
+        // Data from DB
         assertThat(result.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(result.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(result.getDescription(), equalTo(adminDTO.getDescription()));
         assertThat(result.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
 
+        // Response from controller
         assertThat(response.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(response.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(response.getDescription(), equalTo(adminDTO.getDescription()));
         assertThat(response.getLocation(), equalTo(adminDTO.getLocation()));
-        assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
+        assertThat(response.getPaid(), equalTo(adminDTO.getPaid()));
     }
 
     @Test
@@ -497,17 +499,19 @@ public class EventControllerTest {
 
         Event result = eventRepository.findById(savedEvent.getEventId()).get();
 
+        // Data from DB
         assertThat(result.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(result.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(result.getDescription(), equalTo(adminDTO.getDescription()));
         assertThat(result.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
 
+        // Response from controller
         assertThat(response.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(response.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(response.getDescription(), equalTo(adminDTO.getDescription()));
         assertThat(response.getLocation(), equalTo(adminDTO.getLocation()));
-        assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
+        assertThat(response.getPaid(), equalTo(adminDTO.getPaid()));
 
     }
 

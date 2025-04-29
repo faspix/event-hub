@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<ResponseCategoryDTO> findCategories(Integer page, Integer size) {
-        Pageable pageRequest = PageRequestMaker.makePageRequest(page, size);
+        Pageable pageRequest = makePageRequest(page, size);
         return categoryRepository.findAll(pageRequest)
                 .stream()
                 .map(categoryMapper::categoryToResponse)
