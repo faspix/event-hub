@@ -17,7 +17,7 @@ import java.util.Set;
 
 public interface EventService {
 
-    ResponseEventDTO createEvent(String creatorId, RequestEventDTO eventDTO);
+    ResponseEventDTO createEvent(String creatorId, String creatorUsername, RequestEventDTO eventDTO);
 
     ResponseEventDTO editEvent(String userId, Long eventId, RequestEventDTO eventDTO);
 

@@ -11,14 +11,20 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    @Mapping(target = "initiator", ignore = true)
-    @Mapping(target = "category", ignore = true)
     @Mapping(target = "comments", ignore = true)
+    @Mapping(source = "categoryId", target = "category.categoryId")
+    @Mapping(source = "categoryName", target = "category.name")
+    @Mapping(source = "initiatorId", target = "initiator.userId")
+    @Mapping(source = "initiatorUsername", target = "initiator.username")
     ResponseEventDTO eventToResponse(Event event);
 
-    @Mapping(target = "initiator", ignore = true)
-    @Mapping(target = "category", ignore = true)
+    @Mapping(source = "categoryId", target = "category.categoryId")
+    @Mapping(source = "categoryName", target = "category.name")
+    @Mapping(source = "initiatorId", target = "initiator.userId")
+    @Mapping(source = "initiatorUsername", target = "initiator.username")
     ResponseEventShortDTO eventToShortResponse(Event event);
+
+
 
     @Mapping(source = "paid", target = "paid", defaultValue = "false")
     @Mapping(source = "requestModeration", target = "requestModeration", defaultValue = "false")
@@ -27,6 +33,8 @@ public interface EventMapper {
     @Mapping(target = "confirmedRequests", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "initiatorId", ignore = true)
+    @Mapping(target = "initiatorUsername", ignore = true)
+    @Mapping(target = "categoryName", ignore = true)
     @Mapping(target = "publishedOn", ignore = true)
     @Mapping(target = "state", ignore = true)
     @Mapping(target = "likes", ignore = true)

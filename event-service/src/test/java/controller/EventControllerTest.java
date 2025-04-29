@@ -11,6 +11,7 @@ import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
+import com.faspix.service.EventServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static utility.CategoryFactory.makeResponseCategory;
 import static utility.EventFactory.*;
 import static utility.UserFactory.*;
 
@@ -118,6 +120,8 @@ public class EventControllerTest {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
+        when(categoryServiceClient.getCategoryById(any()))
+                .thenReturn((makeResponseCategory()));
 
         MvcResult mvcResult = mockMvc.perform(post("/events")
                         .content(objectMapper.writeValueAsString(requestEventDTO))
@@ -156,7 +160,8 @@ public class EventControllerTest {
         requestEventDTO.setEventDate(OffsetDateTime.now().plusHours(2).plusMinutes(1));
         when(userServiceClient.getUserById(any()))
                 .thenReturn(makeResponseUserTest());
-
+        when(categoryServiceClient.getCategoryById(any()))
+                .thenReturn((makeResponseCategory()));
 
         MvcResult mvcResult = mockMvc.perform(post("/events")
                         .content(objectMapper.writeValueAsString(requestEventDTO))
@@ -572,41 +577,41 @@ public class EventControllerTest {
         assertThat(events.size(), equalTo(0));
     }
 
-//    @Test
-//    public void findEventsTest_NoResults() throws Exception {
-//        MvcResult mvcResult = mockMvc.perform(get("/events")
-//                        .param("text", "NonExistentEvent")
-//                        .param("page", "0")
-//                        .param("size", "10")
-//                        .header("Authorization", "Bearer 123123")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andReturn();
-//
-//        String body = mvcResult.getResponse().getContentAsString();
-//        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
-//
-//        assertThat(events.size(), equalTo(0));
-//    }
-//
-//    @Test
-//    public void findEventsByAdminTest_NoResults() throws Exception {
-//        MvcResult mvcResult = mockMvc.perform(get("/events/admin/search")
-//                        .param("users", "999")
-//                        .param("page", "0")
-//                        .param("size", "10")
-//                        .header("Authorization", "Bearer 123123")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andReturn();
-//
-//        String body = mvcResult.getResponse().getContentAsString();
-//        List<ResponseEventDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
-//
-//        assertThat(events.size(), equalTo(0));
-//    }
+    @Test
+    public void findEventsTest_NoResults() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/events")
+                        .param("text", "NonExistentEvent")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(events.size(), equalTo(0));
+    }
+
+    @Test
+    public void findEventsByAdminTest_NoResults() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/events/admin/search")
+                        .param("users", "999")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(events.size(), equalTo(0));
+    }
 
 
 

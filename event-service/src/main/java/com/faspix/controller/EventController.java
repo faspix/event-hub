@@ -37,7 +37,8 @@ public class EventController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody @Valid RequestEventDTO eventDTO
     ) {
-        return eventService.createEvent(jwt.getSubject(), eventDTO);
+        String username = jwt.getClaim("username");
+        return eventService.createEvent(jwt.getSubject(), username, eventDTO);
     }
 
     @PatchMapping("{eventId}")

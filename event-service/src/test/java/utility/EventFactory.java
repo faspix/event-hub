@@ -34,6 +34,8 @@ public class EventFactory {
                 .title("title")
                 .annotation("annotation")
                 .categoryId(1L)
+                .categoryName("category")
+                .initiatorUsername("initiator_username")
                 .participantLimit(10)
                 .creationDate(OffsetDateTime.now())
                 .description("description")

@@ -2,16 +2,13 @@ package com.faspix.entity;
 
 import com.faspix.enums.EventState;
 import com.faspix.utility.Location;
-import com.faspix.dto.ResponseUserShortDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -35,6 +32,9 @@ public class Event {
     private Long categoryId;
 
     @Column(nullable = false)
+    private String categoryName;
+
+    @Column(nullable = false)
     private Integer confirmedRequests;
 
     @Column(nullable = false)
@@ -48,6 +48,9 @@ public class Event {
 
     @Column(nullable = false)
     private String initiatorId;
+
+    @Column(nullable = false)
+    private String initiatorUsername;
 
     @Embedded
     @Column(nullable = false)
