@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+permissions:
+  contents: read
+
 jobs:
   test-microservices:
     runs-on: ubuntu-latest
