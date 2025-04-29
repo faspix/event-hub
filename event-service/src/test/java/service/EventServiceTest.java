@@ -77,6 +77,9 @@ public class EventServiceTest {
     private ElasticsearchClient elasticsearchClient;
 
     @Mock
+    private EventViewService eventViewService;
+
+    @Mock
     private StatisticsServiceClient statisticsServiceClient;
 
     @Mock
@@ -377,15 +380,13 @@ public class EventServiceTest {
         List<Event> events = List.of(makeEventTest());
         when(eventRepository.findAllById(any()))
                 .thenReturn(events);
-        when(hit.id()).thenReturn("1");
+        when(hit.id()).thenReturn("1"); // elasticsearch
         when(hitsMetadata.hits())
                 .thenReturn(List.of(hit));
         when(searchResponse.hits())
                 .thenReturn(hitsMetadata);
         when(elasticsearchClient.search(any(SearchRequest.class), eq(EventIndex.class)))
                 .thenReturn(searchResponse);
-
-
 
         List<ResponseEventShortDTO> result = searchService.findEvents(
                 "test", List.of(1L), true, null, null, true,
@@ -400,14 +401,13 @@ public class EventServiceTest {
         List<Event> events = List.of(makeEventTest());
         when(eventRepository.findAllById(any()))
                 .thenReturn(events);
-        when(hit.id()).thenReturn("1");
+        when(hit.id()).thenReturn("1"); // elasticsearch
         when(hitsMetadata.hits())
                 .thenReturn(List.of(hit));
         when(searchResponse.hits())
                 .thenReturn(hitsMetadata);
         when(elasticsearchClient.search(any(SearchRequest.class), eq(EventIndex.class)))
                 .thenReturn(searchResponse);
-
 
         List<ResponseEventShortDTO> result = searchService.findEvents(
                 "test", List.of(1L), true, null, null, true,
