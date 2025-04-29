@@ -43,24 +43,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     void removeDislike(Long eventId);
 
     @Query("SELECT e FROM Event e WHERE " +
-            "e.state = 'PUBLISHED' " +
-            "AND (:text IS NULL OR lower(e.annotation) LIKE lower(concat('%', :text, '%')) " +
-            "OR lower(e.description) LIKE lower(concat('%', :text, '%'))) " +
-            "AND (:categories IS NULL OR e.categoryId IN :categories) " +
-            "AND (:paid IS NULL OR e.paid = :paid) " +
-            "AND (e.eventDate >= :rangeStart) " +
-            "AND (e.eventDate <= :rangeEnd) " +
-            "AND (:onlyAvailable = FALSE OR e.participantLimit = 0 OR e.participantLimit > e.confirmedRequests)")
-    Page<Event> searchEvent(@Param("text") String text,
-                            @Param("categories") List<Long> categories,
-                            @Param("paid") Boolean paid,
-                            @Param("rangeStart") LocalDateTime rangeStart,
-                            @Param("rangeEnd") LocalDateTime rangeEnd,
-                            @Param("onlyAvailable") Boolean onlyAvailable,
-                            Pageable pageable);
-
-
-    @Query("SELECT e FROM Event e WHERE " +
             "(:users IS NULL OR e.initiatorId IN :users) " +
             "AND (:states IS NULL OR e.state IN :states) " +
             "AND (:categories IS NULL OR e.categoryId IN :categories) " +

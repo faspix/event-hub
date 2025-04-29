@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
@@ -23,7 +24,7 @@ public class ResponseEventShortDTO {
 
     private Integer confirmedRequests;
 
-    private LocalDateTime eventDate;
+    private OffsetDateTime eventDate;
 
     private ResponseUserShortDTO initiator;
 

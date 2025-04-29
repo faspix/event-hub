@@ -30,7 +30,7 @@ public class ResponseEventDTO {
 
     private String description;
 
-    private LocalDateTime eventDate;
+    private OffsetDateTime eventDate;
 
     private ResponseUserShortDTO initiator;
 

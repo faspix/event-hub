@@ -43,12 +43,12 @@ The system is built using a modular microservices architecture and includes the 
 * Liquibase
 
 ### Infrastructure & DevOps
-* Docker & Docker Compose
 * RabbitMQ
-* Redis
 * PostgreSQL
-* Keycloak
 * Elasticsearch
+* Redis
+* Keycloak
+* Docker & Docker Compose
 
 ### Monitoring & Logging
 * Micrometer
@@ -57,5 +57,6 @@ The system is built using a modular microservices architecture and includes the 
 
 ### Testing
 * JUnit
+* Mockito
 
 

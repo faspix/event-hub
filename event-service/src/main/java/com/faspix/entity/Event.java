@@ -44,7 +44,7 @@ public class Event {
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime eventDate;
+    private OffsetDateTime eventDate;
 
     @Column(nullable = false)
     private String initiatorId;
