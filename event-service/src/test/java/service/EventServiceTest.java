@@ -48,7 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static utility.CategoryFactory.makeResponseCategory;
 import static utility.EventFactory.*;
+import static utility.UserFactory.makeResponseUserTest;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
@@ -106,8 +108,10 @@ public class EventServiceTest {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
+        when(categoryServiceClient.getCategoryById(any()))
+                .thenReturn((makeResponseCategory()));
 
-        ResponseEventDTO event = eventService.createEvent("1", requestEventDTO);
+        ResponseEventDTO event = eventService.createEvent("1", "username", requestEventDTO);
 
         assertThat(event.getEventDate(), equalTo(requestEventDTO.getEventDate()));
         assertThat(event.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
@@ -128,8 +132,10 @@ public class EventServiceTest {
         requestEventDTO.setEventDate(OffsetDateTime.now().plusHours(2).plusMinutes(1));
         when(eventRepository.save(any()))
                 .thenReturn(makeEventTest());
+        when(categoryServiceClient.getCategoryById(any()))
+                .thenReturn((makeResponseCategory()));
 
-        ResponseEventDTO event = eventService.createEvent("1", requestEventDTO);
+        ResponseEventDTO event = eventService.createEvent("1", "username", requestEventDTO);
 
         assertThat(event.getAnnotation(), equalTo(requestEventDTO.getAnnotation()));
         assertThat(event.getRequestModeration(), equalTo(requestEventDTO.getRequestModeration()));
@@ -148,7 +154,7 @@ public class EventServiceTest {
         requestEventDTO.setEventDate(OffsetDateTime.now());
 
         ValidationException exception = Assertions.assertThrowsExactly(ValidationException.class,
-                () -> eventService.createEvent("1", requestEventDTO)
+                () -> eventService.createEvent("1", "username", requestEventDTO)
         );
         assertEquals("Event cannot start in less than 2 hours", exception.getMessage());
     }

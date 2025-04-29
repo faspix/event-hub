@@ -230,15 +230,11 @@ public class SearchServiceImpl implements SearchService {
     }
 
         private ResponseEventShortDTO getResponseShortDTO(Event event) {
-        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
-        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
         Long views = getViewsById(event.getEventId());
 
         ResponseEventShortDTO responseDTO = eventMapper.eventToShortResponse(event);
 
         responseDTO.setViews(views);
-        responseDTO.setCategory(category);
-        responseDTO.setInitiator(initiator);
         return responseDTO;
     }
 
@@ -267,50 +263,13 @@ public class SearchServiceImpl implements SearchService {
     }
 
 
-private ResponseCategoryDTO getCategoryById(Long id) {
-        Cache cache = cacheManager.getCache("CategoryService::findCategoryById");
-        if (cache == null) {
-            log.error("Cache CategoryService::findCategoryById is null, requested category id: {}", id);
-            return categoryServiceClient.getCategoryById(id);
-        }
-
-        ResponseCategoryDTO category = cache.get(id, ResponseCategoryDTO.class);
-        if (category == null) {
-            category = categoryServiceClient.getCategoryById(id);
-            log.debug("Category with id {} not found in cache, fetching from service", id);
-        }
-        return category;
-    }
-
-    private ResponseUserShortDTO getUserById(String userId) {
-        ResponseUserDTO userDTO;
-        Cache cache = cacheManager.getCache("UserService::getUserById");
-        if (cache == null) {
-            log.error("Cache UserService::getUserById is null, requested userId: {}", userId);
-            userDTO = userServiceClient.getUserById(userId);
-        } else {
-            userDTO = cache.get(userId, ResponseUserDTO.class);
-            if (userDTO == null) {
-                userDTO = userServiceClient.getUserById(userId);
-                log.debug("User with id {} not found in cache, fetching from service", userId);
-            }
-        }
-        return userMapper.responseUserDtoToResponseUserShortDto(userDTO);
-    }
-
-
-
     private ResponseEventDTO getResponseDTO(Event event) {
-        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
-        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
         Long views = getViewsById(event.getEventId());
 
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
 
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
         responseDTO.setViews(views);
-        responseDTO.setCategory(category);
-        responseDTO.setInitiator(initiator);
         responseDTO.setComments(comments);
         return responseDTO;
     }

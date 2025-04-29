@@ -16,6 +16,7 @@ public class TestSecurityConfiguration {
         return token -> Jwt.withTokenValue("mock-token")
                 .header("alg", "RS256")
                 .claim("sub", "1")
+                .claim("username", "testUser")
                 .claim("realm_access", Map.of("roles", List.of("USER", "ADMIN")))
                 .build();
     }

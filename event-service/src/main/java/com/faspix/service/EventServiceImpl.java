@@ -61,15 +61,16 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEventDTO createEvent(String creatorId, RequestEventDTO eventDTO) {
+    public ResponseEventDTO createEvent(String creatorId, String creatorUsername, RequestEventDTO eventDTO) {
         if (eventDTO.getEventDate().isBefore(OffsetDateTime.now().plusHours(2)))
             throw new ValidationException("Event cannot start in less than 2 hours");
-        getUserById(creatorId);
         Event event = eventMapper.requestToEvent(eventDTO);
 
         event.setConfirmedRequests(0);
         event.setCreationDate(OffsetDateTime.now());
         event.setInitiatorId(creatorId);
+        event.setInitiatorUsername(creatorUsername);
+        event.setCategoryName(getCategoryById(event.getCategoryId()).getName());
         event.setState(EventState.PENDING);
         event.setLikes(0);
         event.setDislikes(0);
@@ -99,10 +100,16 @@ public class EventServiceImpl implements EventService {
         updatedEvent.setConfirmedRequests(event.getConfirmedRequests());
         updatedEvent.setCreationDate(event.getCreationDate());
         updatedEvent.setInitiatorId(event.getInitiatorId());
+        updatedEvent.setInitiatorUsername(event.getInitiatorUsername());
         updatedEvent.setState(event.getState());
         updatedEvent.setLikes(event.getLikes());
         updatedEvent.setLikes(event.getDislikes());
 
+        if (eventDTO.getCategoryId() != null && !eventDTO.getCategoryId().equals(updatedEvent.getCategoryId())) {
+            updatedEvent.setCategoryName(getCategoryById(
+                    eventDTO.getCategoryId()
+            ).getName());
+        }
 
         eventRepository.save(updatedEvent);
         eventSearchRepository.save(
@@ -143,7 +150,6 @@ public class EventServiceImpl implements EventService {
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
     }
-
 
 
     @Override
@@ -193,6 +199,12 @@ public class EventServiceImpl implements EventService {
             event.setState(EventState.CANCELED);
         }
 
+        if (requestDTO.getCategoryId() != null && !requestDTO.getCategoryId().equals(event.getCategoryId())) {
+            event.setCategoryName(getCategoryById(
+                    requestDTO.getCategoryId()
+            ).getName());
+        }
+
         eventRepository.save(event);
         eventSearchRepository.save(
                 eventMapper.eventToIndex(event)
@@ -202,20 +214,15 @@ public class EventServiceImpl implements EventService {
 
 
     private ResponseEventDTO getResponseDTO(Event event) {
-        ResponseCategoryDTO category = getCategoryById(event.getCategoryId());
-        ResponseUserShortDTO initiator = getUserById(event.getInitiatorId());
         Long views = getViewsById(event.getEventId());
-
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
 
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
+
         responseDTO.setViews(views);
-        responseDTO.setCategory(category);
-        responseDTO.setInitiator(initiator);
         responseDTO.setComments(comments);
         return responseDTO;
     }
-
 
 
     private Long getViewsById(Long eventId) {
@@ -255,23 +262,6 @@ public class EventServiceImpl implements EventService {
         }
         return category;
     }
-
-    private ResponseUserShortDTO getUserById(String userId) {
-        ResponseUserDTO userDTO;
-        Cache cache = cacheManager.getCache("UserService::getUserById");
-        if (cache == null) {
-            log.error("Cache UserService::getUserById is null, requested userId: {}", userId);
-            userDTO = userServiceClient.getUserById(userId);
-        } else {
-            userDTO = cache.get(userId, ResponseUserDTO.class);
-            if (userDTO == null) {
-                userDTO = userServiceClient.getUserById(userId);
-                log.debug("User with id {} not found in cache, fetching from service", userId);
-            }
-        }
-        return userMapper.responseUserDtoToResponseUserShortDto(userDTO);
-    }
-
 
 }
 
