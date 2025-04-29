@@ -1,8 +1,6 @@
 package com.faspix.service;
 
 import com.faspix.client.CategoryServiceClient;
-import com.faspix.client.StatisticsServiceClient;
-import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
@@ -11,7 +9,6 @@ import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
-import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,18 +16,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
-
-import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -40,17 +33,13 @@ public class EventServiceImpl implements EventService {
 
     private final EventMapper eventMapper;
 
-    private final UserServiceClient userServiceClient;
-
     private final CategoryServiceClient categoryServiceClient;
-
-    private final StatisticsServiceClient statisticsServiceClient;
 
     private final EventRepository eventRepository;
 
     private final EndpointStatisticsService endpointStatisticsService;
 
-    private final UserMapper userMapper;
+    private final EventViewService eventViewService;
 
     private final CommentService commentService;
 
@@ -131,7 +120,7 @@ public class EventServiceImpl implements EventService {
         if (cache == null) {
             log.error("Cache EventService::getEventViewsById is null");
         } else {
-            cache.put(eventId, getViewsById(eventId) + 1);
+            cache.put(eventId, eventViewService.getViewsByEventId(eventId) + 1);
         }
         endpointStatisticsService.sendEndpointStatistics(
                 RequestEndpointStatsDTO.builder()
@@ -214,7 +203,7 @@ public class EventServiceImpl implements EventService {
 
 
     private ResponseEventDTO getResponseDTO(Event event) {
-        Long views = getViewsById(event.getEventId());
+        Long views = eventViewService.getViewsByEventId(event.getEventId());
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
 
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
@@ -224,29 +213,6 @@ public class EventServiceImpl implements EventService {
         return responseDTO;
     }
 
-
-    private Long getViewsById(Long eventId) {
-        Cache cache = cacheManager.getCache("EventService::getEventViewsById");
-        if (cache == null) {
-            log.error("Cache EventService::getEventViewsById is null, requested eventId id: {}", eventId);
-            return fetchEventViewsFromDB(eventId);
-        }
-
-        Long views = cache.get(eventId, Long.class);
-        if (views != null) {
-            return views;
-        }
-
-        log.debug("Views for event with id {} not found in cache, fetching from statistics service", eventId);
-        return fetchEventViewsFromDB(eventId);
-    }
-
-    private Long fetchEventViewsFromDB(Long eventId) {
-        List<ResponseEndpointStatsDTO> statsById = statisticsServiceClient.getStatsById(eventId);
-        return (statsById == null || statsById.isEmpty())
-                ? 0
-                : statsById.getFirst().getHits();
-    }
 
     private ResponseCategoryDTO getCategoryById(Long id) {
         Cache cache = cacheManager.getCache("CategoryService::findCategoryById");
