@@ -10,13 +10,26 @@ import java.util.List;
 
 public interface SearchService {
 
-    List<ResponseEventShortDTO> findEvents(String text, List<Long> categories, Boolean paid, OffsetDateTime rangeStart,
-                                           OffsetDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
-                                           Integer page, Integer size);
+    List<ResponseEventShortDTO> findEvents(String text,
+                                           List<Long> categories,
+                                           Boolean paid,
+                                           OffsetDateTime rangeStart,
+                                           OffsetDateTime rangeEnd,
+                                           Boolean onlyAvailable,
+                                           EventSortType sort,
+                                           Integer page,
+                                           Integer size
+    );
 
 
-    List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
-                                           OffsetDateTime rangeStart, OffsetDateTime rangeEnd, Integer page, Integer size);
+    List<ResponseEventDTO> findEventsAdmin(List<String> users,
+                                           List<EventState> states,
+                                           List<Long> categories,
+                                           OffsetDateTime rangeStart,
+                                           OffsetDateTime rangeEnd,
+                                           Integer page,
+                                           Integer size
+    );
 
     List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size);
 }
