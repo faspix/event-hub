@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -113,8 +114,8 @@ public class CommentServiceTest {
     @Test
     void findCommentsByEventIdTest_Success() {
         Comment comment = makeComment();
-        when(commentRepository.findByEvent_EventId(anyLong()))
-                .thenReturn(List.of(comment));
+        when(commentRepository.findByEvent_EventId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(List.of(comment)));
 
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(1L, 1, 10);
         assertThat(comments.size(), equalTo(1));
@@ -124,8 +125,8 @@ public class CommentServiceTest {
 
     @Test
     void findCommentsByEventIdTest_NoComments_SuccessReturnNull() {
-        when(commentRepository.findByEvent_EventId(anyLong()))
-                .thenReturn(List.of());
+        when(commentRepository.findByEvent_EventId(anyLong(), any()))
+                .thenReturn(new PageImpl<>(Collections.emptyList()));
 
         List<ResponseCommentDTO> responseDTO = commentService.findCommentsByEventId(1L, 1, 10);
         assertThat(responseDTO, is(Collections.emptyList()));

@@ -12,7 +12,7 @@ public interface CompilationService {
 
     ResponseCompilationDTO findCompilationById(Long id);
 
-    List<ResponseCompilationDTO> findCompilations(Boolean pinned, Integer page, Integer size);
+    List<ResponseCompilationDTO> findCompilations(Boolean pinned, Integer from, Integer size);
 
     ResponseCompilationDTO editCompilation(Long id, RequestCompilationDTO compilationDTO);
 

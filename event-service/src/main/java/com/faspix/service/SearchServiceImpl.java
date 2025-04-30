@@ -91,9 +91,9 @@ public class SearchServiceImpl implements SearchService {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,
-                                                  OffsetDateTime rangeStart, OffsetDateTime rangeEnd, Integer page,
+                                                  OffsetDateTime rangeStart, OffsetDateTime rangeEnd, Integer from,
                                                   Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
+        Pageable pageRequest = makePageRequest(from, size);
 
         if (rangeStart == null)
             rangeStart = OffsetDateTime.now();
@@ -109,8 +109,8 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
+    public List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer from, Integer size) {
+        Pageable pageRequest = makePageRequest(from, size);
         return eventRepository.findEventsByInitiatorId(userId, pageRequest)
                 .stream()
                 .map(this::getResponseShortDTO)

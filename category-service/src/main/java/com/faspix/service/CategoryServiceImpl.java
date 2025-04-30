@@ -9,7 +9,6 @@ import com.faspix.exception.CategoryNotEmptyException;
 import com.faspix.exception.CategoryNotFoundException;
 import com.faspix.mapper.CategoryMapper;
 import com.faspix.repository.CategoryRepository;
-import com.faspix.utility.PageRequestMaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -42,8 +41,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final CacheManager cacheManager;
 
     @Override
-    public List<ResponseCategoryDTO> findCategories(Integer page, Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
+    public List<ResponseCategoryDTO> findCategories(Integer from, Integer size) {
+        Pageable pageRequest = makePageRequest(from, size);
         return categoryRepository.findAll(pageRequest)
                 .stream()
                 .map(categoryMapper::categoryToResponse)

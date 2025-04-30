@@ -38,8 +38,6 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationMapper compilationMapper;
 
-    private final EventMapper eventMapper;
-
     private final EventServiceClient eventServiceClient;
 
     private final CacheManager cacheManager;
@@ -82,8 +80,8 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public List<ResponseCompilationDTO> findCompilations(Boolean pinned, Integer page, Integer size) {
-        Pageable pageRequest = makePageRequest(page, size);
+    public List<ResponseCompilationDTO> findCompilations(Boolean pinned, Integer from, Integer size) {
+        Pageable pageRequest = makePageRequest(from, size);
 
         Page<Compilation> compilations = (pinned == null)
                 ? compilationRepository.findAll(pageRequest)
