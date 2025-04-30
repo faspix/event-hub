@@ -40,10 +40,10 @@ public class UserController {
     public List<ResponseUserDTO> searchUsers(
             @RequestParam(required = false) String nickname,
             @RequestParam(required = false) String email,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return userService.searchUsers(nickname, email, page, size);
+        return userService.searchUsers(nickname, email, from, size);
     }
 
     @PatchMapping("/admin/{userId}")

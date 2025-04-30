@@ -14,6 +14,8 @@ import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +65,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<ResponseCommentDTO> findCommentsByEventId(Long eventId, Integer from, Integer size) {
-        List<Comment> comments = commentRepository.findByEvent_EventId(eventId);
+        Pageable pageable = makePageRequest(from, size);
+        Page<Comment> comments = commentRepository.findByEvent_EventId(eventId, pageable);
         if (comments.isEmpty())
             return Collections.emptyList();
 

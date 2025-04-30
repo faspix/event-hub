@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    List<ResponseCategoryDTO> findCategories(Integer page, Integer size);
+    List<ResponseCategoryDTO> findCategories(Integer from, Integer size);
 
     ResponseCategoryDTO findCategoryById(Long categoryId);
 

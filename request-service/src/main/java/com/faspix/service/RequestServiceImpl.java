@@ -77,9 +77,9 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(String requesterId, Long eventId, Integer page, Integer size) {
+    public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(String requesterId, Long eventId, Integer from, Integer size) {
         validateOwnership(requesterId, eventId, eventServiceClient.findEventById(eventId));
-        Pageable pageRequest = makePageRequest(page, size);
+        Pageable pageRequest = makePageRequest(from, size);
         return requestRepository.findRequestsByEventId(eventId, pageRequest)
                 .stream()
                 .map(requestMapper::participationRequestToResponse)
@@ -122,8 +122,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public List<ResponseParticipationRequestDTO> getUsersRequests(String requesterId, Integer page, Integer size) {
-        Pageable pageable = makePageRequest(page, size);
+    public List<ResponseParticipationRequestDTO> getUsersRequests(String requesterId, Integer from, Integer size) {
+        Pageable pageable = makePageRequest(from, size);
         return requestRepository.findRequestsByRequesterId(requesterId, pageable)
                 .stream()
                 .map(requestMapper::participationRequestToResponse)

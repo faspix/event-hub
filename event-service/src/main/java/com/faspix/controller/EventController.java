@@ -2,22 +2,17 @@ package com.faspix.controller;
 
 import com.faspix.dto.*;
 import com.faspix.enums.EventState;
-import com.faspix.mapper.EventMapper;
 import com.faspix.service.EventService;
 import com.faspix.service.SearchService;
 import com.faspix.utility.EventSortType;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
@@ -53,10 +48,10 @@ public class EventController {
     @GetMapping("/users/{userId}")
     public List<ResponseEventShortDTO> findAllUserEvents(
             @PathVariable String userId,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return searchService.findAllUsersEvents(userId, page, size);
+        return searchService.findAllUsersEvents(userId, from, size);
     }
 
     // @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ssXXX")
@@ -68,7 +63,7 @@ public class EventController {
             @RequestParam(required = false) OffsetDateTime rangeStart,
             @RequestParam(required = false) OffsetDateTime rangeEnd,
             @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-            @RequestParam(defaultValue = "EVENT_DATE") EventSortType sort,
+            @RequestParam(defaultValue = "NONE") EventSortType sort,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
@@ -82,10 +77,10 @@ public class EventController {
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) OffsetDateTime rangeStart,
             @RequestParam(required = false) OffsetDateTime rangeEnd,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return searchService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, page, size);
+        return searchService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @GetMapping("{eventId}")

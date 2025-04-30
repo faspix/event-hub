@@ -385,7 +385,7 @@ public class EventServiceTest {
 
         List<ResponseEventShortDTO> result = searchService.findEvents(
                 "test", List.of(1L), true, null, null, true,
-                EventSortType.EVENT_DATE, 0, 10);
+                EventSortType.NONE, 0, 10);
 
         assertThat(result.size(), equalTo(1));
         assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));;

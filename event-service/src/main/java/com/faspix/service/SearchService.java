@@ -27,9 +27,9 @@ public interface SearchService {
                                            List<Long> categories,
                                            OffsetDateTime rangeStart,
                                            OffsetDateTime rangeEnd,
-                                           Integer page,
+                                           Integer from,
                                            Integer size
     );
 
-    List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer page, Integer size);
+    List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer from, Integer size);
 }

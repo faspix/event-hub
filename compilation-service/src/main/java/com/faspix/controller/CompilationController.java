@@ -35,10 +35,10 @@ public class CompilationController {
     @GetMapping
     public List<ResponseCompilationDTO> findCompilations(
             @RequestParam(required = false) Boolean pinned,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return compilationService.findCompilations(pinned, page, size);
+        return compilationService.findCompilations(pinned, from, size);
     }
 
     @PatchMapping("{compId}")

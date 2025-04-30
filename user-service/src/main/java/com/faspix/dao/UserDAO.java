@@ -27,7 +27,7 @@ public class UserDAO {
                     "AND (lower(u.username) LIKE lower(:nickname) " +
                     "OR lower(u.email) LIKE lower(:email)) " +
                     "GROUP BY u.id, u.username, u.email " +
-                    "LIMIT :size OFFSET :offset";
+                    "LIMIT :size OFFSET :from";
 
 
     private final static String FIND_ALL_SQL =
@@ -36,13 +36,12 @@ public class UserDAO {
                     "WHERE u.id IN (:ids)";
 
 
-    public List<ResponseUserDTO> findUsers(String nickname, String email, int page, int size) {
-        int offset = page * size;
+    public List<ResponseUserDTO> findUsers(String nickname, String email, int from, int size) {
         Map<String, Object> params = new HashMap<>();
         params.put("nickname", nickname == null ? "%" : "%" + nickname + "%");
         params.put("email", email == null ? "%" : "%" + email + "%");
         params.put("size", size);
-        params.put("offset", offset);
+        params.put("from", from);
 
         return namedParameterJdbcTemplate.query(FIND_USERS_SQL, params, (rs, rowNum) ->
                 ResponseUserDTO.builder()

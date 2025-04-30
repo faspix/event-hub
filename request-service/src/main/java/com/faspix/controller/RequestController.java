@@ -40,10 +40,10 @@ public class RequestController {
     public List<ResponseParticipationRequestDTO> getRequestsToMyEvent(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable Long eventId,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return requestService.getRequestsToMyEvent(jwt.getSubject(), eventId, page, size);
+        return requestService.getRequestsToMyEvent(jwt.getSubject(), eventId, from, size);
     }
 
     @PatchMapping("/events/{eventId}")
@@ -58,11 +58,11 @@ public class RequestController {
     @GetMapping("/users")
     public List<ResponseParticipationRequestDTO> getUsersRequests(
             @AuthenticationPrincipal Jwt jwt,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
 
     ) {
-        return requestService.getUsersRequests(jwt.getSubject(), page, size);
+        return requestService.getUsersRequests(jwt.getSubject(), from, size);
     }
 
 

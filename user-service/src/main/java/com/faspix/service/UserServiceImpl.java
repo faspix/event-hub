@@ -166,8 +166,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public List<ResponseUserDTO> searchUsers(String nickname, String email, int page, int size) {
-        return userDAO.findUsers(nickname, email, page, size);
+    public List<ResponseUserDTO> searchUsers(String nickname, String email, int from, int size) {
+        return userDAO.findUsers(nickname, email, from, size);
     }
 
     @PreAuthorize("hasAnyRole('MICROSERVICE')")

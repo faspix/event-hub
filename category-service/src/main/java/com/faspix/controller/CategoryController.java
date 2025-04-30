@@ -19,10 +19,10 @@ public class CategoryController {
 
     @GetMapping
     public List<ResponseCategoryDTO> findCategories(
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return categoryService.findCategories(page, size);
+        return categoryService.findCategories(from, size);
     }
 
     @GetMapping("{categoryId}")

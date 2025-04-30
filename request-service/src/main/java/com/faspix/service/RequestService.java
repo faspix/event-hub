@@ -12,10 +12,10 @@ public interface RequestService {
 
     ResponseParticipationRequestDTO cancelRequest(String requesterId, Long eventId);
 
-    List<ResponseParticipationRequestDTO> getRequestsToMyEvent(String requesterId, Long eventId, Integer page, Integer size);
+    List<ResponseParticipationRequestDTO> getRequestsToMyEvent(String requesterId, Long eventId, Integer from, Integer size);
 
     List<ResponseParticipationRequestDTO> setRequestsStatus(String userId, Long eventId, RequestParticipationRequestDTO requestDTO);
 
-    List<ResponseParticipationRequestDTO> getUsersRequests(String requesterId, Integer page, Integer size);
+    List<ResponseParticipationRequestDTO> getUsersRequests(String requesterId, Integer from, Integer size);
 
 }
