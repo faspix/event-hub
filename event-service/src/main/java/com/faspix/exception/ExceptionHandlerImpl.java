@@ -16,6 +16,12 @@ public class ExceptionHandlerImpl {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    private ExceptionResponse handleCommentNotFoundException(final CommentNotFoundException e) {
+        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionResponse handleEventNotPublishedException(final EventNotPublishedException e) {
         return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
     }

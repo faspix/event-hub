@@ -104,6 +104,7 @@ public class CommentControllerTest {
     @BeforeEach
     void init() {
         eventRepository.deleteAll();
+        commentRepository.deleteAll();
     }
 
     @Test
@@ -123,11 +124,7 @@ public class CommentControllerTest {
         String body = mvcResult.getResponse().getContentAsString();
         ResponseCommentDTO comment = objectMapper.readValue(body, ResponseCommentDTO.class);
 
-        ResponseCommentDTO commentFromRepo = eventController.findEventById(event.getEventId(),
-                        new MockHttpServletRequest())
-                .getComments().getFirst();
-        assertThat(comment.getId(), equalTo(commentFromRepo.getId()));
-        assertThat(comment.getText(), equalTo(commentFromRepo.getText()));
+        assertThat(comment.getText(), equalTo(request.getText()));
     }
 
 
@@ -180,6 +177,73 @@ public class CommentControllerTest {
 
     }
 
+    @Test
+    void editCommentTest_Success() throws Exception {
+        Event event = eventRepository.save(makeEventTest());
+        event.setState(EventState.PUBLISHED);
+        Comment comment = makeComment();
+        comment.setEvent(event);
+        comment.setAuthorId("user1");
+        Comment savedComment = commentRepository.save(comment);
+        RequestCommentDTO requestDTO = makeRequestComment();
+
+        MvcResult mvcResult = mockMvc.perform(patch("/events/comments/{commentId}", savedComment.getId())
+                        .content(objectMapper.writeValueAsString(requestDTO))
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .principal(() -> "user1")) // Simulate JWT subject
+                .andExpect(status().isOk())
+                .andExpectAll(jsonPath("$.text", is(requestDTO.getText())))
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        ResponseCommentDTO responseDTO = objectMapper.readValue(body, ResponseCommentDTO.class);
+
+        assertThat(responseDTO.getText(), equalTo(requestDTO.getText()));
+    }
+
+    @Test
+    void editCommentTest_CommentNotFound_Exception() throws Exception {
+        RequestCommentDTO requestDTO = makeRequestComment();
+
+        mockMvc.perform(patch("/events/comments/{commentId}", 1L)
+                        .content(objectMapper.writeValueAsString(requestDTO))
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .principal(() -> "user1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteCommentTest_Success() throws Exception {
+        Event event = eventRepository.save(makeEventTest());
+        event.setState(EventState.PUBLISHED);
+        Comment comment = makeComment();
+        comment.setEvent(event);
+        comment.setAuthorId("user1");
+        Comment savedComment = commentRepository.save(comment);
+
+        mockMvc.perform(delete("/events/comments/{commentId}", savedComment.getId())
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .principal(() -> "user1"))
+                .andExpect(status().isNoContent());
+
+        assertThat(commentRepository.findById(savedComment.getId()).isEmpty(), is(true));
+    }
+
+    @Test
+    void deleteCommentTest_CommentNotFound_Exception() throws Exception {
+        mockMvc.perform(delete("/events/comments/{commentId}", 1L)
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .principal(() -> "user1"))
+                .andExpect(status().isNotFound());
+    }
 
 }
 

@@ -11,4 +11,8 @@ public interface CommentService {
 
     List<ResponseCommentDTO> findCommentsByEventId(Long eventId, Integer from, Integer size);
 
+    ResponseCommentDTO editComment(String userId, Long commentId, RequestCommentDTO requestDTO);
+
+    void deleteComment(String userId, Long commentId);
+
 }
