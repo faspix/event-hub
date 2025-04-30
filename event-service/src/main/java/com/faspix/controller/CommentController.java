@@ -3,6 +3,7 @@ package com.faspix.controller;
 import com.faspix.dto.RequestCommentDTO;
 import com.faspix.dto.ResponseCommentDTO;
 import com.faspix.service.CommentService;
+import com.faspix.utility.CommentSortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,9 +34,10 @@ public class CommentController {
     public List<ResponseCommentDTO> getCommentsByEventId(
             @PathVariable Long eventId,
             @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "20") Integer size
-    ) {
-        return commentService.findCommentsByEventId(eventId, from, size);
+            @RequestParam(defaultValue = "20") Integer size,
+            @RequestParam(defaultValue = "DESC") CommentSortType sortType
+            ) {
+        return commentService.findCommentsByEventId(eventId, sortType, from, size);
     }
 
     @PatchMapping("/comments/{commentId}")

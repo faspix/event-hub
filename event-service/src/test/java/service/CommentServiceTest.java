@@ -13,6 +13,7 @@ import com.faspix.mapper.UserMapper;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import com.faspix.service.CommentServiceImpl;
+import com.faspix.utility.CommentSortType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -117,7 +118,7 @@ public class CommentServiceTest {
         when(commentRepository.findByEvent_EventId(anyLong(), any()))
                 .thenReturn(new PageImpl<>(List.of(comment)));
 
-        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(1L, 1, 10);
+        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(1L, CommentSortType.ASC, 1, 10);
         assertThat(comments.size(), equalTo(1));
         assertThat(comments.getFirst().getText(), equalTo(comment.getText()));
         assertThat(comments.getFirst().getAuthor().getUserId(), equalTo(comment.getAuthorId()));
@@ -128,7 +129,7 @@ public class CommentServiceTest {
         when(commentRepository.findByEvent_EventId(anyLong(), any()))
                 .thenReturn(new PageImpl<>(Collections.emptyList()));
 
-        List<ResponseCommentDTO> responseDTO = commentService.findCommentsByEventId(1L, 1, 10);
+        List<ResponseCommentDTO> responseDTO = commentService.findCommentsByEventId(1L, CommentSortType.ASC, 1, 10);
         assertThat(responseDTO, is(Collections.emptyList()));
     }
 

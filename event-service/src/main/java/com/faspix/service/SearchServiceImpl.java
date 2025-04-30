@@ -96,7 +96,6 @@ public class SearchServiceImpl implements SearchService {
         }
     }
 
-
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<ResponseEventDTO> findEventsAdmin(List<String> users, List<EventState> states, List<Long> categories,

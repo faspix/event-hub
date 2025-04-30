@@ -12,10 +12,12 @@ import com.faspix.exception.ValidationException;
 import com.faspix.mapper.CommentMapper;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
+import com.faspix.utility.CommentSortType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseCommentDTO addComment(String userId, String username, Long eventId, RequestCommentDTO requestDTO) {
+    public ResponseCommentDTO addComment(String userId, String username, Long eventId,
+                                         RequestCommentDTO requestDTO) {
         if (commentRepository.countCommentsByEventIdAndAuthorId(eventId, userId) > 0)
             throw new UserAlreadyCommentThisEventException("User with id " + userId +
                     " already comment event with id " + eventId);
@@ -64,8 +67,15 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<ResponseCommentDTO> findCommentsByEventId(Long eventId, Integer from, Integer size) {
-        Pageable pageable = makePageRequest(from, size);
+    public List<ResponseCommentDTO> findCommentsByEventId(Long eventId, CommentSortType sortType,
+                                                          Integer from, Integer size) {
+        Sort sort = Sort.by(
+                sortType == CommentSortType.ASC
+                        ? Sort.Direction.ASC
+                        : Sort.Direction.DESC,
+                "createdAt"
+        );
+        Pageable pageable = makePageRequest(from, size, sort);
         Page<Comment> comments = commentRepository.findByEvent_EventId(eventId, pageable);
         if (comments.isEmpty())
             return Collections.emptyList();
