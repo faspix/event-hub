@@ -370,7 +370,9 @@ public class EventServiceTest {
 
     @Test
     public void findEventsTest_SortByEventDate_Success() throws IOException {
-        List<Event> events = List.of(makeEventTest());
+        Event event = makeEventTest();
+        event.setEventId(1L);
+        List<Event> events = List.of(event);
         when(eventRepository.findAllById(any()))
                 .thenReturn(events);
         when(hit.id()).thenReturn("1"); // elasticsearch
@@ -391,7 +393,9 @@ public class EventServiceTest {
 
     @Test
     public void findEventsTest_SortByViews_Success() throws IOException {
-        List<Event> events = List.of(makeEventTest());
+        Event event = makeEventTest();
+        event.setEventId(1L);
+        List<Event> events = List.of(event);
         when(eventRepository.findAllById(any()))
                 .thenReturn(events);
         when(hit.id()).thenReturn("1"); // elasticsearch

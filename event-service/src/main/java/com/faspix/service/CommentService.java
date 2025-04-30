@@ -9,6 +9,6 @@ public interface CommentService {
 
     ResponseCommentDTO addComment(String userId, String username, Long eventId, RequestCommentDTO requestDTO);
 
-    List<ResponseCommentDTO> findCommentsByEventId(Long eventId);
+    List<ResponseCommentDTO> findCommentsByEventId(Long eventId, Integer from, Integer size);
 
 }

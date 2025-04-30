@@ -11,7 +11,6 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    @Mapping(target = "comments", ignore = true)
     @Mapping(source = "categoryId", target = "category.categoryId")
     @Mapping(source = "categoryName", target = "category.name")
     @Mapping(source = "initiatorId", target = "initiator.userId")

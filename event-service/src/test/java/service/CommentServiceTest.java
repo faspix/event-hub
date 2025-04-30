@@ -100,10 +100,10 @@ public class CommentServiceTest {
     @Test
     void findCommentsByEventIdTest_Success() {
         Comment comment = makeComment();
-        when(commentRepository.findCommentsByEventId(anyLong()))
+        when(commentRepository.findByEvent_EventId(anyLong()))
                 .thenReturn(List.of(comment));
 
-        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(1L);
+        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(1L, 1, 10);
         assertThat(comments.size(), equalTo(1));
         assertThat(comments.getFirst().getText(), equalTo(comment.getText()));
         assertThat(comments.getFirst().getAuthor().getUserId(), equalTo(comment.getAuthorId()));
@@ -111,10 +111,10 @@ public class CommentServiceTest {
 
     @Test
     void findCommentsByEventIdTest_NoComments_SuccessReturnNull() {
-        when(commentRepository.findCommentsByEventId(anyLong()))
+        when(commentRepository.findByEvent_EventId(anyLong()))
                 .thenReturn(List.of());
 
-        List<ResponseCommentDTO> responseDTO = commentService.findCommentsByEventId(1L);
+        List<ResponseCommentDTO> responseDTO = commentService.findCommentsByEventId(1L, 1, 10);
         assertThat(responseDTO, is(Collections.emptyList()));
     }
 
