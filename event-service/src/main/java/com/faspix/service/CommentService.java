@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CommentService {
 
-    ResponseCommentDTO addComment(String userId, Long eventId, RequestCommentDTO requestDTO);
+    ResponseCommentDTO addComment(String userId, String username, Long eventId, RequestCommentDTO requestDTO);
 
     List<ResponseCommentDTO> findCommentsByEventId(Long eventId);
 

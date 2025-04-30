@@ -56,7 +56,6 @@ public class EventServiceImpl implements EventService {
         Event event = eventMapper.requestToEvent(eventDTO);
 
         event.setConfirmedRequests(0);
-        event.setCreationDate(OffsetDateTime.now());
         event.setInitiatorId(creatorId);
         event.setInitiatorUsername(creatorUsername);
         event.setCategoryName(getCategoryById(event.getCategoryId()).getName());
@@ -92,12 +91,14 @@ public class EventServiceImpl implements EventService {
         updatedEvent.setInitiatorUsername(event.getInitiatorUsername());
         updatedEvent.setState(event.getState());
         updatedEvent.setLikes(event.getLikes());
-        updatedEvent.setLikes(event.getDislikes());
+        updatedEvent.setDislikes(event.getDislikes());
 
-        if (eventDTO.getCategoryId() != null && !eventDTO.getCategoryId().equals(updatedEvent.getCategoryId())) {
+        if (!event.getCategoryId().equals(updatedEvent.getCategoryId())) {
             updatedEvent.setCategoryName(getCategoryById(
-                    eventDTO.getCategoryId()
+                    updatedEvent.getCategoryId()
             ).getName());
+        } else {
+            updatedEvent.setCategoryName(event.getCategoryName());
         }
 
         eventRepository.save(updatedEvent);
@@ -179,19 +180,19 @@ public class EventServiceImpl implements EventService {
         if (! EventState.PENDING.equals(event.getState()))
             throw new ValidationException("Event must be in PENDING state");
 
+        if (requestDTO.getCategoryId() != null && !event.getCategoryId().equals(requestDTO.getCategoryId())) {
+            event.setCategoryName(getCategoryById(
+                    requestDTO.getCategoryId()
+            ).getName());
+        }
+
         eventMapper.RequestUpdateEventAdminToEvent(event, requestDTO);
 
         if (EventStateAction.PUBLISH_EVENT.equals(requestDTO.getStateAction())) {
             event.setState(EventState.PUBLISHED);
-            event.setPublishedOn(OffsetDateTime.now());
+            event.setPublishedAt(OffsetDateTime.now());
         } else if (EventStateAction.REJECT_EVENT.equals(requestDTO.getStateAction())) {
             event.setState(EventState.CANCELED);
-        }
-
-        if (requestDTO.getCategoryId() != null && !requestDTO.getCategoryId().equals(event.getCategoryId())) {
-            event.setCategoryName(getCategoryById(
-                    requestDTO.getCategoryId()
-            ).getName());
         }
 
         eventRepository.save(event);

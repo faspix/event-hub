@@ -1,7 +1,6 @@
 package service;
 
 
-import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Comment;
 import com.faspix.entity.Event;
@@ -52,9 +51,6 @@ public class CommentServiceTest {
     @Mock
     private CacheManager cacheManager;
 
-    @Mock
-    private UserServiceClient userServiceClient;
-
     @InjectMocks
     private CommentServiceImpl commentService;
 
@@ -62,32 +58,27 @@ public class CommentServiceTest {
     void addCommentTest_Success() {
         Event event = makeEventTest();
         event.setState(EventState.PUBLISHED);
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
         when(commentRepository.save(any()))
                 .thenReturn(makeComment());
 
         RequestCommentDTO requestDTO = makeRequestComment();
-        ResponseCommentDTO responseDTO = commentService.addComment("1", 1L, requestDTO);
+        ResponseCommentDTO responseDTO = commentService.addComment("1",  "username", 1L, requestDTO);
 
         assertThat(responseDTO.getText(), equalTo(requestDTO.getText()));
-        verify(userServiceClient, times(1)).getUserById(any());
         verify(eventRepository, times(1)).findById(anyLong());
         verify(commentRepository, times(1)).save(any());
     }
 
     @Test
     void addCommentTest_EventNotFound_Exception() {
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
         RequestCommentDTO requestDTO = makeRequestComment();
         EventNotFoundException exception = assertThrowsExactly(EventNotFoundException.class,
-                () -> commentService.addComment("1", 1L, requestDTO)
+                () -> commentService.addComment("1", "username", 1L, requestDTO)
         );
         assertThat(exception.getMessage(), equalTo("Event with id 1 not found"));
     }
@@ -95,14 +86,12 @@ public class CommentServiceTest {
 
     @Test
     void addCommentTest_EventNotPublished_Exception() {
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(makeEventTest()));
 
         RequestCommentDTO requestDTO = makeRequestComment();
         EventNotFoundException exception = assertThrowsExactly(EventNotFoundException.class,
-                () -> commentService.addComment("1", 1L, requestDTO)
+                () -> commentService.addComment("1", "username", 1L, requestDTO)
         );
         assertThat(exception.getMessage(), equalTo("Event with id 1 not published yet"));
 
@@ -113,8 +102,6 @@ public class CommentServiceTest {
         Comment comment = makeComment();
         when(commentRepository.findCommentsByEventId(anyLong()))
                 .thenReturn(List.of(comment));
-        when(userServiceClient.getUsersByIds(any()))
-                .thenReturn(Set.of(makeResponseShortUser()));
 
         List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(1L);
         assertThat(comments.size(), equalTo(1));

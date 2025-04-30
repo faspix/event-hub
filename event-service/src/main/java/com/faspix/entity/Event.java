@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
 
@@ -37,6 +38,7 @@ public class Event {
     @Column(nullable = false)
     private Integer confirmedRequests;
 
+    @CreationTimestamp
     @Column(nullable = false)
     private OffsetDateTime creationDate;
 
@@ -62,7 +64,7 @@ public class Event {
     @Column(nullable = false)
     private Integer participantLimit;
 
-    private OffsetDateTime publishedOn;
+    private OffsetDateTime publishedAt;
 
     @Column(nullable = false)
     private Boolean requestModeration;

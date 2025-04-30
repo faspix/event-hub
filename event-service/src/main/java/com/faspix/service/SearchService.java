@@ -17,7 +17,7 @@ public interface SearchService {
                                            OffsetDateTime rangeEnd,
                                            Boolean onlyAvailable,
                                            EventSortType sort,
-                                           Integer page,
+                                           Integer from,
                                            Integer size
     );
 

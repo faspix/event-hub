@@ -69,10 +69,10 @@ public class EventController {
             @RequestParam(required = false) OffsetDateTime rangeEnd,
             @RequestParam(defaultValue = "false") Boolean onlyAvailable,
             @RequestParam(defaultValue = "EVENT_DATE") EventSortType sort,
-            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return searchService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, page, size);
+        return searchService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/admin/search")

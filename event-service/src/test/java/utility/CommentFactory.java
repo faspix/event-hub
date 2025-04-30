@@ -15,7 +15,8 @@ public class CommentFactory {
         return Comment.builder()
                 .id(null)
                 .authorId("1")
-                .creationDate(Instant.now())
+                .createdAt(Instant.now())
+                .authorUsername("user")
                 .event(makeEventTest())
                 .text("Comment text")
                 .build();
@@ -25,6 +26,8 @@ public class CommentFactory {
         return ResponseCommentDTO.builder()
                 .id(1L)
                 .author(makeResponseShortUser())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .text("Comment text")
                 .build();
     }

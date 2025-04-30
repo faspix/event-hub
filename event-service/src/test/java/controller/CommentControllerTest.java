@@ -3,7 +3,6 @@ package controller;
 import com.faspix.EventApplication;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.client.UserServiceClient;
 import com.faspix.controller.EventController;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
@@ -67,9 +66,6 @@ public class CommentControllerTest {
     private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 
     @MockitoBean
-    private UserServiceClient userServiceClient;
-
-    @MockitoBean
     private EventSearchRepository eventSearchRepository;
 
     @MockitoBean
@@ -110,8 +106,6 @@ public class CommentControllerTest {
         Event event = eventRepository.save(makeEventTest());
         event.setState(EventState.PUBLISHED);
         RequestCommentDTO request = makeRequestComment();
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
 
         MvcResult mvcResult = mockMvc.perform(post("/events/{eventId}/comment", event.getEventId())
                         .content(objectMapper.writeValueAsString(request))
@@ -135,8 +129,6 @@ public class CommentControllerTest {
     @Test
     void addCommentTest_EventNotFound_Exception() throws Exception {
         RequestCommentDTO request = makeRequestComment();
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
 
         mockMvc.perform(post("/events/{eventId}/comment", 1L)
                         .content(objectMapper.writeValueAsString(request))
@@ -151,8 +143,6 @@ public class CommentControllerTest {
     void addCommentTest_EventNotPublished_Exception() throws Exception {
         Event event = eventRepository.save(makeEventTest());
         RequestCommentDTO request = makeRequestComment();
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
 
         mockMvc.perform(post("/events/{eventId}/comment", event.getEventId())
                         .content(objectMapper.writeValueAsString(request))

@@ -34,7 +34,7 @@ public class EventFactory {
                 .location(new Location(10.0, 10.0))
                 .paid(false)
                 .confirmedRequests(10)
-                .publishedOn(OffsetDateTime.now())
+                .publishedAt(OffsetDateTime.now())
                 .requestModeration(false)
                 .state(EventState.PENDING)
                 .views(0L)

@@ -40,7 +40,7 @@ public class ResponseEventDTO {
 
     private Integer participantLimit;
 
-    private OffsetDateTime publishedOn;
+    private OffsetDateTime publishedAt;
 
     private Boolean requestModeration;
 
