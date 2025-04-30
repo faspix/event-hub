@@ -56,8 +56,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<ResponseCommentDTO> findCommentsByEventId(Long eventId) {
-        List<Comment> comments = commentRepository.findCommentsByEventId(eventId);
+    public List<ResponseCommentDTO> findCommentsByEventId(Long eventId, Integer from, Integer size) {
+        List<Comment> comments = commentRepository.findByEvent_EventId(eventId);
         if (comments.isEmpty())
             return Collections.emptyList();
 

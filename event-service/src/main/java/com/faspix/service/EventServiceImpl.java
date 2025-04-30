@@ -41,8 +41,6 @@ public class EventServiceImpl implements EventService {
 
     private final EventViewService eventViewService;
 
-    private final CommentService commentService;
-
     private final CacheManager cacheManager;
 
     private final EventSearchRepository eventSearchRepository;
@@ -205,12 +203,9 @@ public class EventServiceImpl implements EventService {
 
     private ResponseEventDTO getResponseDTO(Event event) {
         Long views = eventViewService.getViewsByEventId(event.getEventId());
-        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
-
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
 
         responseDTO.setViews(views);
-        responseDTO.setComments(comments);
         return responseDTO;
     }
 

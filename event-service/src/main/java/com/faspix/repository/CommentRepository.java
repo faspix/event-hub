@@ -8,10 +8,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    @Query("FROM Comment c " +
-            "WHERE c.event.eventId = :eventId " +
-            "ORDER BY c.createdAt")
-    List<Comment> findCommentsByEventId(Long eventId);
+    List<Comment> findByEvent_EventId(Long eventId);
 
     @Query("SELECT COUNT(c) FROM Comment c " +
             "WHERE c.event.eventId = :eventId " +

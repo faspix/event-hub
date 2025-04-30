@@ -43,8 +43,6 @@ public class SearchServiceImpl implements SearchService {
 
     private final EventRepository eventRepository;
 
-    private final CommentService commentService;
-
     private final EventMapper eventMapper;
 
     private final EventViewService eventViewService;
@@ -132,11 +130,8 @@ public class SearchServiceImpl implements SearchService {
     private ResponseEventDTO getResponseDTO(Event event) {
         Long views = eventViewService.getViewsByEventId(event.getEventId());
 
-        List<ResponseCommentDTO> comments = commentService.findCommentsByEventId(event.getEventId());
-
         ResponseEventDTO responseDTO = eventMapper.eventToResponse(event);
         responseDTO.setViews(views);
-        responseDTO.setComments(comments);
         return responseDTO;
     }
 

@@ -5,12 +5,14 @@ import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
 import com.faspix.controller.EventController;
 import com.faspix.dto.*;
+import com.faspix.entity.Comment;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
 import com.faspix.service.EndpointStatisticsService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -41,6 +45,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static utility.CommentFactory.makeComment;
 import static utility.CommentFactory.makeRequestComment;
 import static utility.EventFactory.*;
 import static utility.UserFactory.*;
@@ -151,6 +156,30 @@ public class CommentControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isNotFound());
     }
+
+    @Test
+    void getCommentsTest_Success() throws Exception {
+        Event event = eventRepository.save(makeEventTest());
+        Comment repoComment = makeComment();
+        repoComment.setEvent(event);
+        Comment existComment = commentRepository.save(repoComment);
+
+        MvcResult mvcResult = mockMvc.perform(get("/events/comments/{eventId}", event.getEventId())
+                        .header("Authorization", "Bearer 123123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().is2xxSuccessful())
+                .andExpectAll(jsonPath("$.size()", is(1)))
+                .andReturn();
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseCommentDTO> comments = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(comments.size(), equalTo(1));
+        assertThat(existComment.getAuthorId(), equalTo(comments.getFirst().getAuthor().getUserId()));
+        assertThat(existComment.getText(), equalTo(comments.getFirst().getText()));
+
+    }
+
 
 }
 

@@ -48,8 +48,6 @@ public class ResponseEventDTO {
 
     private Long views;
 
-    private List<ResponseCommentDTO> comments;
-
     private Integer likes;
 
     private Integer dislikes;
