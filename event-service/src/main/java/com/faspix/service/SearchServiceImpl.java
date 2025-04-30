@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -81,10 +82,18 @@ public class SearchServiceImpl implements SearchService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        return orderedEvents
-                .stream()
-                .map(this::getResponseShortDTO)
-                .toList();
+        if (sort == EventSortType.VIEWS) {
+            return orderedEvents
+                    .stream()
+                    .map(this::getResponseShortDTO)
+                    .sorted((o1, o2) -> (int) (o1.getViews() - o2.getViews()))
+                    .toList();
+        } else {
+            return orderedEvents
+                    .stream()
+                    .map(this::getResponseShortDTO)
+                    .toList();
+        }
     }
 
 
