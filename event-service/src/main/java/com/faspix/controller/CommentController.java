@@ -38,4 +38,22 @@ public class CommentController {
         return commentService.findCommentsByEventId(eventId, from, size);
     }
 
+    @PatchMapping("/comments/{commentId}")
+    public ResponseCommentDTO editComment(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long commentId,
+            @RequestBody RequestCommentDTO requestDTO
+    ) {
+        return commentService.editComment(jwt.getSubject(), commentId, requestDTO);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/comments/{commentId}")
+    public void deleteComment(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long commentId
+    ) {
+        commentService.deleteComment(jwt.getSubject(), commentId);
+    }
+
 }

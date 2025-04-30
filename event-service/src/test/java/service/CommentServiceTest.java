@@ -5,7 +5,9 @@ import com.faspix.dto.*;
 import com.faspix.entity.Comment;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
+import com.faspix.exception.CommentNotFoundException;
 import com.faspix.exception.EventNotFoundException;
+import com.faspix.exception.ValidationException;
 import com.faspix.mapper.CommentMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.CommentRepository;
@@ -19,6 +21,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 
@@ -53,6 +60,12 @@ public class CommentServiceTest {
 
     @InjectMocks
     private CommentServiceImpl commentService;
+
+    @Mock
+    private SecurityContext securityContext;
+
+    @Mock
+    private Authentication authentication;
 
     @Test
     void addCommentTest_Success() {
@@ -118,6 +131,69 @@ public class CommentServiceTest {
         assertThat(responseDTO, is(Collections.emptyList()));
     }
 
+//    @Test
+//    void editCommentTest_Success_Author() {
+//        Comment comment = makeComment();
+//        comment.setAuthorId("1");
+//        RequestCommentDTO requestDTO = makeRequestComment();
+//
+//        when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
+//        when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+//
+//        ResponseCommentDTO responseDTO = commentService.editComment("1", 1L, requestDTO);
+//
+//        assertThat(responseDTO.getText(), equalTo(comment.getText()));
+//        verify(commentRepository, times(1)).findById(1L);
+//        verify(commentRepository, times(1)).save(any(Comment.class));
+//    }
 
+    @Test
+    void editCommentTest_CommentNotFound_Exception() {
+        when(commentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        RequestCommentDTO requestDTO = makeRequestComment();
+        CommentNotFoundException exception = assertThrowsExactly(CommentNotFoundException.class,
+                () -> commentService.editComment("1", 1L, requestDTO));
+        assertThat(exception.getMessage(), equalTo("Comment with id 1 not found"));
+    }
+
+    @Test
+    void deleteCommentTest_Success_Author() {
+        Comment comment = makeComment();
+        comment.setAuthorId("1");
+
+        when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
+
+        commentService.deleteComment("1", 1L);
+
+        verify(commentRepository, times(1)).findById(1L);
+        verify(commentRepository, times(1)).delete(comment);
+    }
+
+    @Test
+    void deleteCommentTest_CommentNotFound_Exception() {
+        when(commentRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        CommentNotFoundException exception = assertThrowsExactly(CommentNotFoundException.class,
+                () -> commentService.deleteComment("1", 1L));
+        assertThat(exception.getMessage(), equalTo("Comment with id 1 not found"));
+    }
+
+    @Test
+    void deleteCommentTest_UnauthorizedUser_Exception() {
+        Comment comment = makeComment();
+        comment.setAuthorId("2");
+
+        when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
+
+        SecurityContextHolder.setContext(securityContext);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getAuthorities())
+            .thenReturn(List.of());
+
+        ValidationException exception = assertThrowsExactly(ValidationException.class,
+                () -> commentService.deleteComment("1", 1L));
+        assertThat(exception.getMessage(), equalTo("User with id 1 is not authorized to edit comment with id " + comment.getId()));
+    }
 
 }

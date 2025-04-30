@@ -5,19 +5,23 @@ import com.faspix.dto.ResponseCommentDTO;
 import com.faspix.entity.Comment;
 import com.faspix.entity.Event;
 import com.faspix.enums.EventState;
+import com.faspix.exception.CommentNotFoundException;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.UserAlreadyCommentThisEventException;
+import com.faspix.exception.ValidationException;
 import com.faspix.mapper.CommentMapper;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +68,46 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream()
                 .map(commentMapper::commentToResponse)
                 .toList();
+    }
+
+    @Transactional
+    @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseCommentDTO editComment(String userId, Long commentId, RequestCommentDTO requestDTO) {
+        Comment comment = getCommentById(commentId);
+        checkCommentAuthority(userId, comment);
+        return commentMapper.commentToResponse(
+                commentRepository.save(comment)
+        );
+    }
+
+    @Transactional
+    @Override
+    public void deleteComment(String userId, Long commentId) {
+        Comment comment = getCommentById(commentId);
+        checkCommentAuthority(userId, comment);
+        commentRepository.delete(comment);
+    }
+
+    private void checkCommentAuthority(String userId, Comment comment) {
+        boolean isAuthor = Objects.equals(comment.getAuthorId(), userId);
+
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(grantedAuthority ->
+                        grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAuthor && !isAdmin) {
+            throw new ValidationException("User with id " + userId + " is not authorized " +
+                    "to edit comment with id " + comment.getId());
+        }
+    }
+
+    private Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId).orElseThrow(
+                () -> new CommentNotFoundException("Comment with id " + commentId + " not found")
+        );
     }
 
 }
