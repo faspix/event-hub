@@ -6,7 +6,7 @@ CREATE TABLE comments (
     author_id VARCHAR(50) NOT NULL,
     event_id BIGINT NOT NULL,
     text VARCHAR(2000) NOT NULL,
-    creation_date TIMESTAMP WITH TIME ZONE,
+    creation_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     CONSTRAINT fk_event
         FOREIGN KEY(event_id)
         REFERENCES events(event_id) ON DELETE CASCADE

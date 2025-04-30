@@ -26,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
@@ -70,8 +73,17 @@ public class SearchServiceImpl implements SearchService {
                 .map(hit -> Long.valueOf(hit.id()))
                 .toList();
 
-        List<Event> events = eventRepository.findAllById(eventIds);
-        return events
+        List<Event> unorderedEvents = eventRepository.findAllById(eventIds);
+
+        Map<Long, Event> eventMap = unorderedEvents.stream()
+                .collect(Collectors.toMap(Event::getEventId, Function.identity()));
+
+        List<Event> orderedEvents = eventIds.stream()
+                .map(eventMap::get)
+                .filter(Objects::nonNull)
+                .toList();
+
+        return orderedEvents
                 .stream()
                 .map(this::getResponseShortDTO)
                 .toList();
@@ -162,7 +174,9 @@ public class SearchServiceImpl implements SearchService {
                     } else {
                         return m.matchAll(ma -> ma);
                     }
-                }).filter(f -> {
+                })
+//                .minimumShouldMatch("0")
+                .filter(f -> {
                     if (paid != null) {
                         return f.term(t -> t
                                 .field("paid")
@@ -233,7 +247,6 @@ public class SearchServiceImpl implements SearchService {
                         return f.matchAll(m -> m);
                     }
                 })
-//                .minimumShouldMatch("0")
                 .build();
         return boolQuery;
     }

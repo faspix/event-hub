@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,5 +18,9 @@ public class ResponseCommentDTO {
     private ResponseUserShortDTO author;
 
     private String text;
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
 
 }

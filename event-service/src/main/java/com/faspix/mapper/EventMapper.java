@@ -35,7 +35,7 @@ public interface EventMapper {
     @Mapping(target = "initiatorId", ignore = true)
     @Mapping(target = "initiatorUsername", ignore = true)
     @Mapping(target = "categoryName", ignore = true)
-    @Mapping(target = "publishedOn", ignore = true)
+    @Mapping(target = "publishedAt", ignore = true)
     @Mapping(target = "state", ignore = true)
     @Mapping(target = "likes", ignore = true)
     @Mapping(target = "dislikes", ignore = true)

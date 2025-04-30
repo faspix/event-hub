@@ -2,7 +2,6 @@ package controller;
 
 import com.faspix.EventApplication;
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.client.UserServiceClient;
 import com.faspix.entity.Event;
 import com.faspix.entity.EventDislike;
 import com.faspix.entity.EventLike;
@@ -56,9 +55,6 @@ public class EventReactionControllerTest {
 
     @MockitoBean
     private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
-
-    @MockitoBean
-    private UserServiceClient userServiceClient;
 
     @MockitoBean
     private StatisticsServiceClient statisticsServiceClient;

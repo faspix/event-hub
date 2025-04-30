@@ -7,7 +7,6 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.client.UserServiceClient;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.entity.EventIndex;
@@ -32,11 +31,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -50,16 +47,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static utility.CategoryFactory.makeResponseCategory;
 import static utility.EventFactory.*;
-import static utility.UserFactory.makeResponseUserTest;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
 
     @Mock
     private EventRepository eventRepository;
-
-    @Mock
-    private UserServiceClient userServiceClient;
 
     @Mock
     private CacheManager cacheManager;
@@ -268,7 +261,7 @@ public class EventServiceTest {
         assertThat(result.getDescription(), equalTo(event.getDescription()));
         assertThat(result.getLocation(), equalTo(event.getLocation()));
         assertThat(result.getCreationDate(), equalTo(event.getCreationDate()));
-        assertThat(result.getPublishedOn(), equalTo(event.getPublishedOn()));
+        assertThat(result.getPublishedAt(), equalTo(event.getPublishedAt()));
         assertThat(result.getPaid(), equalTo(event.getPaid()));
         assertThat(result.getState(), equalTo(event.getState()));
     }

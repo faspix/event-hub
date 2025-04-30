@@ -3,7 +3,6 @@ package controller;
 import com.faspix.EventApplication;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.client.UserServiceClient;
 import com.faspix.controller.EventController;
 import com.faspix.dto.*;
 import com.faspix.entity.Event;
@@ -11,7 +10,6 @@ import com.faspix.enums.EventState;
 import com.faspix.enums.EventStateAction;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
-import com.faspix.service.EventServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
@@ -70,9 +68,6 @@ public class EventControllerTest {
     private EventController eventController;
 
     @MockitoBean
-    private UserServiceClient userServiceClient;
-
-    @MockitoBean
     private StatisticsServiceClient statisticsServiceClient;
 
     @MockitoBean
@@ -118,8 +113,6 @@ public class EventControllerTest {
     @Test
     public void createEventTest_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
         when(categoryServiceClient.getCategoryById(any()))
                 .thenReturn((makeResponseCategory()));
 
@@ -158,8 +151,6 @@ public class EventControllerTest {
     public void createEventTest_EventStartsToSoon_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setEventDate(OffsetDateTime.now().plusHours(2).plusMinutes(1));
-        when(userServiceClient.getUserById(any()))
-                .thenReturn(makeResponseUserTest());
         when(categoryServiceClient.getCategoryById(any()))
                 .thenReturn((makeResponseCategory()));
 

@@ -15,7 +15,7 @@ CREATE TABLE events (
     lon DOUBLE PRECISION NOT NULL,
     paid BOOLEAN NOT NULL,
     participant_limit INTEGER NOT NULL,
-    published_on TIMESTAMP WITH TIME ZONE,
+    published_at TIMESTAMP WITH TIME ZONE,
     request_moderation BOOLEAN NOT NULL,
     state VARCHAR(255) NOT NULL,
     views BIGINT NOT NULL,

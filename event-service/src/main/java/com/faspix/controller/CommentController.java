@@ -23,7 +23,8 @@ public class CommentController {
             @PathVariable Long eventId,
             @RequestBody RequestCommentDTO requestDTO
     ) {
-        return commentService.addComment(jwt.getSubject(), eventId, requestDTO);
+        String username = jwt.getClaim("username");
+        return commentService.addComment(jwt.getSubject(), username, eventId, requestDTO);
     }
 
 }
