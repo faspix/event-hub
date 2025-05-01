@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 @Configuration
 @RequiredArgsConstructor
-public class RabbitMQConfiguration {
+public class StreamConsumersConfiguration {
 
     private final StatisticsService statisticsService;
 

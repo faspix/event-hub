@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 @Configuration
 @Getter
-public class RabbitMQConfiguration {
+public class StreamProducersConfiguration {
 
     private final Sinks.Many<Message<ConfirmedRequestsDTO>> bus = Sinks.many()
             .multicast().onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE, false);
