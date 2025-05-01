@@ -22,6 +22,9 @@ spring:
       bindings:
         newConfirmedRequestProduce-out-0:
           destination: confirmed-request-dest
+      kafka:
+        binder:
+          brokers: kafka:9025
 
 server:
   port: 9094

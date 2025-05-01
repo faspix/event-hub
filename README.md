@@ -43,7 +43,7 @@ The system is built using a modular microservices architecture and includes the 
 * Liquibase
 
 ### Infrastructure & DevOps
-* RabbitMQ
+* Kafka
 * PostgreSQL
 * Elasticsearch
 * Redis

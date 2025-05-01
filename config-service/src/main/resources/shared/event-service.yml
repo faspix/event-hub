@@ -15,8 +15,6 @@ spring:
     type: redis
     cache-names: redis-cache
   elasticsearch:
-#    client:
-#      reactive: false
     uris: http://elasticsearch:9200
   jpa:
     open-in-view: false
@@ -38,12 +36,18 @@ spring:
             max-attempts: 3
         endpointStatisticsProduce-out-0:
           destination: endpoint-stats-dest
-      rabbit:
+      kafka:
+        binder:
+          brokers: kafka:9025
         bindings:
           newConfirmedRequestConsume-in-0:
             consumer:
-              deadLetterQueueName: confirmed-request.dlq
-              republishToDlq: true
+              enableDlq: true
+              dlqName: newConfirmedRequestConsume-dead-letter-topic
+              autoCommitOnError: false
+              retryAttempts: 3
+              backOffInitialInterval: 1000
+              backOffMaxInterval: 5000
 
 server:
   port: 9091

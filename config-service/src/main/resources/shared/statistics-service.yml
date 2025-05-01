@@ -25,12 +25,18 @@ spring:
           group: endpoint-stats-group
           consumer:
             max-attempts: 3
-      rabbit:
+      kafka:
+        binder:
+          brokers: kafka:9025
         bindings:
           endpointStatisticsConsume-in-0:
             consumer:
-              deadLetterQueueName: endpoint-stats.dlq
-              republishToDlq: true
+              enableDlq: true
+              dlqName: endpointStatisticsConsume-dead-letter-topic
+              autoCommitOnError: false
+              retryAttempts: 3
+              backOffInitialInterval: 1000
+              backOffMaxInterval: 5000
 
 server:
   port: 9095
