@@ -26,12 +26,22 @@ spring:
         format_sql: true
   cloud:
     function:
-      definition: newConfirmedRequestConsume; endpointStatisticsProduce
+      definition: newConfirmedRequestConsume; endpointStatisticsProduce; updateUsernameConsume; updateCategoryNameConsume;
     stream:
       bindings:
         newConfirmedRequestConsume-in-0:
           destination: confirmed-request-dest
           group: confirmed-request-group
+          consumer:
+            max-attempts: 3
+        updateUsernameConsume-in-0:
+          destination: update-username-dest
+          group: update-username-group
+          consumer:
+            max-attempts: 3
+        updateCategoryNameConsume-in-0:
+          destination: update-category-name-dest
+          group: update-category-name-group
           consumer:
             max-attempts: 3
         endpointStatisticsProduce-out-0:
@@ -44,6 +54,22 @@ spring:
             consumer:
               enableDlq: true
               dlqName: newConfirmedRequestConsume-dead-letter-topic
+              autoCommitOnError: false
+              retryAttempts: 3
+              backOffInitialInterval: 1000
+              backOffMaxInterval: 5000
+          updateUsernameConsume-in-0:
+            consumer:
+              enableDlq: true
+              dlqName: updateUsernameConsume-dead-letter-topic
+              autoCommitOnError: false
+              retryAttempts: 3
+              backOffInitialInterval: 1000
+              backOffMaxInterval: 5000
+          updateCategoryNameConsume-in-0:
+            consumer:
+              enableDlq: true
+              dlqName: updateCategoryNameConsume-dead-letter-topic
               autoCommitOnError: false
               retryAttempts: 3
               backOffInitialInterval: 1000

@@ -22,7 +22,16 @@ spring:
   cache:
     type: redis
     cache-names: redis-cache
-
+  cloud:
+    function:
+      definition: updateCategoryNameProduce;
+    stream:
+      bindings:
+        updateCategoryNameProduce-out-0:
+          destination: update-category-name-dest
+      kafka:
+        binder:
+          brokers: kafka:9025
 
 server:
   port: 9092

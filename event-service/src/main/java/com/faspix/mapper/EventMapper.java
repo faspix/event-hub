@@ -15,12 +15,14 @@ public interface EventMapper {
     @Mapping(source = "categoryName", target = "category.name")
     @Mapping(source = "initiatorId", target = "initiator.userId")
     @Mapping(source = "initiatorUsername", target = "initiator.username")
+    @Mapping(target = "views", ignore = true)
     ResponseEventDTO eventToResponse(Event event);
 
     @Mapping(source = "categoryId", target = "category.categoryId")
     @Mapping(source = "categoryName", target = "category.name")
     @Mapping(source = "initiatorId", target = "initiator.userId")
     @Mapping(source = "initiatorUsername", target = "initiator.username")
+    @Mapping(target = "views", ignore = true)
     ResponseEventShortDTO eventToShortResponse(Event event);
 
 

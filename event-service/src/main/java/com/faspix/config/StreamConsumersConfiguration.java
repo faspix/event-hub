@@ -1,6 +1,8 @@
 package com.faspix.config;
 
 import com.faspix.dto.ConfirmedRequestsDTO;
+import com.faspix.dto.UpdateCategoryNameDTO;
+import com.faspix.dto.UpdateUsernameDTO;
 import com.faspix.service.EventService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,16 @@ public class StreamConsumersConfiguration {
     @Bean
     Consumer<Message<ConfirmedRequestsDTO>> newConfirmedRequestConsume() {
         return msg -> eventService.setConfirmedRequestsNumber(msg.getPayload());
+    }
+
+    @Bean
+    Consumer<Message<UpdateUsernameDTO>> updateUsernameConsume() {
+        return msg -> eventService.updateInitiatorUsername(msg.getPayload());
+    }
+
+    @Bean
+    Consumer<Message<UpdateCategoryNameDTO>> updateCategoryNameConsume() {
+        return msg -> eventService.updateCategoryName(msg.getPayload());
     }
 
 }

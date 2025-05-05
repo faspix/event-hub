@@ -160,6 +160,19 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    @Override
+    @Transactional
+    public void updateInitiatorUsername(UpdateUsernameDTO dto) {
+        log.debug("Update initiator username: {}", dto);
+        eventRepository.updateEventInitiatorName(dto.getUserId(), dto.getUsername());
+    }
+
+    @Override
+    @Transactional
+    public void updateCategoryName(UpdateCategoryNameDTO dto) {
+        log.debug("Update category name: {}", dto);
+        eventRepository.updateCategoryName(dto.getCategoryId(), dto.getCategoryName());
+    }
 
     @Override
     public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids) {

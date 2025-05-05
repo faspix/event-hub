@@ -39,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
 
+    private final UpdateUsernameService updateUsernameService;
+
     @Override
     public ResponseUserDTO createUser(RequestUserDTO userDTO) {
         UserRepresentation user = new UserRepresentation();
@@ -82,6 +84,7 @@ public class UserServiceImpl implements UserService {
         UserResource userResource = realmResource.users().get(userId);
 
         UserRepresentation userRepresentation = userResource.toRepresentation();
+        updateUsernameChecker(userDTO, userRepresentation);
         updateUser(userDTO, userRepresentation);
 
         userResource.update(userRepresentation);
@@ -129,6 +132,7 @@ public class UserServiceImpl implements UserService {
         UserResource userResource = usersResource.get(userId);
 
         UserRepresentation userRepresentation = getUserRepresentation(userId, userResource);
+        updateUsernameChecker(userDTO, userRepresentation);
         updateUser(userDTO, userRepresentation);
 
         userResource.update(userRepresentation);
@@ -217,6 +221,22 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(RoleRepresentation::toString)
                 .toList();
+    }
+
+    private void updateUsernameChecker(RequestUserAdminEditDTO userDTO, UserRepresentation userRepresentation) {
+        if (userDTO.getUsername() != null && !userDTO.getUsername().equals(userRepresentation.getUsername())) {
+            updateUsernameService.sendUpdatedUsername(
+                    new UpdateUsernameDTO(userRepresentation.getId(), userDTO.getUsername())
+            );
+        }
+    }
+
+    private void updateUsernameChecker(RequestUserDTO userDTO, UserRepresentation userRepresentation) {
+        if (userDTO.getUsername() != null && !userDTO.getUsername().equals(userRepresentation.getUsername())) {
+            updateUsernameService.sendUpdatedUsername(
+                    new UpdateUsernameDTO(userRepresentation.getId(), userDTO.getUsername())
+            );
+        }
     }
 
 }

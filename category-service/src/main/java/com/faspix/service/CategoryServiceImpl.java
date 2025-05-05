@@ -3,6 +3,7 @@ package com.faspix.service;
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCategoryDTO;
 import com.faspix.dto.ResponseCategoryDTO;
+import com.faspix.dto.UpdateCategoryNameDTO;
 import com.faspix.entity.Category;
 import com.faspix.exception.CategoryAlreadyExistException;
 import com.faspix.exception.CategoryNotEmptyException;
@@ -37,6 +38,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     private final EventServiceClient eventServiceClient;
+
+    private final UpdateCategoryNameService updateCategoryNameService;
 
     private final CacheManager cacheManager;
 
@@ -88,6 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseCategoryDTO editCategory(Long categoryId, RequestCategoryDTO categoryDTO) {
         ResponseCategoryDTO category = findCategoryById(categoryId);
+        updateCategoryName(category, categoryDTO);
         Category updatedCategory = categoryMapper.requestToCategory(categoryDTO);
         updatedCategory.setCategoryId(category.getCategoryId());
         try {
@@ -112,5 +116,13 @@ public class CategoryServiceImpl implements CategoryService {
             throw new CategoryNotEmptyException("Category with id " + categoryId + " is not empty");
 
         categoryRepository.deleteById(categoryId);
+    }
+
+    private void updateCategoryName(ResponseCategoryDTO category, RequestCategoryDTO requestDTO) {
+        if (requestDTO.getName() != null && !requestDTO.getName().equals(category.getName())) {
+            updateCategoryNameService.sendUpdateCategoryName(
+                    new UpdateCategoryNameDTO(category.getCategoryId(), requestDTO.getName())
+            );
+        }
     }
 }

@@ -20,6 +20,22 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findEventsByCategoryId(Long categoryId);
 
     @Modifying
+    @Query("""
+    UPDATE Event e
+    SET e.initiatorUsername = :name
+    WHERE e.initiatorId = :userId
+    """)
+    void updateEventInitiatorName(String userId, String name);
+
+    @Modifying
+    @Query("""
+    UPDATE Event e
+    SET e.categoryName = :catName
+    WHERE e.categoryId = :catId
+    """)
+    void updateCategoryName(Long catId, String catName);
+
+    @Modifying
     @Query("UPDATE Event e " +
             "SET e.likes = e.likes + 1 " +
             "WHERE e.eventId = :eventId")
