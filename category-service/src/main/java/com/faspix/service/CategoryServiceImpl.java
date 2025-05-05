@@ -112,7 +112,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (!categoryRepository.existsById(categoryId)) {
             throw new CategoryNotFoundException("Category with id " + categoryId + " not found");
         }
-        if (!eventServiceClient.findEventsByCategoryId(categoryId).isEmpty())
+        if (eventServiceClient.isEventsExistsInCategory(categoryId))
             throw new CategoryNotEmptyException("Category with id " + categoryId + " is not empty");
 
         categoryRepository.deleteById(categoryId);

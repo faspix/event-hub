@@ -205,8 +205,8 @@ public class CategoryControllerTest {
     void deleteCategoryTest_CategoryNotEmpty_Exception() throws Exception {
         Category category = categoryRepository.save(makeCategory());
 
-        when(eventServiceClient.findEventsByCategoryId(category.getCategoryId()))
-                .thenReturn(List.of(ResponseEventShortDTO.builder().build()));
+        when(eventServiceClient.isEventsExistsInCategory(category.getCategoryId()))
+                .thenReturn(true);
 
         mockMvc.perform(delete("/categories/{categoryId}", category.getCategoryId()))
                 .andExpect(status().isConflict());

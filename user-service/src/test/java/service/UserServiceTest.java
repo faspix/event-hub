@@ -5,6 +5,7 @@ import com.faspix.dto.*;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
 import com.faspix.roles.UserRoles;
+import com.faspix.service.UpdateUsernameService;
 import com.faspix.service.UserServiceImpl;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
@@ -56,6 +57,9 @@ public class UserServiceTest {
 
     @Mock
     private RoleMappingResource roleMappingResource;
+
+    @Mock
+    private UpdateUsernameService updateUsernameService;
 
     @Mock
     private RolesResource rolesResource;

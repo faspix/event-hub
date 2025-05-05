@@ -141,15 +141,6 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public List<ResponseEventShortDTO> findEventsByCategoryId(Long catId) {
-        return eventRepository.findEventsByCategoryId(catId)
-                .stream()
-                .map(eventMapper::eventToShortResponse)
-                .toList();
-    }
-
-
-    @Override
     @Transactional
     public void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO) {
         Event event = getEventById(requestsDTO.getEventId());

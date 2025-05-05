@@ -32,4 +32,9 @@ public interface SearchService {
     );
 
     List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer from, Integer size);
+
+    boolean isEventExists(Long eventId);
+
+    boolean isEventsExistsInCategory(Long categoryId);
+
 }
