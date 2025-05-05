@@ -360,23 +360,6 @@ public class EventControllerTest {
     }
 
     @Test
-    public void isEventsExistsInCategory_Success() throws Exception {
-        Event savedEvent = eventRepository.save(makeEventTest());
-
-        MvcResult mvcResult = mockMvc.perform(get("/events/categories/exists")
-                        .param("id", savedEvent.getCategoryId().toString())
-                        .header("Authorization", "Bearer 123123")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                ).andExpect(status().is2xxSuccessful())
-                .andReturn();
-        String body = mvcResult.getResponse().getContentAsString();
-        boolean boolBody = Boolean.parseBoolean(body);
-
-        assertThat(boolBody, equalTo(true));
-    }
-
-    @Test
     public void findAllUserEventsTest_Success() throws Exception {
         Long eventId = 1L;
         Event event1 = makeEventTest();

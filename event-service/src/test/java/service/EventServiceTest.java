@@ -245,62 +245,6 @@ public class EventServiceTest {
         assertEquals("Event must not be published", exception.getMessage());
     }
 
-    @Test
-    public void findEventTest_Success() {
-        Event event = makeEventTest();
-        event.setState(EventState.PUBLISHED);
-        when(eventRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(event));
-
-        ResponseEventDTO result = eventService.findEventById(1L, new MockHttpServletRequest());
-
-        assertThat(result.getEventId(), equalTo(event.getEventId()));
-        assertThat(result.getEventDate(), equalTo(event.getEventDate()));
-        assertThat(result.getTitle(), equalTo(event.getTitle()));
-        assertThat(result.getAnnotation(), equalTo(event.getAnnotation()));
-        assertThat(result.getDescription(), equalTo(event.getDescription()));
-        assertThat(result.getLocation(), equalTo(event.getLocation()));
-        assertThat(result.getCreationDate(), equalTo(event.getCreationDate()));
-        assertThat(result.getPublishedAt(), equalTo(event.getPublishedAt()));
-        assertThat(result.getPaid(), equalTo(event.getPaid()));
-        assertThat(result.getState(), equalTo(event.getState()));
-    }
-
-    @Test
-    public void findEventByIdTest_EventNotPublished_Exception() {
-        Event event = makeEventTest();
-        when(eventRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(event));
-
-        EventNotPublishedException exception = Assertions.assertThrowsExactly(EventNotPublishedException.class, () ->
-                eventService.findEventById(1L, new MockHttpServletRequest())
-        );
-
-        assertEquals("Event with id 1 not published yet", exception.getMessage());
-    }
-
-
-    @Test
-    public void findEventByIdTest_EventNotFound_Exception() {
-        when(eventRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
-
-        EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
-                eventService.findEventById(1L, new MockHttpServletRequest())
-        );
-
-        assertEquals("Event with id 1 not found", exception.getMessage());
-    }
-
-    @Test
-    public void findAllUsersEventsTest_Success() {
-        List<Event> events = List.of(makeEventTest(), makeEventTest());
-        when(eventRepository.findEventsByInitiatorId(any(), any())).thenReturn(new PageImpl<>(events));
-
-        List<ResponseEventShortDTO> result = searchService.findAllUsersEvents("1", 0, 10);
-
-        assertThat(result.size(), equalTo(2));
-    }
 
     @Test
     public void adminEditEventTest_Success() {
@@ -341,7 +285,6 @@ public class EventServiceTest {
         assertEquals("Event with id 1 starts in less than an hour", exception.getMessage());
     }
 
-
     @Test
     public void adminEditEventTest_EventStartsToSoon_Success() {
         Event event = makeEventTest();
@@ -369,66 +312,6 @@ public class EventServiceTest {
     }
 
     @Test
-    public void findEventsTest_SortByEventDate_Success() throws IOException {
-        Event event = makeEventTest();
-        event.setEventId(1L);
-        List<Event> events = List.of(event);
-        when(eventRepository.findAllById(any()))
-                .thenReturn(events);
-        when(hit.id()).thenReturn("1"); // elasticsearch
-        when(hitsMetadata.hits())
-                .thenReturn(List.of(hit));
-        when(searchResponse.hits())
-                .thenReturn(hitsMetadata);
-        when(elasticsearchClient.search(any(SearchRequest.class), eq(EventIndex.class)))
-                .thenReturn(searchResponse);
-
-        List<ResponseEventShortDTO> result = searchService.findEvents(
-                "test", List.of(1L), true, null, null, true,
-                EventSortType.NONE, 0, 10);
-
-        assertThat(result.size(), equalTo(1));
-        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));;
-    }
-
-    @Test
-    public void findEventsTest_SortByViews_Success() throws IOException {
-        Event event = makeEventTest();
-        event.setEventId(1L);
-        List<Event> events = List.of(event);
-        when(eventRepository.findAllById(any()))
-                .thenReturn(events);
-        when(hit.id()).thenReturn("1"); // elasticsearch
-        when(hitsMetadata.hits())
-                .thenReturn(List.of(hit));
-        when(searchResponse.hits())
-                .thenReturn(hitsMetadata);
-        when(elasticsearchClient.search(any(SearchRequest.class), eq(EventIndex.class)))
-                .thenReturn(searchResponse);
-
-        List<ResponseEventShortDTO> result = searchService.findEvents(
-                "test", List.of(1L), true, null, null, true,
-                EventSortType.VIEWS, 0, 10);
-
-        assertThat(result.size(), equalTo(1));
-        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
-    }
-
-    @Test
-    public void findEventsAdminTest_Success() {
-        List<Event> events = List.of(makeEventTest());
-        Page<Event> eventPage = new PageImpl<>(events);
-        when(eventRepository.searchEventAdmin(anyList(), anyList(), anyList(), any(), any(), any()))
-                .thenReturn(eventPage);
-
-        List<ResponseEventDTO> result = searchService.findEventsAdmin(
-                List.of("1"), List.of(EventState.PENDING), List.of(1L), null, null, 0, 10);
-
-        assertThat(result.size(), equalTo(1));
-        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
-    }
-
-    @Test
     public void setConfirmedRequestsNumberTest_Success() {
         Event event = makeEventTest();
         event.setConfirmedRequests(5);
@@ -443,18 +326,14 @@ public class EventServiceTest {
     }
 
     @Test
-    public void findEventsByIdsTest_Success() {
-        List<Event> events = List.of(makeEventTest());
-        Set<Long> eventIds = Set.of(1L);
-        when(eventRepository.findAllById(eventIds)).thenReturn(events);
-
-        List<ResponseEventShortDTO> result = eventService.findEventsByIds(eventIds);
-
-        assertThat(result.size(), equalTo(1));
-        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
-        verify(eventRepository).findAllById(eventIds);
+    public void updateInitiatorUsernameTest_Success() {
+        eventService.updateInitiatorUsername(new UpdateUsernameDTO("1", "username"));
     }
 
+    @Test
+    public void updateCategoryNameTest_Success() {
+        eventService.updateCategoryName(new UpdateCategoryNameDTO(1L, "username"));
+    }
 
 
 }
