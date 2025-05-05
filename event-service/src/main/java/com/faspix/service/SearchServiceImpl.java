@@ -124,6 +124,16 @@ public class SearchServiceImpl implements SearchService {
                 .toList();
     }
 
+    @Override
+    public boolean isEventExists(Long eventId) {
+        return eventRepository.existsById(eventId);
+    }
+
+    @Override
+    public boolean isEventsExistsInCategory(Long categoryId) {
+        return eventRepository.existsEventsByCategoryId(categoryId);
+    }
+
     private ResponseEventShortDTO getResponseShortDTO(Event event) {
         Long views = eventViewService.getViewsByEventId(event.getEventId());
 

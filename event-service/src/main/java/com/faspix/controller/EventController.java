@@ -91,13 +91,6 @@ public class EventController {
         return eventService.findEventById(eventId, httpServletRequest);
     }
 
-    @GetMapping("/categories/{catId}")
-    public List<ResponseEventShortDTO> findEventsByCategoryId(
-            @PathVariable Long catId
-    ) {
-        return eventService.findEventsByCategoryId(catId);
-    }
-
     @PatchMapping("/admin/{eventId}")
     public ResponseEventDTO adminEditEvent(
             @PathVariable Long eventId,
@@ -112,5 +105,6 @@ public class EventController {
     ) {
         return eventService.findEventsByIds(ids);
     }
+
 
 }

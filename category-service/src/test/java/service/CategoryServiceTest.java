@@ -141,8 +141,8 @@ public class CategoryServiceTest {
     public void deleteCategoryTest_Success() {
         when(categoryRepository.existsById(anyLong()))
                 .thenReturn(true);
-        when(eventServiceClient.findEventsByCategoryId(anyLong()))
-                .thenReturn(Collections.emptyList());
+        when(eventServiceClient.isEventsExistsInCategory(anyLong()))
+                .thenReturn(false);
 
         categoryService.deleteCategory(1L);
         verify(categoryRepository, times(1)).deleteById(anyLong());
@@ -163,8 +163,8 @@ public class CategoryServiceTest {
     public void deleteCategoryTest_NotEmpty() {
         when(categoryRepository.existsById(anyLong()))
                 .thenReturn(true);
-        when(eventServiceClient.findEventsByCategoryId(anyLong()))
-                .thenReturn(List.of(ResponseEventShortDTO.builder().build()));
+        when(eventServiceClient.isEventsExistsInCategory(anyLong()))
+                .thenReturn(true);
 
         CategoryNotEmptyException exception = assertThrows(CategoryNotEmptyException.class,
                 () -> categoryService.deleteCategory(1L)

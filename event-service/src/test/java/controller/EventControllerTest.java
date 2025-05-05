@@ -360,24 +360,20 @@ public class EventControllerTest {
     }
 
     @Test
-    public void findEventsByCategoryIdTest_Success() throws Exception {
+    public void isEventsExistsInCategory_Success() throws Exception {
         Event savedEvent = eventRepository.save(makeEventTest());
 
-        MvcResult mvcResult = mockMvc.perform(get("/events/categories/{categoryId}",
-                                                                        savedEvent.getCategoryId())
+        MvcResult mvcResult = mockMvc.perform(get("/events/categories/exists")
+                        .param("id", savedEvent.getCategoryId().toString())
                         .header("Authorization", "Bearer 123123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().is2xxSuccessful())
                 .andReturn();
         String body = mvcResult.getResponse().getContentAsString();
-        List<ResponseEventShortDTO> resultList = objectMapper.readValue(body, new TypeReference<>() {});
-        ResponseEventShortDTO result = resultList.getFirst();
+        boolean boolBody = Boolean.parseBoolean(body);
 
-        assertThat(result.getEventId(), equalTo(savedEvent.getEventId()));
-        assertThat(result.getTitle(), equalTo(savedEvent.getTitle()));
-        assertThat(result.getAnnotation(), equalTo(savedEvent.getAnnotation()));
-        assertThat(result.getPaid(), equalTo(savedEvent.getPaid()));
+        assertThat(boolBody, equalTo(true));
     }
 
     @Test

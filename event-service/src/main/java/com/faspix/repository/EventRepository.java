@@ -17,7 +17,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Page<Event> findEventsByInitiatorId(String userId, Pageable pageable);
 
-    List<Event> findEventsByCategoryId(Long categoryId);
+    boolean existsEventsByCategoryId(Long categoryId);
 
     @Modifying
     @Query("""

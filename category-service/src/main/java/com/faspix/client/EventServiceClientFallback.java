@@ -10,9 +10,10 @@ import java.util.List;
 @Slf4j
 @Component
 public class EventServiceClientFallback implements EventServiceClient {
+
     @Override
-    public List<ResponseEventShortDTO> findEventsByCategoryId(Long catId) {
-        log.error("Error during calling event service for findEventsByCategoryId, category id: {} ", catId);
+    public boolean isEventsExistsInCategory(Long id) {
+        log.error("Error during calling event service for isEventsExistsInCategory, category id: {} ", id);
         throw new ServiceUnavailableException("Error during calling event service");
     }
 }

@@ -17,8 +17,6 @@ public interface EventService {
 
     Event getEventById(Long eventId);
 
-    List<ResponseEventShortDTO> findEventsByCategoryId(Long categoryId);
-
     void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 
     void updateInitiatorUsername(UpdateUsernameDTO dto);
