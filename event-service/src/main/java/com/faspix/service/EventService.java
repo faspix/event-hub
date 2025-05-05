@@ -21,6 +21,10 @@ public interface EventService {
 
     void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);
 
+    void updateInitiatorUsername(UpdateUsernameDTO dto);
+
+    void updateCategoryName(UpdateCategoryNameDTO dto);
+
     ResponseEventDTO adminEditEvent(Long eventId, RequestUpdateEventAdminDTO requestDTO);
 
     List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids);
