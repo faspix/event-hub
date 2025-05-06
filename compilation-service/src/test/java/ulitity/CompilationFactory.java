@@ -31,10 +31,6 @@ public class CompilationFactory {
         return ResponseCompilationDTO.builder()
                 .id(null)
                 .title("title")
-                .events(Collections.singletonList(ResponseEventShortDTO.builder()
-                        .title("title of event")
-                        .eventId(1L)
-                        .build()))
                 .pinned(false)
                 .build();
     }

@@ -2,6 +2,7 @@ package com.faspix.controller;
 
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
+import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.mapper.CompilationMapper;
 import com.faspix.service.CompilationService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,13 @@ public class CompilationController {
             @PathVariable Long compId
     ) {
         return compilationService.findCompilationById(compId);
+    }
+
+    @GetMapping("/{compId}/events")
+    private List<ResponseEventShortDTO> findEventsByCompilationId(
+            @PathVariable Long compId
+    ) {
+        return compilationService.getEventsByCompilationId(compId);
     }
 
     @GetMapping

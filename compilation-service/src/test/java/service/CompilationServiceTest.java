@@ -3,6 +3,7 @@ package service;
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
+import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
@@ -20,6 +21,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static ulitity.CompilationFactory.*;
+import static ulitity.EventFactory.makeShortResponseEventTest;
 
 @ExtendWith(MockitoExtension.class)
 public class CompilationServiceTest {
@@ -76,6 +79,37 @@ public class CompilationServiceTest {
         assertThat(result.getTitle(), equalTo(compilation.getTitle()));
     }
 
+    @Test
+    public void getEventsByCompilationIdTest_Success() {
+        ResponseEventShortDTO events = makeShortResponseEventTest();
+        when(compilationRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(makeCompilation()));
+        when(eventServiceClient.getEventsByIds(anyList()))
+                .thenReturn(Collections.singletonList(events));
+
+        List<ResponseEventShortDTO> response = compilationService.getEventsByCompilationId(1L);
+
+        assertThat(response.getFirst().getEventId(), equalTo(events.getEventId()));
+        assertThat(response.getFirst().getTitle(), equalTo(events.getTitle()));
+
+        verify(eventServiceClient, times(1)).getEventsByIds(anyList());
+        verify(compilationRepository, times(1)).findById(any());
+    }
+
+
+    @Test
+    public void getEventsByCompilationIdTest_CompilationNotExists() {
+        ResponseEventShortDTO events = makeShortResponseEventTest();
+        when(compilationRepository.findById(anyLong()))
+                .thenReturn(Optional.ofNullable(null));
+
+        CompilationNotFoundException exception = assertThrows(CompilationNotFoundException.class,
+                () -> compilationService.getEventsByCompilationId(1L)
+        );
+        assertEquals("Compilation with id 1 not found", exception.getMessage());
+
+        verify(compilationRepository, times(1)).findById(any());
+    }
 
     @Test
     public void editCompilationTest_Success() {

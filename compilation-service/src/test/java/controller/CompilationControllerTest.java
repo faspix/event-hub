@@ -4,8 +4,10 @@ import com.faspix.CompilationApplication;
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
+import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.repository.CompilationRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,15 +26,18 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -156,6 +161,27 @@ public class CompilationControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 ).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    public void findEventsByCompilationIdTest_Success() throws Exception {
+        ResponseEventShortDTO eventShortDTO = makeShortResponseEventTest();
+        when(eventServiceClient.getEventsByIds(anyList()))
+                .thenReturn(Collections.singletonList(eventShortDTO));
+        Compilation compilation = compilationRepository.save(makeCompilation());
+
+        MvcResult mvcResult = mockMvc.perform(get("/compilations/{compId}/events", compilation.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andReturn();
+
+        String body = mvcResult.getResponse().getContentAsString();
+        List<ResponseEventShortDTO> events = objectMapper.readValue(body, new TypeReference<>() {});
+
+        assertThat(events.getFirst().getEventId(), equalTo(eventShortDTO.getEventId()));
+        assertThat(events.getFirst().getTitle(), equalTo(eventShortDTO.getTitle()));
+
     }
 
     @Test
