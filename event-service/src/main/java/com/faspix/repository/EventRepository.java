@@ -11,11 +11,16 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     Page<Event> findEventsByInitiatorId(String userId, Pageable pageable);
+
+    @Query("SELECT e FROM Event e WHERE e.eventId IN :ids")
+    Page<Event> findAllEventsByIds(@Param("ids") Set<Long> ids, Pageable pageable);
 
     boolean existsEventsByCategoryId(Long categoryId);
 
@@ -71,6 +76,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                  @Param("rangeStart") OffsetDateTime rangeStart,
                                  @Param("rangeEnd") OffsetDateTime rangeEnd,
                                  Pageable pageable);
-
 
 }

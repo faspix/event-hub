@@ -28,6 +28,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -121,6 +122,14 @@ public class SearchServiceImpl implements SearchService {
         return eventRepository.findEventsByInitiatorId(userId, pageRequest)
                 .stream()
                 .map(this::getResponseShortDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids, int from, int size) {
+        Pageable pageable = makePageRequest(from, size);
+        return eventRepository.findAllEventsByIds(ids, pageable).stream()
+                .map(eventMapper::eventToShortResponse)
                 .toList();
     }
 

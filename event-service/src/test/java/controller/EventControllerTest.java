@@ -236,7 +236,7 @@ public class EventControllerTest {
 
 
     @Test
-    public void editEventTest_EventStartsToSoon_Success() throws Exception {
+    public void    editEventTest_EventStartsToSoon_Success() throws Exception {
         RequestEventDTO requestEventDTO = makeRequestEventTest();
         requestEventDTO.setTitle("updated title");
         requestEventDTO.setEventDate(OffsetDateTime.now().plusHours(2).plusMinutes(1));
