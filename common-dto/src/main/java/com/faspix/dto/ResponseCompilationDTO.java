@@ -17,6 +17,4 @@ public class ResponseCompilationDTO {
 
     private Boolean pinned;
 
-    private List<ResponseEventShortDTO> events;
-
 }

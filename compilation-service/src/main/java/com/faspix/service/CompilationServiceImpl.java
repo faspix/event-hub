@@ -54,7 +54,7 @@ public class CompilationServiceImpl implements CompilationService {
                     compilationMapper.requestToCompilation(compilationDTO)
             );
 
-            responseDTO = getResponseDTO(compilation);
+            responseDTO = compilationMapper.compilationToResponse(compilation);
 
             Cache cache = cacheManager.getCache("CompilationService::findCompilationById");
             if (cache != null) {
@@ -76,7 +76,7 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(id).orElseThrow(
                 () -> new CompilationNotFoundException("Compilation with id " + id + " not found")
         );
-        return getResponseDTO(compilation);
+        return compilationMapper.compilationToResponse(compilation);
     }
 
     @Override
@@ -88,8 +88,16 @@ public class CompilationServiceImpl implements CompilationService {
                 : compilationRepository.findCompilationsByPinned(pinned, pageRequest);
 
         return compilations.stream()
-                .map(this::getResponseDTO)
+                .map(compilationMapper::compilationToResponse)
                 .toList();
+    }
+
+    @Override
+    public List<ResponseEventShortDTO> getEventsByCompilationId(Long compId) {
+        Compilation compilation = compilationRepository.findById(compId).orElseThrow(
+                () -> new CompilationNotFoundException("Compilation with id " + compId + " not found")
+        );
+        return eventServiceClient.getEventsByIds(compilation.getEvents());
     }
 
     @Override
@@ -113,7 +121,7 @@ public class CompilationServiceImpl implements CompilationService {
             throw new CompilationAlreadyExistException(
                     "Compilation with title '" + compilationDTO.getTitle() + "' already exist");
         }
-        return getResponseDTO(compilation);
+        return compilationMapper.compilationToResponse(compilation);
     }
 
     @Override
@@ -123,13 +131,6 @@ public class CompilationServiceImpl implements CompilationService {
     public void deleteCompilation(Long id) {
         checkCompilationExistence(id);
         compilationRepository.deleteById(id);
-    }
-
-    private ResponseCompilationDTO getResponseDTO(Compilation compilation) {
-        List<ResponseEventShortDTO> events = eventServiceClient.getEventsByIds(compilation.getEvents());
-        ResponseCompilationDTO dto = compilationMapper.compilationToResponse(compilation);
-        dto.setEvents(events);
-        return dto;
     }
 
 }
