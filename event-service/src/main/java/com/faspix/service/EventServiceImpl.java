@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,8 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
+
+import static com.faspix.utility.PageRequestMaker.makePageRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -163,13 +166,6 @@ public class EventServiceImpl implements EventService {
     public void updateCategoryName(UpdateCategoryNameDTO dto) {
         log.debug("Update category name: {}", dto);
         eventRepository.updateCategoryName(dto.getCategoryId(), dto.getCategoryName());
-    }
-
-    @Override
-    public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids) {
-        return eventRepository.findAllById(ids).stream()
-                .map(eventMapper::eventToShortResponse)
-                .toList();
     }
 
     @Override

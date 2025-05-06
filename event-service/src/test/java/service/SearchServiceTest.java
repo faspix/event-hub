@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.IOException;
@@ -221,13 +222,14 @@ public class SearchServiceTest {
     public void findEventsByIdsTest_Success() {
         List<Event> events = List.of(makeEventTest());
         Set<Long> eventIds = Set.of(1L);
-        when(eventRepository.findAllById(eventIds)).thenReturn(events);
+        when(eventRepository.findAllEventsByIds(anySet(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(events));
 
-        List<ResponseEventShortDTO> result = eventService.findEventsByIds(eventIds);
+        List<ResponseEventShortDTO> result = searchService.findEventsByIds(eventIds, 0, 10);
 
         assertThat(result.size(), equalTo(1));
         assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
-        verify(eventRepository).findAllById(eventIds);
+        verify(eventRepository).findAllEventsByIds(anySet(), any(Pageable.class));
     }
 
 }

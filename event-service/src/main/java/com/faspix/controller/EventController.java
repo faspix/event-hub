@@ -100,10 +100,12 @@ public class EventController {
     }
 
     @PostMapping("/batch")
-    public List<ResponseEventShortDTO> findUserByIds(
-            @RequestBody Set<Long> ids
+    public List<ResponseEventShortDTO> findEventsByIds(
+            @RequestBody Set<Long> ids,
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "20") Integer size
     ) {
-        return eventService.findEventsByIds(ids);
+        return searchService.findEventsByIds(ids, from, size);
     }
 
 

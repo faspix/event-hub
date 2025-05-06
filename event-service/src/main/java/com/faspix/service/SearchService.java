@@ -7,6 +7,7 @@ import com.faspix.utility.EventSortType;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 public interface SearchService {
 
@@ -36,5 +37,7 @@ public interface SearchService {
     boolean isEventExists(Long eventId);
 
     boolean isEventsExistsInCategory(Long categoryId);
+
+    List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids, int from, int size);
 
 }
