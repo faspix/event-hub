@@ -35,9 +35,11 @@ public class CompilationController {
 
     @GetMapping("/{compId}/events")
     private List<ResponseEventShortDTO> findEventsByCompilationId(
-            @PathVariable Long compId
+            @PathVariable Long compId,
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "20") Integer size
     ) {
-        return compilationService.getEventsByCompilationId(compId);
+        return compilationService.getEventsByCompilationId(compId, from, size);
     }
 
     @GetMapping

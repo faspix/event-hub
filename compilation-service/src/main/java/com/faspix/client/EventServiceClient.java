@@ -11,6 +11,6 @@ import java.util.List;
 public interface EventServiceClient {
 
     @PostMapping("/events/batch")
-    List<ResponseEventShortDTO> getEventsByIds(@RequestBody List<Long> ids);
+    List<ResponseEventShortDTO> getEventsByIds(@RequestBody List<Long> ids, Integer from, Integer size);
 
 }

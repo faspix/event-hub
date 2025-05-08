@@ -13,7 +13,7 @@ public interface CompilationService {
 
     ResponseCompilationDTO findCompilationById(Long id);
 
-    List<ResponseEventShortDTO> getEventsByCompilationId(Long catId);
+    List<ResponseEventShortDTO> getEventsByCompilationId(Long catId, Integer from, Integer size);
 
     List<ResponseCompilationDTO> findCompilations(Boolean pinned, Integer from, Integer size);
 

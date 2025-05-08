@@ -93,11 +93,11 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public List<ResponseEventShortDTO> getEventsByCompilationId(Long compId) {
+    public List<ResponseEventShortDTO> getEventsByCompilationId(Long compId, Integer from, Integer size) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(
                 () -> new CompilationNotFoundException("Compilation with id " + compId + " not found")
         );
-        return eventServiceClient.getEventsByIds(compilation.getEvents());
+        return eventServiceClient.getEventsByIds(compilation.getEvents(), from, size);
     }
 
     @Override
