@@ -84,15 +84,15 @@ public class CompilationServiceTest {
         ResponseEventShortDTO events = makeShortResponseEventTest();
         when(compilationRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(makeCompilation()));
-        when(eventServiceClient.getEventsByIds(anyList()))
+        when(eventServiceClient.getEventsByIds(anyList(), any(), any()))
                 .thenReturn(Collections.singletonList(events));
 
-        List<ResponseEventShortDTO> response = compilationService.getEventsByCompilationId(1L);
+        List<ResponseEventShortDTO> response = compilationService.getEventsByCompilationId(1L, 1, 1);
 
         assertThat(response.getFirst().getEventId(), equalTo(events.getEventId()));
         assertThat(response.getFirst().getTitle(), equalTo(events.getTitle()));
 
-        verify(eventServiceClient, times(1)).getEventsByIds(anyList());
+        verify(eventServiceClient, times(1)).getEventsByIds(anyList(), any(), any());
         verify(compilationRepository, times(1)).findById(any());
     }
 
@@ -104,7 +104,7 @@ public class CompilationServiceTest {
                 .thenReturn(Optional.ofNullable(null));
 
         CompilationNotFoundException exception = assertThrows(CompilationNotFoundException.class,
-                () -> compilationService.getEventsByCompilationId(1L)
+                () -> compilationService.getEventsByCompilationId(1L, 1, 1)
         );
         assertEquals("Compilation with id 1 not found", exception.getMessage());
 

@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -37,8 +38,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -89,7 +89,7 @@ public class CompilationControllerTest {
     @Test
     public void createCompilationTest_Success() throws Exception {
         RequestCompilationDTO requestDTO = makeRequestCompilation();
-        when(eventServiceClient.getEventsByIds(List.of()))
+        when(eventServiceClient.getEventsByIds(anyList(), any(), any()))
                 .thenReturn(List.of(makeShortResponseEventTest()));
 
         MvcResult mvcResult = mockMvc.perform(post("/compilations")
@@ -114,8 +114,8 @@ public class CompilationControllerTest {
     @Test
     public void createCompilationTest_CompilationAlreadyExist_Exception() throws Exception {
         RequestCompilationDTO requestDTO = makeRequestCompilation();
-        when(eventServiceClient.getEventsByIds(List.of()))
-                .thenReturn(List.of(makeShortResponseEventTest()));
+        when(eventServiceClient.getEventsByIds(anyList(), any(), any()))
+                .thenReturn(Collections.singletonList(makeShortResponseEventTest()));
 
 
         mockMvc.perform(post("/compilations")
@@ -166,7 +166,7 @@ public class CompilationControllerTest {
     @Test
     public void findEventsByCompilationIdTest_Success() throws Exception {
         ResponseEventShortDTO eventShortDTO = makeShortResponseEventTest();
-        when(eventServiceClient.getEventsByIds(anyList()))
+        when(eventServiceClient.getEventsByIds(anyList(), any(), any()))
                 .thenReturn(Collections.singletonList(eventShortDTO));
         Compilation compilation = compilationRepository.save(makeCompilation());
 

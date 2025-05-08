@@ -14,7 +14,7 @@ import java.util.List;
 public class EventServiceClientFallback implements EventServiceClient {
 
     @Override
-    public List<ResponseEventShortDTO> getEventsByIds(List<Long> ids) {
+    public List<ResponseEventShortDTO> getEventsByIds(List<Long> ids, Integer from, Integer size) {
         log.error("Error during calling event service for getEventById, event ids: {} ", ids);
         throw new ServiceUnavailableException("Error during calling event service");
     }
