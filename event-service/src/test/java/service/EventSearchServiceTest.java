@@ -13,7 +13,6 @@ import com.faspix.entity.EventIndex;
 import com.faspix.enums.EventState;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.EventNotPublishedException;
-import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
@@ -35,7 +34,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.io.IOException;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,11 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static utility.CategoryFactory.makeResponseCategory;
 import static utility.EventFactory.*;
 
 @ExtendWith(MockitoExtension.class)
-public class SearchServiceTest {
+public class EventSearchServiceTest {
 
     @Mock
     private EventRepository eventRepository;
@@ -83,7 +80,7 @@ public class SearchServiceTest {
     private CommentService commentService;
 
     @InjectMocks
-    private SearchServiceImpl searchService;
+    private EventSearchServiceImpl searchService;
 
     @Mock
     private HitsMetadata<EventIndex> hitsMetadata;

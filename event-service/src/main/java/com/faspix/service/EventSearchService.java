@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
-public interface SearchService {
+public interface EventSearchService {
 
     List<ResponseEventShortDTO> findEvents(String text,
                                            List<Long> categories,

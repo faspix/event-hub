@@ -2,7 +2,7 @@ package com.faspix.controller;
 
 import com.faspix.dto.*;
 import com.faspix.enums.EventState;
-import com.faspix.service.SearchService;
+import com.faspix.service.EventSearchService;
 import com.faspix.utility.EventSortType;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class EventSearchController {
 
-    private final SearchService searchService;
+    private final EventSearchService eventSearchService;
 
 
     @GetMapping("/users/{userId}")
@@ -27,7 +27,7 @@ public class EventSearchController {
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return searchService.findAllUsersEvents(userId, from, size);
+        return eventSearchService.findAllUsersEvents(userId, from, size);
     }
 
     // @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ssXXX")
@@ -43,7 +43,7 @@ public class EventSearchController {
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return searchService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        return eventSearchService.findEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/admin/search")
@@ -56,7 +56,7 @@ public class EventSearchController {
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return searchService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
+        return eventSearchService.findEventsAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @GetMapping("{eventId}")
@@ -64,7 +64,7 @@ public class EventSearchController {
             @PathVariable Long eventId,
             HttpServletRequest httpServletRequest
     ) {
-        return searchService.findEventById(eventId, httpServletRequest);
+        return eventSearchService.findEventById(eventId, httpServletRequest);
     }
 
     @PostMapping("/batch")
@@ -74,7 +74,7 @@ public class EventSearchController {
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size
     ) {
-        return searchService.findEventsByIds(ids, from, size);
+        return eventSearchService.findEventsByIds(ids, from, size);
     }
 
 
