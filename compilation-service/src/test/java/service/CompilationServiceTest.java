@@ -99,7 +99,6 @@ public class CompilationServiceTest {
 
     @Test
     public void getEventsByCompilationIdTest_CompilationNotExists() {
-        ResponseEventShortDTO events = makeShortResponseEventTest();
         when(compilationRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(null));
 

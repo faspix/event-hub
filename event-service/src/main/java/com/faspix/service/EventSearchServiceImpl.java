@@ -44,7 +44,7 @@ import static com.faspix.utility.PageRequestMaker.makePageRequest;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SearchServiceImpl implements SearchService {
+public class EventSearchServiceImpl implements EventSearchService {
 
     private final ElasticsearchClient elasticsearchClient;
 

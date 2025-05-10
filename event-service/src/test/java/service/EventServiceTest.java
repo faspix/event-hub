@@ -1,7 +1,6 @@
 package service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
@@ -11,15 +10,12 @@ import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.entity.EventIndex;
 import com.faspix.enums.EventState;
-import com.faspix.exception.EventNotFoundException;
-import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
 import com.faspix.service.*;
-import com.faspix.utility.EventSortType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,15 +25,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.mock.web.MockHttpServletRequest;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -82,7 +72,7 @@ public class EventServiceTest {
     private CommentService commentService;
 
     @InjectMocks
-    private SearchServiceImpl searchService;
+    private EventSearchServiceImpl searchService;
 
     @Mock
     private HitsMetadata<EventIndex> hitsMetadata;
