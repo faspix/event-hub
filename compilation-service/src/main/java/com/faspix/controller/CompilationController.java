@@ -5,6 +5,7 @@ import com.faspix.dto.ResponseCompilationDTO;
 import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.mapper.CompilationMapper;
 import com.faspix.service.CompilationService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,7 @@ public class CompilationController {
     }
 
     @GetMapping("/{compId}/events")
+    @Hidden
     private List<ResponseEventShortDTO> findEventsByCompilationId(
             @PathVariable Long compId,
             @RequestParam(defaultValue = "0") Integer from,

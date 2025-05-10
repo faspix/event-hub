@@ -4,6 +4,7 @@ import com.faspix.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.enums.EventState;
 import com.faspix.utility.EventSortType;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -33,6 +34,8 @@ public interface SearchService {
     );
 
     List<ResponseEventShortDTO> findAllUsersEvents(String userId, Integer from, Integer size);
+
+    ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest);
 
     boolean isEventExists(Long eventId);
 

@@ -67,6 +67,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public List<ResponseCommentDTO> findCommentsByEventId(Long eventId, CommentSortType sortType,
                                                           Integer from, Integer size) {
         Sort sort = Sort.by(
@@ -98,6 +99,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public void deleteComment(String userId, Long commentId) {
         Comment comment = getCommentById(commentId);
         checkCommentAuthority(userId, comment);

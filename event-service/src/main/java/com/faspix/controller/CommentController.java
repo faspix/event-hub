@@ -4,6 +4,7 @@ import com.faspix.dto.RequestCommentDTO;
 import com.faspix.dto.ResponseCommentDTO;
 import com.faspix.service.CommentService;
 import com.faspix.utility.CommentSortType;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,6 +32,7 @@ public class CommentController {
     }
 
     @GetMapping("/comments/{eventId}")
+    @Hidden
     public List<ResponseCommentDTO> getCommentsByEventId(
             @PathVariable Long eventId,
             @RequestParam(defaultValue = "0") Integer from,

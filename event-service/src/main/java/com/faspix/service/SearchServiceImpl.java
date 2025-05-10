@@ -12,18 +12,24 @@ import com.faspix.dto.*;
 import com.faspix.entity.Event;
 import com.faspix.entity.EventIndex;
 import com.faspix.enums.EventState;
+import com.faspix.exception.EventNotFoundException;
+import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.SearchServiceException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.utility.EventSortType;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +51,10 @@ public class SearchServiceImpl implements SearchService {
     private final EventRepository eventRepository;
 
     private final EventMapper eventMapper;
+
+    private final CacheManager cacheManager;
+
+    private final EndpointStatisticsService endpointStatisticsService;
 
     private final EventViewService eventViewService;
 
@@ -126,6 +136,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids, int from, int size) {
         Pageable pageable = makePageRequest(from, size);
         return eventRepository.findAllEventsByIds(ids, pageable).stream()
@@ -134,11 +145,39 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    public ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest) {
+        Event event = eventRepository.findById(eventId).orElseThrow(
+                () -> new EventNotFoundException("Event with id " + eventId + " not found")
+        );
+        if (event.getState() != EventState.PUBLISHED)
+            throw new EventNotPublishedException("Event with id " + eventId + " not published yet");
+
+        Cache cache = cacheManager.getCache("EventService::getEventViewsById");
+        if (cache == null) {
+            log.error("Cache EventService::getEventViewsById is null");
+        } else {
+            cache.put(eventId, eventViewService.getViewsByEventId(eventId) + 1);
+        }
+        endpointStatisticsService.sendEndpointStatistics(
+                RequestEndpointStatsDTO.builder()
+                        .app("event-service")
+                        .ip(httpServletRequest.getRemoteAddr())
+                        .uri(httpServletRequest.getRequestURI())
+                        .timestamp(Instant.now())
+                        .build()
+        );
+        return getResponseDTO(event);
+    }
+
+
+    @Override
+    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public boolean isEventExists(Long eventId) {
         return eventRepository.existsById(eventId);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public boolean isEventsExistsInCategory(Long categoryId) {
         return eventRepository.existsEventsByCategoryId(categoryId);
     }

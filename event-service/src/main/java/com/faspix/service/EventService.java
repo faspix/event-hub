@@ -13,8 +13,6 @@ public interface EventService {
 
     ResponseEventDTO editEvent(String userId, Long eventId, RequestEventDTO eventDTO);
 
-    ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest);
-
     Event getEventById(Long eventId);
 
     void setConfirmedRequestsNumber(ConfirmedRequestsDTO requestsDTO);

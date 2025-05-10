@@ -2,6 +2,7 @@ package com.faspix.controller;
 
 import com.faspix.dto.*;
 import com.faspix.service.UserService;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -79,6 +80,7 @@ public class UserController {
     }
 
     @PostMapping("/batch")
+    @Hidden
     public List<ResponseUserShortDTO> findUserByIds(
             @RequestBody Set<String> userIds
     ) {

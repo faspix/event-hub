@@ -93,6 +93,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public List<ResponseEventShortDTO> getEventsByCompilationId(Long compId, Integer from, Integer size) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(
                 () -> new CompilationNotFoundException("Compilation with id " + compId + " not found")
