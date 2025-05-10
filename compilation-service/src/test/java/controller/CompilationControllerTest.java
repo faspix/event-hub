@@ -50,7 +50,7 @@ import static ulitity.EventFactory.*;
 @AutoConfigureMockMvc
 @Testcontainers
 @Import(TestSecurityConfiguration.class)
-@WithMockUser(roles = {"USER", "ADMIN"})
+@WithMockUser(roles = {"USER", "ADMIN", "MICROSERVICE"})
 public class CompilationControllerTest {
 
     @Autowired

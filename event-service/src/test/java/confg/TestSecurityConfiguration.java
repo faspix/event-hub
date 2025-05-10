@@ -17,7 +17,7 @@ public class TestSecurityConfiguration {
                 .header("alg", "RS256")
                 .claim("sub", "1")
                 .claim("username", "testUser")
-                .claim("realm_access", Map.of("roles", List.of("USER", "ADMIN")))
+                .claim("realm_access", Map.of("roles", List.of("USER", "ADMIN", "MICROSERVICE")))
                 .build();
     }
 

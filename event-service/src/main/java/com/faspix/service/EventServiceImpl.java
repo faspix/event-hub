@@ -40,8 +40,6 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
 
-    private final EndpointStatisticsService endpointStatisticsService;
-
     private final EventViewService eventViewService;
 
     private final CacheManager cacheManager;
@@ -109,39 +107,11 @@ public class EventServiceImpl implements EventService {
         return getResponseDTO(updatedEvent);
     }
 
-
-    @Override
-    public ResponseEventDTO findEventById(Long eventId, HttpServletRequest httpServletRequest) {
-        Event event = eventRepository.findById(eventId).orElseThrow(
-                () -> new EventNotFoundException("Event with id " + eventId + " not found")
-        );
-        if (event.getState() != EventState.PUBLISHED)
-            throw new EventNotPublishedException("Event with id " + eventId + " not published yet");
-
-        Cache cache = cacheManager.getCache("EventService::getEventViewsById");
-        if (cache == null) {
-            log.error("Cache EventService::getEventViewsById is null");
-        } else {
-            cache.put(eventId, eventViewService.getViewsByEventId(eventId) + 1);
-        }
-        endpointStatisticsService.sendEndpointStatistics(
-                RequestEndpointStatsDTO.builder()
-                        .app("event-service")
-                        .ip(httpServletRequest.getRemoteAddr())
-                        .uri(httpServletRequest.getRequestURI())
-                        .timestamp(Instant.now())
-                        .build()
-        );
-        return getResponseDTO(event);
-    }
-
-
     public Event getEventById(Long eventId) {
         return eventRepository.findById(eventId).orElseThrow(
                 () -> new EventNotFoundException("Event with id " + eventId + " not found")
         );
     }
-
 
     @Override
     @Transactional

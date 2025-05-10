@@ -108,7 +108,7 @@ public class SearchServiceTest {
         when(eventRepository.findById(anyLong()))
                 .thenReturn(Optional.ofNullable(event));
 
-        ResponseEventDTO result = eventService.findEventById(1L, new MockHttpServletRequest());
+        ResponseEventDTO result = searchService.findEventById(1L, new MockHttpServletRequest());
 
         assertThat(result.getEventId(), equalTo(event.getEventId()));
         assertThat(result.getEventDate(), equalTo(event.getEventDate()));
@@ -129,7 +129,7 @@ public class SearchServiceTest {
                 .thenReturn(Optional.ofNullable(event));
 
         EventNotPublishedException exception = Assertions.assertThrowsExactly(EventNotPublishedException.class, () ->
-                eventService.findEventById(1L, new MockHttpServletRequest())
+                searchService.findEventById(1L, new MockHttpServletRequest())
         );
 
         assertEquals("Event with id 1 not published yet", exception.getMessage());
@@ -141,7 +141,7 @@ public class SearchServiceTest {
                 .thenReturn(Optional.empty());
 
         EventNotFoundException exception = Assertions.assertThrowsExactly(EventNotFoundException.class, () ->
-                eventService.findEventById(1L, new MockHttpServletRequest())
+                searchService.findEventById(1L, new MockHttpServletRequest())
         );
 
         assertEquals("Event with id 1 not found", exception.getMessage());
