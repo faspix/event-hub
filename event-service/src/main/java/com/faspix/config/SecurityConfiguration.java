@@ -25,6 +25,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/events").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/categories/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/events/comments/*").permitAll() // TODO: fix
                         .requestMatchers(HttpMethod.GET, "/actuator/*").permitAll()
                         .anyRequest().authenticated()
                 )

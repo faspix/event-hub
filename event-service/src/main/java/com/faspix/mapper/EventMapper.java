@@ -45,5 +45,13 @@ public interface EventMapper {
     EventIndex eventToIndex(Event event);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "publishedAt", ignore = true)
+    @Mapping(target = "state", ignore = true)
+    @Mapping(target = "likes", ignore = true)
+    @Mapping(target = "dislikes", ignore = true)
+    @Mapping(target = "initiatorId", ignore = true)
+    @Mapping(target = "confirmedRequests", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "initiatorUsername", ignore = true)
     void RequestUpdateEventAdminToEvent(@MappingTarget Event event, RequestUpdateEventAdminDTO eventAdminDTO);
 }
