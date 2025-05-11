@@ -67,7 +67,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('MICROSERVICE')")
     public List<ResponseCommentDTO> findCommentsByEventId(Long eventId, CommentSortType sortType,
                                                           Integer from, Integer size) {
         Sort sort = Sort.by(
