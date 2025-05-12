@@ -36,6 +36,7 @@ The system is built using a modular microservices architecture and includes the 
 ### Core Frameworks & Tools
 * Spring Boot
 * Spring Cloud
+* Spring WebFlux
 * Spring Security
 * Spring Data JPA
 * Spring Data JDBC
