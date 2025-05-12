@@ -60,6 +60,7 @@ public class EventSearchController {
     }
 
     @GetMapping("{eventId}")
+    @Hidden
     public ResponseEventDTO findEventById(
             @PathVariable Long eventId,
             HttpServletRequest httpServletRequest

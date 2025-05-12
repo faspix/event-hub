@@ -9,6 +9,8 @@ import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResponseCompilationDTO {
 
     private Long id;
@@ -16,5 +18,7 @@ public class ResponseCompilationDTO {
     private String title;
 
     private Boolean pinned;
+
+    private List<Long> events;
 
 }

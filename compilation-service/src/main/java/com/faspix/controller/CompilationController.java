@@ -2,8 +2,6 @@ package com.faspix.controller;
 
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
-import com.faspix.dto.ResponseEventShortDTO;
-import com.faspix.mapper.CompilationMapper;
 import com.faspix.service.CompilationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
@@ -28,24 +26,15 @@ public class CompilationController {
     }
 
     @GetMapping("{compId}")
+    @Hidden
     public ResponseCompilationDTO findCompilationById(
             @PathVariable Long compId
     ) {
         return compilationService.findCompilationById(compId);
     }
 
-    @GetMapping("/{compId}/events")
-    @Hidden
-    private List<ResponseEventShortDTO> findEventsByCompilationId(
-            @PathVariable Long compId,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "20") Integer size
-    ) {
-        return compilationService.getEventsByCompilationId(compId, from, size);
-    }
-
     @GetMapping
-    public List<ResponseCompilationDTO> findCompilations(
+    public List<ResponseCompilationDTO> findCompilations( // TODO: return short DTO without event ids
             @RequestParam(required = false) Boolean pinned,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size

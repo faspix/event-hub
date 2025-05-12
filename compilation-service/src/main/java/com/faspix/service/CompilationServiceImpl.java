@@ -1,14 +1,11 @@
 package com.faspix.service;
 
-import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
-import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationAlreadyExistException;
 import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
-import com.faspix.mapper.EventMapper;
 import com.faspix.repository.CompilationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +34,6 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
 
     private final CompilationMapper compilationMapper;
-
-    private final EventServiceClient eventServiceClient;
 
     private final CacheManager cacheManager;
 
@@ -90,15 +85,6 @@ public class CompilationServiceImpl implements CompilationService {
         return compilations.stream()
                 .map(compilationMapper::compilationToResponse)
                 .toList();
-    }
-
-    @Override
-    @PreAuthorize("hasAnyRole('MICROSERVICE')")
-    public List<ResponseEventShortDTO> getEventsByCompilationId(Long compId, Integer from, Integer size) {
-        Compilation compilation = compilationRepository.findById(compId).orElseThrow(
-                () -> new CompilationNotFoundException("Compilation with id " + compId + " not found")
-        );
-        return eventServiceClient.getEventsByIds(compilation.getEvents(), from, size);
     }
 
     @Override
