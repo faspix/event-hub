@@ -1,6 +1,5 @@
 package com.faspix.entity;
 
-import com.faspix.dto.ResponseEventShortDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -41,6 +41,6 @@ public interface EventSearchService {
 
     boolean isEventsExistsInCategory(Long categoryId);
 
-    List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids, int from, int size);
+    List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids, Integer from, Integer size);
 
 }

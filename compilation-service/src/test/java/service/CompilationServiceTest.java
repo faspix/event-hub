@@ -1,13 +1,10 @@
 package service;
 
-import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
-import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
-import com.faspix.mapper.EventMapper;
 import com.faspix.repository.CompilationRepository;
 import com.faspix.service.CompilationServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -44,16 +41,10 @@ public class CompilationServiceTest {
     private CompilationRepository compilationRepository;
 
     @Mock
-    private EventServiceClient eventServiceClient;
-
-    @Mock
     private CacheManager cacheManager;
 
     @Spy
     private final CompilationMapper compilationMapper = Mappers.getMapper(CompilationMapper.class);
-
-    @Spy
-    private final EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
     @Test
     public void createCompilationTest_Success() {
@@ -77,37 +68,6 @@ public class CompilationServiceTest {
         assertThat(result.getId(), equalTo(compilation.getId()));
         assertThat(result.getPinned(), equalTo(compilation.getPinned()));
         assertThat(result.getTitle(), equalTo(compilation.getTitle()));
-    }
-
-    @Test
-    public void getEventsByCompilationIdTest_Success() {
-        ResponseEventShortDTO events = makeShortResponseEventTest();
-        when(compilationRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(makeCompilation()));
-        when(eventServiceClient.getEventsByIds(anyList(), any(), any()))
-                .thenReturn(Collections.singletonList(events));
-
-        List<ResponseEventShortDTO> response = compilationService.getEventsByCompilationId(1L, 1, 1);
-
-        assertThat(response.getFirst().getEventId(), equalTo(events.getEventId()));
-        assertThat(response.getFirst().getTitle(), equalTo(events.getTitle()));
-
-        verify(eventServiceClient, times(1)).getEventsByIds(anyList(), any(), any());
-        verify(compilationRepository, times(1)).findById(any());
-    }
-
-
-    @Test
-    public void getEventsByCompilationIdTest_CompilationNotExists() {
-        when(compilationRepository.findById(anyLong()))
-                .thenReturn(Optional.ofNullable(null));
-
-        CompilationNotFoundException exception = assertThrows(CompilationNotFoundException.class,
-                () -> compilationService.getEventsByCompilationId(1L, 1, 1)
-        );
-        assertEquals("Compilation with id 1 not found", exception.getMessage());
-
-        verify(compilationRepository, times(1)).findById(any());
     }
 
     @Test

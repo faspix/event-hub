@@ -1,10 +1,7 @@
 package utility;
 
 import com.faspix.dto.EventsWithCommentsDTO;
-import com.faspix.dto.external.Location;
-import com.faspix.dto.external.ResponseCategoryDTO;
-import com.faspix.dto.external.ResponseEventDTO;
-import com.faspix.dto.external.ResponseUserShortDTO;
+import com.faspix.dto.external.*;
 import com.faspix.enums.EventState;
 
 import java.time.OffsetDateTime;
@@ -34,6 +31,23 @@ public class EventFactory {
                 10L,
                 10,
                 4
+        );
+    }
+
+    public static ResponseEventShortDTO makeEventShort() {
+        return new ResponseEventShortDTO(
+                1L,
+                "title",
+                "annotation",
+                new ResponseCategoryDTO(1L, "name"),
+                19,
+                OffsetDateTime.MIN,
+                new ResponseUserShortDTO("1L", "username"),
+                true,
+                10L,
+                10,
+                10
+
         );
     }
 

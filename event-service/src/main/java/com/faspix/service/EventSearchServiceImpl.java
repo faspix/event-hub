@@ -136,8 +136,7 @@ public class EventSearchServiceImpl implements EventSearchService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('MICROSERVICE')")
-    public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids, int from, int size) {
+    public List<ResponseEventShortDTO> findEventsByIds(Set<Long> ids, Integer from, Integer size) {
         Pageable pageable = makePageRequest(from, size);
         return eventRepository.findAllEventsByIds(ids, pageable).stream()
                 .map(eventMapper::eventToShortResponse)
