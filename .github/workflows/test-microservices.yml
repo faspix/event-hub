@@ -82,7 +82,7 @@ jobs:
 
       - name: Publish shared-lib to Nexus
         run: |
-          cd common-dto
+          cd shared-lib
           ./../gradlew publish \
           -PREPOSITORY_WRITE_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_WRITE_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
