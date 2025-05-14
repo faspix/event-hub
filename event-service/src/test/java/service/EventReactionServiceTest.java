@@ -1,8 +1,8 @@
 package service;
 
-import com.faspix.entity.Event;
-import com.faspix.entity.EventDislike;
-import com.faspix.entity.EventLike;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.entity.EventDislike;
+import com.faspix.domain.entity.EventLike;
 import com.faspix.exception.ReactionAlreadyExistException;
 import com.faspix.exception.ReactionNotExistException;
 import com.faspix.repository.EventDislikeRepository;

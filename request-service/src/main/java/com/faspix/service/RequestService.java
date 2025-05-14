@@ -2,7 +2,6 @@ package com.faspix.service;
 
 import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.dto.ResponseParticipationRequestDTO;
-import com.faspix.entity.Request;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.faspix.mapper;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
-import com.faspix.dto.ResponseEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
+import com.faspix.shared.dto.RequestEndpointStatsDTO;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -1,8 +1,7 @@
 package controller;
 
 import com.faspix.StatisticsApplication;
-import com.faspix.dto.RequestEndpointStatsDTO;
-import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
 import com.faspix.repository.StatisticsRepository;
 import com.fasterxml.jackson.core.type.TypeReference;

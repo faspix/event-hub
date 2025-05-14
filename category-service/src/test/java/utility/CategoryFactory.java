@@ -1,7 +1,7 @@
 package utility;
 
-import com.faspix.dto.RequestCategoryDTO;
-import com.faspix.dto.ResponseCategoryDTO;
+import com.faspix.shared.dto.RequestCategoryDTO;
+import com.faspix.shared.dto.ResponseCategoryDTO;
 import com.faspix.entity.Category;
 
 public class CategoryFactory {

@@ -1,5 +1,8 @@
 package com.faspix.exception;
 
+
+import com.faspix.shared.exception.ExceptionResponse;
+import com.faspix.shared.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,6 +1,10 @@
 package com.faspix.service;
 
-import com.faspix.dto.*;
+import com.faspix.dto.RequestUpdatePasswordDTO;
+import com.faspix.dto.RequestUserAdminEditDTO;
+import com.faspix.dto.RequestUserDTO;
+import com.faspix.dto.ResponseUserDTO;
+import com.faspix.shared.dto.ResponseUserShortDTO;
 
 import java.util.List;
 import java.util.Set;

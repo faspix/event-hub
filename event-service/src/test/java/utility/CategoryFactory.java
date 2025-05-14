@@ -1,6 +1,7 @@
 package utility;
 
-import com.faspix.dto.ResponseCategoryDTO;
+
+import com.faspix.shared.dto.ResponseCategoryDTO;
 
 public class CategoryFactory {
 

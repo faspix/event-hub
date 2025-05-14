@@ -2,7 +2,7 @@ package utility;
 
 import com.faspix.dto.RequestCommentDTO;
 import com.faspix.dto.ResponseCommentDTO;
-import com.faspix.entity.Comment;
+import com.faspix.domain.entity.Comment;
 
 import java.time.Instant;
 

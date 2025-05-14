@@ -1,8 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.config.StreamProducersConfiguration;
-import com.faspix.dto.UpdateCategoryNameDTO;
-import com.faspix.dto.UpdateUsernameDTO;
+import com.faspix.shared.dto.UpdateCategoryNameDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.support.MessageBuilder;

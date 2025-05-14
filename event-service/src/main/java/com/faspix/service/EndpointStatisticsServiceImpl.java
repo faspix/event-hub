@@ -1,7 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.config.StreamProducersConfiguration;
-import com.faspix.dto.RequestEndpointStatsDTO;
+import com.faspix.shared.dto.RequestEndpointStatsDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.support.MessageBuilder;

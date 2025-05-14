@@ -1,6 +1,6 @@
 package com.faspix.config;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
+import com.faspix.shared.dto.RequestEndpointStatsDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

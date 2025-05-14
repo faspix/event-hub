@@ -1,19 +1,19 @@
 package service;
 
 
-import com.faspix.dto.*;
-import com.faspix.entity.Comment;
-import com.faspix.entity.Event;
-import com.faspix.enums.EventState;
+import com.faspix.domain.entity.Comment;
+import com.faspix.domain.entity.Event;
+import com.faspix.dto.RequestCommentDTO;
+import com.faspix.dto.ResponseCommentDTO;
 import com.faspix.exception.CommentNotFoundException;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.CommentMapper;
-import com.faspix.mapper.UserMapper;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
 import com.faspix.service.CommentServiceImpl;
-import com.faspix.utility.CommentSortType;
+import com.faspix.domain.enums.CommentSortType;
+import com.faspix.shared.utility.EventState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -24,8 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -40,7 +38,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static utility.CommentFactory.*;
 import static utility.EventFactory.*;
-import static utility.UserFactory.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CommentServiceTest {
@@ -50,9 +47,6 @@ public class CommentServiceTest {
 
     @Spy
     private final CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
-
-    @Spy
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Mock
     private EventRepository eventRepository;

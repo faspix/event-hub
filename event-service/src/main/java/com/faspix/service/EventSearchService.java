@@ -1,9 +1,9 @@
 package com.faspix.service;
 
-import com.faspix.dto.ResponseEventDTO;
-import com.faspix.dto.ResponseEventShortDTO;
-import com.faspix.enums.EventState;
-import com.faspix.utility.EventSortType;
+import com.faspix.domain.enums.EventSortType;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.dto.ResponseEventShortDTO;
+import com.faspix.shared.utility.EventState;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.OffsetDateTime;

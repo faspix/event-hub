@@ -4,13 +4,14 @@ import com.faspix.EventApplication;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
 import com.faspix.controller.EventController;
-import com.faspix.dto.*;
-import com.faspix.entity.Event;
-import com.faspix.enums.EventState;
-import com.faspix.enums.EventStateAction;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.enums.EventStateAction;
+import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.utility.EventState;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +37,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -48,7 +47,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utility.CategoryFactory.makeResponseCategory;
 import static utility.EventFactory.*;
-import static utility.UserFactory.*;
 
 @SpringBootTest(classes = {EventApplication.class})
 @AutoConfigureMockMvc
@@ -140,7 +138,6 @@ public class EventControllerTest {
         assertThat(event.getRequestModeration(), equalTo(event1.getRequestModeration()));
         assertThat(event.getPaid(), equalTo(event1.getPaid()));
         assertThat(event.getDescription(), equalTo(event1.getDescription()));
-        assertThat(event.getLocation(), equalTo(event1.getLocation()));
         assertThat(event.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
         assertThat(event.getTitle(), equalTo(event1.getTitle()));
         assertThat(event.getState(), equalTo(EventState.PENDING));
@@ -178,7 +175,6 @@ public class EventControllerTest {
         assertThat(response.getRequestModeration(), equalTo(event1.getRequestModeration()));
         assertThat(response.getPaid(), equalTo(event1.getPaid()));
         assertThat(response.getDescription(), equalTo(event1.getDescription()));
-        assertThat(response.getLocation(), equalTo(event1.getLocation()));
         assertThat(response.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
         assertThat(response.getTitle(), equalTo(event1.getTitle()));
         assertThat(response.getState(), equalTo(EventState.PENDING));
@@ -228,7 +224,6 @@ public class EventControllerTest {
         assertThat(response.getRequestModeration(), equalTo(event1.getRequestModeration()));
         assertThat(response.getPaid(), equalTo(event1.getPaid()));
         assertThat(response.getDescription(), equalTo(event1.getDescription()));
-        assertThat(response.getLocation(), equalTo(event1.getLocation()));
         assertThat(response.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
         assertThat(response.getTitle(), equalTo(event1.getTitle()));
         assertThat(response.getState(), equalTo(EventState.PENDING));
@@ -266,7 +261,6 @@ public class EventControllerTest {
         assertThat(response.getRequestModeration(), equalTo(event1.getRequestModeration()));
         assertThat(response.getPaid(), equalTo(event1.getPaid()));
         assertThat(response.getDescription(), equalTo(event1.getDescription()));
-        assertThat(response.getLocation(), equalTo(event1.getLocation()));
         assertThat(response.getParticipantLimit(), equalTo(event1.getParticipantLimit()));
         assertThat(response.getTitle(), equalTo(event1.getTitle()));
         assertThat(response.getState(), equalTo(EventState.PENDING));
@@ -346,14 +340,12 @@ public class EventControllerTest {
         assertThat(result.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(result.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(result.getDescription(), equalTo(adminDTO.getDescription()));
-        assertThat(result.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
 
         // Response from controller
         assertThat(response.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(response.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(response.getDescription(), equalTo(adminDTO.getDescription()));
-        assertThat(response.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(response.getPaid(), equalTo(adminDTO.getPaid()));
     }
 
@@ -396,14 +388,12 @@ public class EventControllerTest {
         assertThat(result.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(result.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(result.getDescription(), equalTo(adminDTO.getDescription()));
-        assertThat(result.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(result.getPaid(), equalTo(adminDTO.getPaid()));
 
         // Response from controller
         assertThat(response.getTitle(), equalTo(adminDTO.getTitle()));
         assertThat(response.getAnnotation(), equalTo(adminDTO.getAnnotation()));
         assertThat(response.getDescription(), equalTo(adminDTO.getDescription()));
-        assertThat(response.getLocation(), equalTo(adminDTO.getLocation()));
         assertThat(response.getPaid(), equalTo(adminDTO.getPaid()));
 
     }

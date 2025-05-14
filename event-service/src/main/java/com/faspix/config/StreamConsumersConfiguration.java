@@ -1,9 +1,9 @@
 package com.faspix.config;
 
-import com.faspix.dto.ConfirmedRequestsDTO;
-import com.faspix.dto.UpdateCategoryNameDTO;
-import com.faspix.dto.UpdateUsernameDTO;
 import com.faspix.service.EventService;
+import com.faspix.shared.dto.ConfirmedRequestsDTO;
+import com.faspix.shared.dto.UpdateCategoryNameDTO;
+import com.faspix.shared.dto.UpdateUsernameDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

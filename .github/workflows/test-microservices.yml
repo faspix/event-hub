@@ -80,7 +80,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Publish common-dto to Nexus
+      - name: Publish shared-lib to Nexus
         run: |
           cd common-dto
           ./../gradlew publish \

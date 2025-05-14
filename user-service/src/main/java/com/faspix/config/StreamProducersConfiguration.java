@@ -1,7 +1,6 @@
 package com.faspix.config;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
-import com.faspix.dto.UpdateUsernameDTO;
+import com.faspix.shared.dto.UpdateUsernameDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -1,7 +1,7 @@
 package com.faspix.dao;
 
 import com.faspix.dto.ResponseUserDTO;
-import com.faspix.dto.ResponseUserShortDTO;
+import com.faspix.shared.dto.ResponseUserShortDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

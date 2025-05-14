@@ -1,10 +1,7 @@
 package com.faspix.client;
 
-import com.faspix.dto.ConfirmedRequestsDTO;
-import com.faspix.dto.ResponseEventDTO;
+import com.faspix.shared.dto.ResponseEventDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "event-service", fallback = EventServiceClientFallback.class)

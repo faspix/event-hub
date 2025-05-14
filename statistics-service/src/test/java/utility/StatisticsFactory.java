@@ -1,8 +1,8 @@
 package utility;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
-import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.shared.dto.RequestEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 
 import java.time.Instant;
 

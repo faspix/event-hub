@@ -1,12 +1,9 @@
 package com.faspix.controller;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
-import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import com.faspix.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;

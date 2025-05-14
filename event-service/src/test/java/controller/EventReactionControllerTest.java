@@ -2,9 +2,9 @@ package controller;
 
 import com.faspix.EventApplication;
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.entity.Event;
-import com.faspix.entity.EventDislike;
-import com.faspix.entity.EventLike;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.entity.EventDislike;
+import com.faspix.domain.entity.EventLike;
 import com.faspix.repository.EventDislikeRepository;
 import com.faspix.repository.EventLikeRepository;
 import com.faspix.repository.EventRepository;

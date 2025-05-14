@@ -1,6 +1,6 @@
 package com.faspix.config;
 
-import com.faspix.dto.UpdateCategoryNameDTO;
+import com.faspix.shared.dto.UpdateCategoryNameDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

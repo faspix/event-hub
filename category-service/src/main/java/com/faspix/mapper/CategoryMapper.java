@@ -1,8 +1,8 @@
 package com.faspix.mapper;
 
-import com.faspix.dto.RequestCategoryDTO;
-import com.faspix.dto.ResponseCategoryDTO;
 import com.faspix.entity.Category;
+import com.faspix.shared.dto.RequestCategoryDTO;
+import com.faspix.shared.dto.ResponseCategoryDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

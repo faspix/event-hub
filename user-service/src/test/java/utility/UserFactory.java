@@ -2,7 +2,7 @@ package utility;
 
 import com.faspix.dto.RequestUserDTO;
 import com.faspix.dto.ResponseUserDTO;
-import com.faspix.dto.ResponseUserShortDTO;
+import com.faspix.shared.dto.ResponseUserShortDTO;
 
 import java.util.Collections;
 

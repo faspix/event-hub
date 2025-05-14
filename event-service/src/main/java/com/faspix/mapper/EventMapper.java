@@ -2,10 +2,10 @@ package com.faspix.mapper;
 
 import com.faspix.dto.RequestEventDTO;
 import com.faspix.dto.RequestUpdateEventAdminDTO;
-import com.faspix.dto.ResponseEventDTO;
-import com.faspix.dto.ResponseEventShortDTO;
-import com.faspix.entity.Event;
-import com.faspix.entity.EventIndex;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.index.EventIndex;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.dto.ResponseEventShortDTO;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")

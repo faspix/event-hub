@@ -1,14 +1,17 @@
 package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
-import com.faspix.dto.*;
+import com.faspix.shared.dto.ConfirmedRequestsDTO;
+import com.faspix.dto.RequestParticipationRequestDTO;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.entity.Request;
-import com.faspix.enums.EventState;
 import com.faspix.enums.ParticipationRequestState;
 import com.faspix.exception.RequestNotFoundException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
+import com.faspix.shared.utility.EventState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;

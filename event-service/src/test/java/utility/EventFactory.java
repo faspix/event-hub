@@ -1,13 +1,16 @@
 package utility;
 
-import com.faspix.dto.*;
-import com.faspix.entity.Event;
-import com.faspix.entity.EventIndex;
-import com.faspix.enums.EventState;
-import com.faspix.enums.EventStateAction;
-import com.faspix.utility.Location;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.index.EventIndex;
+import com.faspix.domain.enums.EventStateAction;
+import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
+import com.faspix.shared.dto.ResponseCategoryDTO;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.dto.ResponseEventShortDTO;
+import com.faspix.shared.utility.EventState;
+import com.faspix.shared.utility.Location;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 import static utility.UserFactory.makeResponseShortUser;
@@ -41,7 +44,7 @@ public class EventFactory {
                 .description("description")
                 .eventDate(OffsetDateTime.now().plusYears(1000))
                 .initiatorId("1")
-                .location(new Location(10.0, 10.0))
+                .location(new com.faspix.domain.entity.Location(10.0, 10.0))
                 .paid(false)
                 .confirmedRequests(10)
                 .publishedAt(OffsetDateTime.now())

@@ -1,7 +1,7 @@
 package com.faspix.repository;
 
-import com.faspix.entity.Event;
-import com.faspix.entity.EventDislike;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.entity.EventDislike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,7 +1,11 @@
 package com.faspix.controller;
 
-import com.faspix.dto.*;
+import com.faspix.dto.RequestUpdatePasswordDTO;
+import com.faspix.dto.RequestUserAdminEditDTO;
+import com.faspix.dto.RequestUserDTO;
+import com.faspix.dto.ResponseUserDTO;
 import com.faspix.service.UserService;
+import com.faspix.shared.dto.ResponseUserShortDTO;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
