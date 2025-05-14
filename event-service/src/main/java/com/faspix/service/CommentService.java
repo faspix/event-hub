@@ -1,8 +1,8 @@
 package com.faspix.service;
 
+import com.faspix.domain.enums.CommentSortType;
 import com.faspix.dto.RequestCommentDTO;
 import com.faspix.dto.ResponseCommentDTO;
-import com.faspix.utility.CommentSortType;
 
 import java.util.List;
 

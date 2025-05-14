@@ -1,8 +1,7 @@
 package com.faspix.controller;
 
-import com.faspix.dto.RequestCategoryDTO;
-import com.faspix.dto.ResponseCategoryDTO;
-import com.faspix.mapper.CategoryMapper;
+import com.faspix.shared.dto.RequestCategoryDTO;
+import com.faspix.shared.dto.ResponseCategoryDTO;
 import com.faspix.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

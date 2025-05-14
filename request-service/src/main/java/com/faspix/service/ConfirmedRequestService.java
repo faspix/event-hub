@@ -1,6 +1,6 @@
 package com.faspix.service;
 
-import com.faspix.dto.ConfirmedRequestsDTO;
+import com.faspix.shared.dto.ConfirmedRequestsDTO;
 
 public interface ConfirmedRequestService {
 

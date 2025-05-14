@@ -1,6 +1,6 @@
 package com.faspix.repository;
 
-import com.faspix.entity.EventIndex;
+import com.faspix.domain.index.EventIndex;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

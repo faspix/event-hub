@@ -1,9 +1,10 @@
 package com.faspix.controller;
 
-import com.faspix.dto.*;
-import com.faspix.enums.EventState;
 import com.faspix.service.EventSearchService;
-import com.faspix.utility.EventSortType;
+import com.faspix.domain.enums.EventSortType;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.dto.ResponseEventShortDTO;
+import com.faspix.shared.utility.EventState;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.faspix.client;
 
-import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

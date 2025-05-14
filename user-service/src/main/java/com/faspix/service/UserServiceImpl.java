@@ -1,9 +1,14 @@
 package com.faspix.service;
 
-import com.faspix.dto.*;
+import com.faspix.dto.RequestUpdatePasswordDTO;
+import com.faspix.dto.RequestUserAdminEditDTO;
+import com.faspix.dto.RequestUserDTO;
+import com.faspix.dto.ResponseUserDTO;
 import com.faspix.exception.UserAlreadyExistException;
 import com.faspix.exception.UserNotFoundException;
 import com.faspix.dao.UserDAO;
+import com.faspix.shared.dto.ResponseUserShortDTO;
+import com.faspix.shared.dto.UpdateUsernameDTO;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;

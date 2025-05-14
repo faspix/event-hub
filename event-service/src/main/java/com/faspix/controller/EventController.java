@@ -1,7 +1,9 @@
 package com.faspix.controller;
 
-import com.faspix.dto.*;
+import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.service.EventService;
+import com.faspix.shared.dto.ResponseEventDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

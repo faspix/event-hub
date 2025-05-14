@@ -3,7 +3,7 @@ package com.faspix.controller;
 import com.faspix.dto.RequestCommentDTO;
 import com.faspix.dto.ResponseCommentDTO;
 import com.faspix.service.CommentService;
-import com.faspix.utility.CommentSortType;
+import com.faspix.domain.enums.CommentSortType;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;

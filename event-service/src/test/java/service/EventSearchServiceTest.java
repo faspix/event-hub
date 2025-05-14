@@ -7,18 +7,18 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.dto.*;
-import com.faspix.entity.Event;
-import com.faspix.entity.EventIndex;
-import com.faspix.enums.EventState;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.index.EventIndex;
 import com.faspix.exception.EventNotFoundException;
 import com.faspix.exception.EventNotPublishedException;
 import com.faspix.mapper.EventMapper;
-import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
+import com.faspix.domain.enums.EventSortType;
 import com.faspix.service.*;
-import com.faspix.utility.EventSortType;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.dto.ResponseEventShortDTO;
+import com.faspix.shared.utility.EventState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,10 +94,6 @@ public class EventSearchServiceTest {
     @Spy
     private final EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
-    @Spy
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
-
-
     @Test
     public void findEventTest_Success() {
         Event event = makeEventTest();
@@ -112,7 +108,6 @@ public class EventSearchServiceTest {
         assertThat(result.getTitle(), equalTo(event.getTitle()));
         assertThat(result.getAnnotation(), equalTo(event.getAnnotation()));
         assertThat(result.getDescription(), equalTo(event.getDescription()));
-        assertThat(result.getLocation(), equalTo(event.getLocation()));
         assertThat(result.getCreationDate(), equalTo(event.getCreationDate()));
         assertThat(result.getPublishedAt(), equalTo(event.getPublishedAt()));
         assertThat(result.getPaid(), equalTo(event.getPaid()));

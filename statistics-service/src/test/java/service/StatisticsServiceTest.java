@@ -1,11 +1,11 @@
 package service;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
-import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.shared.dto.RequestEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
 import com.faspix.mapper.StatisticsMapper;
 import com.faspix.repository.StatisticsRepository;
 import com.faspix.service.StatisticsServiceImpl;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;

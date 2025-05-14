@@ -1,30 +1,26 @@
 package com.faspix.service;
 
 import com.faspix.client.CategoryServiceClient;
-import com.faspix.dto.*;
-import com.faspix.entity.Event;
-import com.faspix.enums.EventState;
-import com.faspix.enums.EventStateAction;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.enums.EventStateAction;
+import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.exception.EventNotFoundException;
-import com.faspix.exception.EventNotPublishedException;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import com.faspix.shared.dto.*;
+import com.faspix.shared.utility.EventState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
 
 import static com.faspix.utility.PageRequestMaker.makePageRequest;
 

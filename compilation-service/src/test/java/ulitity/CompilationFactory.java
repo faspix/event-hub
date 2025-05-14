@@ -2,10 +2,8 @@ package ulitity;
 
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
-import com.faspix.dto.ResponseEventShortDTO;
 import com.faspix.entity.Compilation;
 
-import java.util.Collections;
 import java.util.List;
 
 public class CompilationFactory {

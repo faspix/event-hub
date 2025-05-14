@@ -1,6 +1,6 @@
 package com.faspix.service;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
+import com.faspix.shared.dto.RequestEndpointStatsDTO;
 
 public interface EndpointStatisticsService {
 

@@ -1,9 +1,8 @@
 package service;
 
 import com.faspix.client.EventServiceClient;
-import com.faspix.dto.RequestCategoryDTO;
-import com.faspix.dto.ResponseCategoryDTO;
-import com.faspix.dto.ResponseEventShortDTO;
+import com.faspix.shared.dto.RequestCategoryDTO;
+import com.faspix.shared.dto.ResponseCategoryDTO;
 import com.faspix.entity.Category;
 import com.faspix.exception.CategoryAlreadyExistException;
 import com.faspix.exception.CategoryNotEmptyException;
@@ -24,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

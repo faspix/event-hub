@@ -1,11 +1,12 @@
 package com.faspix.service;
 
-import com.faspix.dto.*;
-import com.faspix.entity.Event;
-import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.List;
-import java.util.Set;
+import com.faspix.domain.entity.Event;
+import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
+import com.faspix.shared.dto.ConfirmedRequestsDTO;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.dto.UpdateCategoryNameDTO;
+import com.faspix.shared.dto.UpdateUsernameDTO;
 
 public interface EventService {
 

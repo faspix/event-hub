@@ -1,15 +1,15 @@
 package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
-import com.faspix.dto.RequestCategoryDTO;
-import com.faspix.dto.ResponseCategoryDTO;
-import com.faspix.dto.UpdateCategoryNameDTO;
 import com.faspix.entity.Category;
 import com.faspix.exception.CategoryAlreadyExistException;
 import com.faspix.exception.CategoryNotEmptyException;
 import com.faspix.exception.CategoryNotFoundException;
 import com.faspix.mapper.CategoryMapper;
 import com.faspix.repository.CategoryRepository;
+import com.faspix.shared.dto.RequestCategoryDTO;
+import com.faspix.shared.dto.ResponseCategoryDTO;
+import com.faspix.shared.dto.UpdateCategoryNameDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;

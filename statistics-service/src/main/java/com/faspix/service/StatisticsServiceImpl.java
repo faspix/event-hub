@@ -1,7 +1,7 @@
 package com.faspix.service;
 
-import com.faspix.dto.RequestEndpointStatsDTO;
-import com.faspix.dto.ResponseEndpointStatsDTO;
+import com.faspix.shared.dto.RequestEndpointStatsDTO;
+import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
 import com.faspix.mapper.StatisticsMapper;
 import com.faspix.repository.StatisticsRepository;

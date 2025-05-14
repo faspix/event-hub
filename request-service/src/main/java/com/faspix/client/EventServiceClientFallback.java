@@ -1,7 +1,7 @@
 package com.faspix.client;
 
-import com.faspix.dto.ResponseEventDTO;
-import com.faspix.exception.ServiceUnavailableException;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.exception.ServiceUnavailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

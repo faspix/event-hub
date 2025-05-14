@@ -1,7 +1,7 @@
 package com.faspix.config;
 
-import com.faspix.exception.ExceptionResponse;
-import com.faspix.exception.ResourceNotFoundException;
+import com.faspix.shared.exception.ExceptionResponse;
+import com.faspix.shared.exception.ResourceNotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Response;

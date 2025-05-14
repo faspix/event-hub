@@ -1,12 +1,10 @@
 package com.faspix.config;
 
-import com.faspix.dto.ConfirmedRequestsDTO;
+import com.faspix.shared.dto.ConfirmedRequestsDTO;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.util.concurrent.Queues;

@@ -6,16 +6,20 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.faspix.client.CategoryServiceClient;
 import com.faspix.client.StatisticsServiceClient;
-import com.faspix.dto.*;
-import com.faspix.entity.Event;
-import com.faspix.entity.EventIndex;
-import com.faspix.enums.EventState;
+import com.faspix.domain.entity.Event;
+import com.faspix.domain.index.EventIndex;
+import com.faspix.dto.RequestEventDTO;
+import com.faspix.dto.RequestUpdateEventAdminDTO;
 import com.faspix.exception.ValidationException;
 import com.faspix.mapper.EventMapper;
-import com.faspix.mapper.UserMapper;
 import com.faspix.repository.EventRepository;
 import com.faspix.repository.EventSearchRepository;
 import com.faspix.service.*;
+import com.faspix.shared.dto.ConfirmedRequestsDTO;
+import com.faspix.shared.dto.ResponseEventDTO;
+import com.faspix.shared.dto.UpdateCategoryNameDTO;
+import com.faspix.shared.dto.UpdateUsernameDTO;
+import com.faspix.shared.utility.EventState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,9 +89,6 @@ public class EventServiceTest {
 
     @Spy
     private final EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
-
-    @Spy
-    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
 
     @Test
     public void createEventTest_Success() {
@@ -161,7 +162,6 @@ public class EventServiceTest {
         assertThat(updatedEvent.getTitle(), equalTo(event.getTitle()));
         assertThat(updatedEvent.getAnnotation(), equalTo(event.getAnnotation()));
         assertThat(updatedEvent.getDescription(), equalTo(event.getDescription()));
-        assertThat(updatedEvent.getLocation(), equalTo(event.getLocation()));
         assertThat(updatedEvent.getPaid(), equalTo(event.getPaid()));
         assertThat(updatedEvent.getState(), equalTo(event.getState()));
 
@@ -200,7 +200,6 @@ public class EventServiceTest {
         assertThat(updatedEvent.getTitle(), equalTo(event.getTitle()));
         assertThat(updatedEvent.getAnnotation(), equalTo(event.getAnnotation()));
         assertThat(updatedEvent.getDescription(), equalTo(event.getDescription()));
-        assertThat(updatedEvent.getLocation(), equalTo(event.getLocation()));
         assertThat(updatedEvent.getPaid(), equalTo(event.getPaid()));
         assertThat(updatedEvent.getState(), equalTo(event.getState()));
 
@@ -254,7 +253,6 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getTitle(), equalTo(updatedEvent.getTitle()));
         assertThat(eventFromRepo.getAnnotation(), equalTo(updatedEvent.getAnnotation()));
         assertThat(eventFromRepo.getDescription(), equalTo(updatedEvent.getDescription()));
-        assertThat(eventFromRepo.getLocation(), equalTo(updatedEvent.getLocation()));
         assertThat(eventFromRepo.getPaid(), equalTo(updatedEvent.getPaid()));
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
 
@@ -294,7 +292,6 @@ public class EventServiceTest {
         assertThat(eventFromRepo.getTitle(), equalTo(updatedEvent.getTitle()));
         assertThat(eventFromRepo.getAnnotation(), equalTo(updatedEvent.getAnnotation()));
         assertThat(eventFromRepo.getDescription(), equalTo(updatedEvent.getDescription()));
-        assertThat(eventFromRepo.getLocation(), equalTo(updatedEvent.getLocation()));
         assertThat(eventFromRepo.getPaid(), equalTo(updatedEvent.getPaid()));
         assertThat(eventFromRepo.getState(), equalTo(updatedEvent.getState()));
 

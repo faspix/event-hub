@@ -1,7 +1,7 @@
 package com.faspix.repository;
 
-import com.faspix.entity.Event;
-import com.faspix.enums.EventState;
+import com.faspix.domain.entity.Event;
+import com.faspix.shared.utility.EventState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,9 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 

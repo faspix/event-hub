@@ -2,9 +2,8 @@ package controller;
 
 import com.faspix.CategoryApplication;
 import com.faspix.client.EventServiceClient;
-import com.faspix.dto.RequestCategoryDTO;
-import com.faspix.dto.ResponseCategoryDTO;
-import com.faspix.dto.ResponseEventShortDTO;
+import com.faspix.shared.dto.RequestCategoryDTO;
+import com.faspix.shared.dto.ResponseCategoryDTO;
 import com.faspix.entity.Category;
 import com.faspix.repository.CategoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,8 +28,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
