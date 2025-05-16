@@ -83,7 +83,8 @@ class EventAggregationControllerTest {
                 .thenReturn(responseSpec);
         when(responseSpec.bodyToMono(ResponseEventDTO.class))
                 .thenReturn(Mono.just(eventDTO));
-
+        when(responseSpec.onStatus(any(), any()))
+                .thenReturn(responseSpec);
         when(requestHeadersUriSpec.uri(any(Function.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve())
@@ -125,7 +126,8 @@ class EventAggregationControllerTest {
                 .thenReturn(responseSpec);
         when(responseSpec.bodyToMono(ResponseEventDTO.class))
                 .thenReturn(Mono.just(eventDTO));
-
+        when(responseSpec.onStatus(any(), any()))
+                .thenReturn(responseSpec);
         when(requestHeadersUriSpec.uri(any(Function.class)))
                 .thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve())
