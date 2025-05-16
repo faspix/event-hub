@@ -85,9 +85,14 @@ class CompilationAggregationControllerTest {
         when(responseSpec.bodyToMono(ResponseCompilationDTO.class))
                 .thenReturn(Mono.just(compilationDTO));
 
-        when(requestBodyUriSpec.uri(any(Function.class))).thenReturn(requestBodySpec);
-        when(requestBodySpec.bodyValue(compilationDTO.events())).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(requestBodyUriSpec.uri(any(Function.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.bodyValue(compilationDTO.events()))
+                .thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.onStatus(any(), any()))
+                .thenReturn(responseSpec);
         when(responseSpec.bodyToFlux(ResponseEventShortDTO.class))
                 .thenReturn(Flux.fromIterable(events));
 
@@ -122,9 +127,14 @@ class CompilationAggregationControllerTest {
         when(responseSpec.bodyToMono(ResponseCompilationDTO.class))
                 .thenReturn(Mono.just(compilationDTO));
 
-        when(requestBodyUriSpec.uri(any(Function.class))).thenReturn(requestBodySpec);
-        when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(requestBodyUriSpec.uri(any(Function.class)))
+                .thenReturn(requestBodySpec);
+        when(requestBodySpec.bodyValue(any()))
+                .thenReturn(requestHeadersSpec);
+        when(responseSpec.onStatus(any(), any()))
+                .thenReturn(responseSpec);
+        when(requestHeadersSpec.retrieve())
+                .thenReturn(responseSpec);
         when(responseSpec.bodyToFlux(ResponseEventShortDTO.class))
                 .thenReturn(Flux.empty());
 
@@ -142,7 +152,8 @@ class CompilationAggregationControllerTest {
 
         when(requestHeadersUriSpec.uri("lb://compilation-service/compilations/{compId}", compId))
                 .thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(requestHeadersSpec.retrieve())
+                .thenReturn(responseSpec);
         when(responseSpec.bodyToMono(ResponseCompilationDTO.class))
                 .thenReturn(Mono.error(new RuntimeException("Compilation not found")));
 
