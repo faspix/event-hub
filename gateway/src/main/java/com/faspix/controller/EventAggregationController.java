@@ -4,9 +4,11 @@ import com.faspix.dto.EventsWithCommentsDTO;
 import com.faspix.dto.external.ResponseCommentDTO;
 import com.faspix.dto.external.ResponseEventDTO;
 import com.faspix.enums.CommentSortType;
+import com.faspix.exception.EventNotFoundException;
 import com.faspix.mapper.EventMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -41,6 +43,9 @@ public class EventAggregationController {
                 .uri("lb://event-service/events/{eventId}", eventId)
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (p) -> {
+                    throw new EventNotFoundException("Event not found. Error: " + p.statusCode());
+                })
                 .bodyToMono(ResponseEventDTO.class);
 
         Mono<List<ResponseCommentDTO>> commentsMono = webClient

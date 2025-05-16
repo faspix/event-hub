@@ -23,6 +23,7 @@ public class SecurityConfiguration {
                 )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.GET, "/events").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/events/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/events/batch").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/categories/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/comments/*").permitAll() // TODO: fix

@@ -53,5 +53,7 @@ public interface EventMapper {
     @Mapping(target = "confirmedRequests", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "initiatorUsername", ignore = true)
+    @Mapping(target = "eventId", ignore = true)
+    @Mapping(target = "categoryName", ignore = true)
     void RequestUpdateEventAdminToEvent(@MappingTarget Event event, RequestUpdateEventAdminDTO eventAdminDTO);
 }

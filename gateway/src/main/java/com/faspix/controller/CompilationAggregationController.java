@@ -3,7 +3,9 @@ package com.faspix.controller;
 import com.faspix.dto.CompilationWithEventsDTO;
 import com.faspix.dto.external.ResponseCompilationDTO;
 import com.faspix.dto.external.ResponseEventShortDTO;
+import com.faspix.exception.CompilationNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
@@ -30,6 +32,9 @@ public class CompilationAggregationController {
                 .get()
                 .uri("lb://compilation-service/compilations/{compId}", compId)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (p) -> {
+                    throw new CompilationNotFoundException("Compilation not found. Error: " + p.statusCode());
+                })
                 .bodyToMono(ResponseCompilationDTO.class);
 
         Mono<List<ResponseEventShortDTO>> eventsMono = compilationMono

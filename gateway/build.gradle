@@ -8,9 +8,21 @@ group = 'com.faspix'
 version = '1.0-SNAPSHOT'
 
 repositories {
+    maven {
+        url = uri("http://localhost:8231/repository/eventhub-shared-lib/")
+        credentials {
+            username = project.hasProperty("REPOSITORY_USERNAME")
+                    ? project.property("REPOSITORY_USERNAME")
+                    : ""
+            password = project.hasProperty("REPOSITORY_PASSWORD")
+                    ? project.property("REPOSITORY_PASSWORD")
+                    : ""
+        }
+        allowInsecureProtocol = true
+    }
     mavenCentral()
-    mavenLocal()
 }
+
 
 configurations {
     compileOnly {
@@ -51,6 +63,7 @@ dependencies {
 
 // Other
 dependencies {
+    implementation 'com.faspix.shared:shared-lib:0.0.1'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

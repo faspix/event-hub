@@ -12,7 +12,7 @@ public class ExceptionHandlerImpl {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ExceptionResponse handleGeneralException(final Exception e) {
-        return new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        return new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), e);
     }
 
 }
