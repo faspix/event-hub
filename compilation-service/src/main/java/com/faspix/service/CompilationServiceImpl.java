@@ -2,6 +2,7 @@ package com.faspix.service;
 
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
+import com.faspix.dto.ResponseCompilationShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationAlreadyExistException;
 import com.faspix.exception.CompilationNotFoundException;
@@ -46,10 +47,10 @@ public class CompilationServiceImpl implements CompilationService {
         ResponseCompilationDTO responseDTO;
         try {
             compilation = compilationRepository.saveAndFlush(
-                    compilationMapper.requestToCompilation(compilationDTO)
+                    compilationMapper.toCompilation(compilationDTO)
             );
 
-            responseDTO = compilationMapper.compilationToResponse(compilation);
+            responseDTO = compilationMapper.toResponse(compilation);
 
             Cache cache = cacheManager.getCache("CompilationService::findCompilationById");
             if (cache != null) {
@@ -71,11 +72,11 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(id).orElseThrow(
                 () -> new CompilationNotFoundException("Compilation with id " + id + " not found")
         );
-        return compilationMapper.compilationToResponse(compilation);
+        return compilationMapper.toResponse(compilation);
     }
 
     @Override
-    public List<ResponseCompilationDTO> findCompilations(Boolean pinned, Integer from, Integer size) {
+    public List<ResponseCompilationShortDTO> findCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable pageRequest = makePageRequest(from, size);
 
         Page<Compilation> compilations = (pinned == null)
@@ -83,7 +84,7 @@ public class CompilationServiceImpl implements CompilationService {
                 : compilationRepository.findCompilationsByPinned(pinned, pageRequest);
 
         return compilations.stream()
-                .map(compilationMapper::compilationToResponse)
+                .map(compilationMapper::toShortResponse)
                 .toList();
     }
 
@@ -99,7 +100,7 @@ public class CompilationServiceImpl implements CompilationService {
     @CachePut(value = "CompilationService::findCompilationById", key = "#id")
     public ResponseCompilationDTO editCompilation(Long id, RequestCompilationDTO compilationDTO) {
         checkCompilationExistence(id);
-        Compilation updatedCompilation = compilationMapper.requestToCompilation(compilationDTO);
+        Compilation updatedCompilation = compilationMapper.toCompilation(compilationDTO);
         updatedCompilation.setId(id);
         Compilation compilation;
         try {
@@ -108,7 +109,7 @@ public class CompilationServiceImpl implements CompilationService {
             throw new CompilationAlreadyExistException(
                     "Compilation with title '" + compilationDTO.getTitle() + "' already exist");
         }
-        return compilationMapper.compilationToResponse(compilation);
+        return compilationMapper.toResponse(compilation);
     }
 
     @Override
