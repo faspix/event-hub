@@ -169,7 +169,7 @@ public class EventSearchServiceTest {
                 EventSortType.NONE, 0, 10);
 
         assertThat(result.size(), equalTo(1));
-        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));;
+        assertThat(result.get(0).getTitle(), equalTo(events.get(0).getTitle()));
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.faspix.controller;
 
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
+import com.faspix.dto.ResponseCompilationShortDTO;
 import com.faspix.service.CompilationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class CompilationController {
     }
 
     @GetMapping
-    public List<ResponseCompilationDTO> findCompilations( // TODO: return short DTO without event ids
+    public List<ResponseCompilationShortDTO> findCompilations(
             @RequestParam(required = false) Boolean pinned,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "20") Integer size

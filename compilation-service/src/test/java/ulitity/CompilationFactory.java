@@ -25,11 +25,4 @@ public class CompilationFactory {
                 .build();
     }
 
-    public static ResponseCompilationDTO makeResponseCompilation() {
-        return ResponseCompilationDTO.builder()
-                .id(null)
-                .title("title")
-                .pinned(false)
-                .build();
-    }
 }

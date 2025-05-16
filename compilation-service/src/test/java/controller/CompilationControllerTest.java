@@ -84,7 +84,7 @@ public class CompilationControllerTest {
         String body = mvcResult.getResponse().getContentAsString();
         ResponseCompilationDTO result = objectMapper.readValue(body, ResponseCompilationDTO.class);
 
-        Compilation fromRepo = compilationRepository.findById(result.getId()).get();
+        Compilation fromRepo = compilationRepository.findById(result.id()).get();
 
         assertThat(fromRepo.getTitle(), equalTo(requestDTO.getTitle()));
         assertThat(fromRepo.getPinned(), equalTo(requestDTO.getPinned()));
@@ -159,7 +159,7 @@ public class CompilationControllerTest {
 
         String body = mvcResult.getResponse().getContentAsString();
         ResponseCompilationDTO result = objectMapper.readValue(body, ResponseCompilationDTO.class);
-        Compilation fromRepo = compilationRepository.findById(result.getId()).get();
+        Compilation fromRepo = compilationRepository.findById(result.id()).get();
 
         assertThat(fromRepo.getTitle(), equalTo(requestForUpdate.getTitle()));
         assertThat(fromRepo.getPinned(), equalTo(requestForUpdate.getPinned()));

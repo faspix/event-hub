@@ -2,6 +2,7 @@ package service;
 
 import com.faspix.dto.RequestCompilationDTO;
 import com.faspix.dto.ResponseCompilationDTO;
+import com.faspix.dto.ResponseCompilationShortDTO;
 import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
@@ -52,8 +53,8 @@ public class CompilationServiceTest {
 
         ResponseCompilationDTO result = compilationService.createCompilation(compilationDTO);
 
-        assertThat(result.getTitle(), equalTo(compilationDTO.getTitle()));
-        assertThat(result.getPinned(), equalTo(compilationDTO.getPinned()));
+        assertThat(result.title(), equalTo(compilationDTO.getTitle()));
+        assertThat(result.pinned(), equalTo(compilationDTO.getPinned()));
     }
 
     @Test
@@ -63,9 +64,9 @@ public class CompilationServiceTest {
                 .thenReturn(Optional.ofNullable(compilation));
 
         ResponseCompilationDTO result = compilationService.findCompilationById(1L);
-        assertThat(result.getId(), equalTo(compilation.getId()));
-        assertThat(result.getPinned(), equalTo(compilation.getPinned()));
-        assertThat(result.getTitle(), equalTo(compilation.getTitle()));
+        assertThat(result.id(), equalTo(compilation.getId()));
+        assertThat(result.pinned(), equalTo(compilation.getPinned()));
+        assertThat(result.title(), equalTo(compilation.getTitle()));
     }
 
     @Test
@@ -82,8 +83,8 @@ public class CompilationServiceTest {
 
         ResponseCompilationDTO result = compilationService.editCompilation(1L, updateDTO);
 
-        assertThat(result.getTitle(), equalTo(updateDTO.getTitle()));
-        assertThat(result.getPinned(), equalTo(updateDTO.getPinned()));
+        assertThat(result.title(), equalTo(updateDTO.getTitle()));
+        assertThat(result.pinned(), equalTo(updateDTO.getPinned()));
     }
 
     @Test
@@ -92,10 +93,10 @@ public class CompilationServiceTest {
         when(compilationRepository.findAll(any(Pageable.class)))
                 .thenReturn(new PageImpl<>(compilations));
 
-        List<ResponseCompilationDTO> result = compilationService.findCompilations(null, 0, 10);
+        List<ResponseCompilationShortDTO> result = compilationService.findCompilations(null, 0, 10);
 
         assertThat(result.size(), equalTo(compilations.size()));
-        assertThat(result.get(0).getTitle(), equalTo(compilations.get(0).getTitle()));
+        assertThat(result.get(0).title(), equalTo(compilations.get(0).getTitle()));
     }
 
 
@@ -105,10 +106,10 @@ public class CompilationServiceTest {
         when(compilationRepository.findCompilationsByPinned(anyBoolean(), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(compilations));
 
-        List<ResponseCompilationDTO> result = compilationService.findCompilations(true, 0, 10);
+        List<ResponseCompilationShortDTO> result = compilationService.findCompilations(true, 0, 10);
 
         assertThat(result.size(), equalTo(compilations.size()));
-        assertThat(result.get(0).getTitle(), equalTo(compilations.get(0).getTitle()));
+        assertThat(result.get(0).title(), equalTo(compilations.get(0).getTitle()));
     }
 
     @Test
