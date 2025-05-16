@@ -13,56 +13,56 @@ public class ExceptionHandlerImpl {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionResponse handleEventNotFoundException(final EventNotFoundException e) {
-        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+        return new ExceptionResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionResponse handleCommentNotFoundException(final CommentNotFoundException e) {
-        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+        return new ExceptionResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionResponse handleEventNotPublishedException(final EventNotPublishedException e) {
-        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+        return new ExceptionResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     private ExceptionResponse handleValidationException(final ValidationException e) {
-        return new ExceptionResponse(HttpStatus.BAD_REQUEST, e);
+        return new ExceptionResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     private ExceptionResponse handleUserAlreadyCommentThisEventException(final UserAlreadyCommentThisEventException e) {
-        return new ExceptionResponse(HttpStatus.CONFLICT, e);
+        return new ExceptionResponse(HttpStatus.CONFLICT.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     private ExceptionResponse handleReactionAlreadyExistException(final ReactionAlreadyExistException e) {
-        return new ExceptionResponse(HttpStatus.CONFLICT, e);
+        return new ExceptionResponse(HttpStatus.CONFLICT.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionResponse handleReactionNotExistException(final ReactionNotExistException e) {
-        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+        return new ExceptionResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ExceptionResponse handleResourceNotFoundException(final ResourceNotFoundException e) {
-        return new ExceptionResponse(HttpStatus.NOT_FOUND, e);
+        return new ExceptionResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), e);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ExceptionResponse handleGeneralException(final Exception e) {
         e.printStackTrace();
-        return new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, e);
+        return new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), e);
     }
 
 }
