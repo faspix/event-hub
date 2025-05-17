@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
@@ -43,9 +44,7 @@ public class EventAggregationController {
                 .uri("lb://event-service/events/{eventId}", eventId)
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (p) -> {
-                    throw new EventNotFoundException("Event not found. Error: " + p.statusCode());
-                })
+                .onStatus(HttpStatusCode::isError, this::handleWebClientError)
                 .bodyToMono(ResponseEventDTO.class);
 
         Mono<List<ResponseCommentDTO>> commentsMono = webClient
@@ -70,5 +69,19 @@ public class EventAggregationController {
                         tuple.getT1(), tuple.getT2()));
     }
 
+    private <T> Mono<T> handleWebClientError(ClientResponse response) {
+        if (response.statusCode().is4xxClientError()) {
+            return response.bodyToMono(String.class)
+                    .flatMap(body -> Mono.error(
+                            new EventNotFoundException("Event not found. Error: " + body))
+                    );
+        } else if (response.statusCode().is5xxServerError()) {
+            return response.bodyToMono(String.class)
+                    .flatMap(body -> Mono.error(
+                            new RuntimeException("Server error: " + body))
+                    );
+        }
+        return response.createException().flatMap(Mono::error);
+    }
 
 }
