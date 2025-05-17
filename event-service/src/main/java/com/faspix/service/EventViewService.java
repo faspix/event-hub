@@ -9,6 +9,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,15 +32,18 @@ public class EventViewService {
             return views;
         }
 
-        log.debug("Views for event with id {} not found in cache, fetching from statistics service", eventId);
-        return fetchEventViewsFromDB(eventId);
+        log.debug("Cache miss for eventId {}. Fetching from statistics service.", eventId);
+        Long fetchedViews = fetchEventViewsFromDB(eventId);
+        cache.put(eventId, fetchedViews);
+        return fetchedViews;
     }
 
     private Long fetchEventViewsFromDB(Long eventId) {
-        List<ResponseEndpointStatsDTO> statsById = statisticsServiceClient.getStatsById(eventId);
-        return (statsById == null || statsById.isEmpty())
-                ? 0
-                : statsById.getFirst().getHits();
+        List<ResponseEndpointStatsDTO> stats = statisticsServiceClient.getStatsById(eventId);
+        return Optional.ofNullable(stats)
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.getFirst().getHits())
+                .orElse(0L);
     }
 
 }
