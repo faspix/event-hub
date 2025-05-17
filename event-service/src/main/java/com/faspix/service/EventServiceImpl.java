@@ -187,6 +187,7 @@ public class EventServiceImpl implements EventService {
         if (category == null) {
             category = categoryServiceClient.getCategoryById(id);
             log.debug("Category with id {} not found in cache, fetching from service", id);
+            cache.put(id, category);
         }
         return category;
     }
