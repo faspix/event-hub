@@ -7,6 +7,7 @@ import com.faspix.exception.CompilationNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
@@ -32,9 +33,7 @@ public class CompilationAggregationController {
                 .get()
                 .uri("lb://compilation-service/compilations/{compId}", compId)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (p) -> {
-                    throw new CompilationNotFoundException("Compilation not found. Error: " + p.statusCode());
-                })
+                .onStatus(HttpStatusCode::isError, this::handleWebClientError)
                 .bodyToMono(ResponseCompilationDTO.class);
 
         Mono<List<ResponseEventShortDTO>> eventsMono = compilationMono
@@ -75,5 +74,20 @@ public class CompilationAggregationController {
                 });
     }
 
+
+    private <T> Mono<T> handleWebClientError(ClientResponse response) {
+        if (response.statusCode().is4xxClientError()) {
+            return response.bodyToMono(String.class)
+                    .flatMap(body -> Mono.error(
+                            new CompilationNotFoundException("Compilation not found. Error: " + body))
+                    );
+        } else if (response.statusCode().is5xxServerError()) {
+            return response.bodyToMono(String.class)
+                    .flatMap(body -> Mono.error(
+                            new RuntimeException("Server error: " + body))
+                    );
+        }
+        return response.createException().flatMap(Mono::error);
+    }
 
 }
