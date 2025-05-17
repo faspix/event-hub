@@ -6,6 +6,7 @@ import com.faspix.dto.EventsWithCommentsDTO;
 import com.faspix.dto.external.ResponseCommentDTO;
 import com.faspix.dto.external.ResponseEventDTO;
 import com.faspix.enums.CommentSortType;
+import com.faspix.exception.EventNotFoundException;
 import com.faspix.mapper.EventMapper;
 import confg.TestSecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,17 +47,20 @@ class EventAggregationControllerTest {
     @MockitoBean
     private EventMapper eventMapper;
 
+    @MockitoBean
     private WebClient webClient;
+
+    @MockitoBean
     private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
+
+    @MockitoBean
     private WebClient.RequestHeadersSpec requestHeadersSpec;
+
+    @MockitoBean
     private WebClient.ResponseSpec responseSpec;
 
     @BeforeEach
     void setUp() {
-        webClient = mock(WebClient.class);
-        requestHeadersUriSpec = mock(WebClient.RequestHeadersUriSpec.class);
-        requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
-        responseSpec = mock(WebClient.ResponseSpec.class);
 
         when(webClientBuilder.build()).thenReturn(webClient);
     }
@@ -149,6 +153,8 @@ class EventAggregationControllerTest {
     @Test
     void getEventWithComments_EventNotFound_ReturnsError() {
         Long eventId = 1L;
+        ResponseCommentDTO commentDTO = makeComment();
+        List<ResponseCommentDTO> comments = List.of(commentDTO);
 
         when(webClient.get())
                 .thenReturn(requestHeadersUriSpec);
@@ -159,7 +165,49 @@ class EventAggregationControllerTest {
         when(requestHeadersSpec.retrieve())
                 .thenReturn(responseSpec);
         when(responseSpec.bodyToMono(ResponseEventDTO.class))
-                .thenReturn(Mono.error(new RuntimeException("Event not found")));
+                .thenReturn(Mono.error(new EventNotFoundException("Event not found")));
+
+        when(responseSpec.onStatus(any(), any()))
+                .thenReturn(responseSpec);
+        when(requestHeadersUriSpec.uri(any(Function.class)))
+                .thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.bodyToFlux(ResponseCommentDTO.class))
+                .thenReturn(Flux.fromIterable(comments));
+
+        webTestClient.get()
+                .uri("/events/event-with-comments/{eventId}", eventId)
+                .exchange()
+                .expectStatus().is4xxClientError();
+    }
+
+
+    @Test
+    void getEventWithComments_ReturnsRuntimeException() {
+        Long eventId = 1L;
+        ResponseCommentDTO commentDTO = makeComment();
+        List<ResponseCommentDTO> comments = List.of(commentDTO);
+
+        when(webClient.get())
+                .thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri("lb://event-service/events/{eventId}", eventId))
+                .thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.headers(any()))
+                .thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(ResponseEventDTO.class))
+                .thenReturn(Mono.error(new RuntimeException()));
+
+        when(responseSpec.onStatus(any(), any()))
+                .thenReturn(responseSpec);
+        when(requestHeadersUriSpec.uri(any(Function.class)))
+                .thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve())
+                .thenReturn(responseSpec);
+        when(responseSpec.bodyToFlux(ResponseCommentDTO.class))
+                .thenReturn(Flux.fromIterable(comments));
 
         webTestClient.get()
                 .uri("/events/event-with-comments/{eventId}", eventId)
