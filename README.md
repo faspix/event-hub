@@ -31,6 +31,9 @@ The system is built using a modular microservices architecture and includes the 
 * **Config Service** - provides centralized configuration management for all services.
 * **Discovery Service** - enables dynamic service registration and discovery for scalability and resilience.
 
+## System Architecture Diagram
+[![Architecture Diagram](./docs/architecture_diagram.png)](./docs/architecture_diagram.png)
+
 ## Tech Stack
 
 ### Core Frameworks & Tools
