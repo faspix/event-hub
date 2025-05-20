@@ -45,9 +45,6 @@ public class CompilationControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-//    @MockitoBean
-//    private CacheManager cacheManager;
-
     @MockitoBean
     private OAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
 

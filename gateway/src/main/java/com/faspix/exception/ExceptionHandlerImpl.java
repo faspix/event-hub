@@ -22,4 +22,11 @@ public class ExceptionHandlerImpl {
         return Mono.just(new ExceptionResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), e));
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    private Mono<ExceptionResponse> handleGeneralException(final Exception e) {
+        e.printStackTrace();
+        return Mono.just(new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), e));
+    }
+
 }
