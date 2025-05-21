@@ -314,7 +314,7 @@ public class EventSearchServiceImpl implements EventSearchService {
 
     private <TDocument> SearchResponse<TDocument> safeElasticSearch(Function<SearchRequest.Builder, ObjectBuilder<SearchRequest>> fn, Class<TDocument> tDocumentClass) {
         try {
-            return elasticsearchClient.search((SearchRequest)((ObjectBuilder)fn.apply(new SearchRequest.Builder())).build(), tDocumentClass);
+            return elasticsearchClient.search(fn.apply(new SearchRequest.Builder()).build(), tDocumentClass);
         } catch (IOException | ElasticsearchException e) {
             log.error("Elasticsearch search failed: {}", e.getMessage(), e);
             throw new SearchServiceException("Failed to search in Elasticsearch", e);
