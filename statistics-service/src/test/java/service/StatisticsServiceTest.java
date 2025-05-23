@@ -4,7 +4,7 @@ import com.faspix.shared.dto.RequestEndpointStatsDTO;
 import com.faspix.entity.EndpointStats;
 import com.faspix.mapper.StatisticsMapper;
 import com.faspix.repository.StatisticsRepository;
-import com.faspix.service.StatisticsServiceImpl;
+import com.faspix.service.StatisticsService;
 import com.faspix.shared.dto.ResponseEndpointStatsDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ public class StatisticsServiceTest {
     private StatisticsRepository statisticsRepository;
 
     @InjectMocks
-    private StatisticsServiceImpl statisticsService;
+    private StatisticsService statisticsService;
 
     @Spy
     private final StatisticsMapper statisticsMapper = Mappers.getMapper(StatisticsMapper.class);
