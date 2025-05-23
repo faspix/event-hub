@@ -2,7 +2,7 @@ package controller;
 
 import com.faspix.CategoryApplication;
 import com.faspix.client.EventServiceClient;
-import com.faspix.shared.dto.RequestCategoryDTO;
+import com.faspix.dto.RequestCategoryDTO;
 import com.faspix.shared.dto.ResponseCategoryDTO;
 import com.faspix.entity.Category;
 import com.faspix.repository.CategoryRepository;
