@@ -7,7 +7,7 @@ import com.faspix.entity.Compilation;
 import com.faspix.exception.CompilationNotFoundException;
 import com.faspix.mapper.CompilationMapper;
 import com.faspix.repository.CompilationRepository;
-import com.faspix.service.CompilationServiceImpl;
+import com.faspix.service.CompilationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -34,7 +34,7 @@ import static ulitity.CompilationFactory.*;
 public class CompilationServiceTest {
 
     @InjectMocks
-    private CompilationServiceImpl compilationService;
+    private CompilationService compilationService;
 
     @Mock
     private CompilationRepository compilationRepository;
