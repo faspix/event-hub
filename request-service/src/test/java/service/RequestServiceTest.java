@@ -11,7 +11,7 @@ import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
 import com.faspix.service.ConfirmedRequestService;
-import com.faspix.service.RequestServiceImpl;
+import com.faspix.service.RequestService;
 import com.faspix.shared.utility.EventState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +45,7 @@ public class RequestServiceTest {
     private ConfirmedRequestService confirmedRequestService;
 
     @InjectMocks
-    private RequestServiceImpl requestService;
+    private RequestService requestService;
 
     @Spy
     private final RequestMapper requestMapper = Mappers.getMapper(RequestMapper.class);
