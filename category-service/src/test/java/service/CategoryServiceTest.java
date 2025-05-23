@@ -1,15 +1,15 @@
 package service;
 
 import com.faspix.client.EventServiceClient;
-import com.faspix.shared.dto.RequestCategoryDTO;
-import com.faspix.shared.dto.ResponseCategoryDTO;
+import com.faspix.dto.RequestCategoryDTO;
 import com.faspix.entity.Category;
 import com.faspix.exception.CategoryAlreadyExistException;
 import com.faspix.exception.CategoryNotEmptyException;
 import com.faspix.exception.CategoryNotFoundException;
 import com.faspix.mapper.CategoryMapper;
 import com.faspix.repository.CategoryRepository;
-import com.faspix.service.CategoryServiceImpl;
+import com.faspix.service.CategoryService;
+import com.faspix.shared.dto.ResponseCategoryDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -39,7 +39,7 @@ import static utility.CategoryFactory.*;
 public class CategoryServiceTest {
 
     @InjectMocks
-    private CategoryServiceImpl categoryService;
+    private CategoryService categoryService;
 
     @Mock
     private CategoryRepository categoryRepository;

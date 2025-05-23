@@ -1,7 +1,8 @@
-package com.faspix.shared.dto;
+package com.faspix.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
