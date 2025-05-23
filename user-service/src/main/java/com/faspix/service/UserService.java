@@ -23,7 +23,7 @@ public interface UserService {
 
     void deleteUser(String userId);
 
-    List<ResponseUserDTO> searchUsers(String nickname, String email, int from, int size);
+    List<ResponseUserDTO> searchUsers(String nickname, String email, Integer from, Integer size);
 
     List<ResponseUserShortDTO> findUserByIds(Set<String> userIds);
 }

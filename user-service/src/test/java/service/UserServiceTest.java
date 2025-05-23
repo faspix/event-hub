@@ -10,7 +10,7 @@ import com.faspix.exception.UserNotFoundException;
 import com.faspix.shared.dto.ResponseUserShortDTO;
 import com.faspix.shared.roles.UserRoles;
 import com.faspix.service.UpdateUsernameService;
-import com.faspix.service.UserServiceImpl;
+import com.faspix.service.KeycloakUserService;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ public class UserServiceTest {
     private UserDAO userDAO;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private KeycloakUserService userService;
 
     @Mock
     private UsersResource usersResource;
@@ -306,7 +306,7 @@ public class UserServiceTest {
             return null;
         }).when(userResource).resetPassword(any(CredentialRepresentation.class));
 
-        Method setUserPasswordMethod = UserServiceImpl.class
+        Method setUserPasswordMethod = KeycloakUserService.class
                 .getDeclaredMethod("setUserPassword", UsersResource.class, String.class, String.class);
         setUserPasswordMethod.setAccessible(true);
 
