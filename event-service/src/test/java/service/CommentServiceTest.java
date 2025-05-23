@@ -11,7 +11,7 @@ import com.faspix.exception.ValidationException;
 import com.faspix.mapper.CommentMapper;
 import com.faspix.repository.CommentRepository;
 import com.faspix.repository.EventRepository;
-import com.faspix.service.CommentServiceImpl;
+import com.faspix.service.CommentService;
 import com.faspix.domain.enums.CommentSortType;
 import com.faspix.shared.utility.EventState;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ public class CommentServiceTest {
     private CacheManager cacheManager;
 
     @InjectMocks
-    private CommentServiceImpl commentService;
+    private CommentService commentService;
 
     @Mock
     private SecurityContext securityContext;

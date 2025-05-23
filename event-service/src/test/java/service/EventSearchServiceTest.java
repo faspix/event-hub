@@ -56,7 +56,7 @@ public class EventSearchServiceTest {
     private CacheManager cacheManager;
 
     @InjectMocks
-    private EventServiceImpl eventService;
+    private EventService eventService;
 
     @Mock
     private SearchResponse<EventIndex> searchResponse;
@@ -80,7 +80,7 @@ public class EventSearchServiceTest {
     private CommentService commentService;
 
     @InjectMocks
-    private EventSearchServiceImpl searchService;
+    private EventSearchService searchService;
 
     @Mock
     private HitsMetadata<EventIndex> hitsMetadata;

@@ -8,7 +8,7 @@ import com.faspix.exception.ReactionNotExistException;
 import com.faspix.repository.EventDislikeRepository;
 import com.faspix.repository.EventLikeRepository;
 import com.faspix.repository.EventRepository;
-import com.faspix.service.EventReactionServiceImpl;
+import com.faspix.service.EventReactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ public class EventReactionServiceTest {
     private EventRepository eventRepository;
 
     @InjectMocks
-    private EventReactionServiceImpl eventReactionService;
+    private EventReactionService eventReactionService;
 
     private final String userId = "1";
     private final Long eventId = 1L;
