@@ -36,7 +36,7 @@ import java.util.Set;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class KeycloakUserService implements UserService {
 
     private final RealmResource realmResource;
 
@@ -175,7 +175,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public List<ResponseUserDTO> searchUsers(String nickname, String email, int from, int size) {
+    public List<ResponseUserDTO> searchUsers(String nickname, String email, Integer from, Integer size) {
         return userDAO.findUsers(nickname, email, from, size);
     }
 
