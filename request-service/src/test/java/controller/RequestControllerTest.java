@@ -4,6 +4,7 @@ import com.faspix.RequestApplication;
 import com.faspix.client.EventServiceClient;
 import com.faspix.controller.RequestController;
 import com.faspix.dto.RequestParticipationRequestDTO;
+import com.faspix.service.NotificationService;
 import com.faspix.shared.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.shared.dto.ResponseUserShortDTO;
@@ -73,6 +74,9 @@ public class RequestControllerTest {
 
     @MockitoBean
     private ConfirmedRequestService confirmedRequestService;
+
+    @MockitoBean
+    private NotificationService notificationService;
 
     @MockitoBean
     private EventServiceClient eventServiceClient;
