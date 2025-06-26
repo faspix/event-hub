@@ -1,1 +1,12 @@
-spring.application.name=notification-service
+spring:
+  application:
+    name: notification-service
+  config:
+    import: configserver:http://config-service:8001
+  cloud:
+    config:
+      fail-fast: true
+      password: admin
+      username: user
+  profiles:
+    active: keycloak

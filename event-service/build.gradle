@@ -83,9 +83,9 @@ dependencies {
 dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation 'org.testcontainers:postgresql:1.20.5' // TODO: migrate to 1.21.0 version
+    testImplementation 'org.testcontainers:postgresql:1.21.0'
     testImplementation 'org.testcontainers:elasticsearch:1.21.0'
-    testImplementation "org.testcontainers:junit-jupiter:1.20.5"
+    testImplementation "org.testcontainers:junit-jupiter:1.21.0"
     testImplementation 'org.springframework.security:spring-security-test'
 }
 
