@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    function:
+      definition: email-notificationsConsume
+    stream:
+      bindings:
+        email-notificationsConsume-in-0:
+          destination: email-notifications-dest
+          group: email-notification-group
+          consumer:
+            max-attempts: 3
+      kafka:
+        binder:
+          brokers: kafka:9025
+        bindings:
+          email-notificationsConsume-in-0:
+            consumer:
+              enableDlq: true
+              dlqName: email-notificationsConsume-dead-letter-topic
+              autoCommitOnError: false
+              retryAttempts: 3
+              backOffInitialInterval: 1000
+              backOffMaxInterval: 5000
+
+server:
+  port: 8080
