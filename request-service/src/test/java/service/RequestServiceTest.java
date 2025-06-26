@@ -2,7 +2,6 @@ package service;
 
 import com.faspix.client.EventServiceClient;
 import com.faspix.dto.RequestParticipationRequestDTO;
-import com.faspix.shared.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.entity.Request;
 import com.faspix.enums.ParticipationRequestState;
@@ -11,7 +10,9 @@ import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
 import com.faspix.service.ConfirmedRequestService;
+import com.faspix.service.NotificationService;
 import com.faspix.service.RequestService;
+import com.faspix.shared.dto.ResponseEventDTO;
 import com.faspix.shared.utility.EventState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,9 @@ public class RequestServiceTest {
 
     @Mock
     private ConfirmedRequestService confirmedRequestService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private RequestService requestService;
