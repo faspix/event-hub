@@ -1,22 +1,22 @@
 spring:
   cloud:
     function:
-      definition: email-notificationsConsume
+      definition: notificationConsume
     stream:
       bindings:
-        email-notificationsConsume-in-0:
-          destination: email-notifications-dest
-          group: email-notification-group
+        notificationConsume-in-0:
+          destination: notification-dest
+          group: notification-group
           consumer:
             max-attempts: 3
       kafka:
         binder:
           brokers: kafka:9025
         bindings:
-          email-notificationsConsume-in-0:
+          notificationConsume-in-0:
             consumer:
               enableDlq: true
-              dlqName: email-notificationsConsume-dead-letter-topic
+              dlqName: notificationConsume-dead-letter-topic
               autoCommitOnError: false
               retryAttempts: 3
               backOffInitialInterval: 1000

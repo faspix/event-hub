@@ -1,6 +1,7 @@
 package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
+import com.faspix.shared.dto.ConfirmedRequestNotificationDTO;
 import com.faspix.shared.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestParticipationRequestDTO;
 import com.faspix.shared.dto.ResponseEventDTO;
@@ -37,7 +38,9 @@ public class RequestService {
 
     private final ConfirmedRequestService confirmedRequestService;
 
-    @Transactional // TODO: ErrorResponse: Request must have status PENDING
+    private final NotificationService notificationService;
+
+    @Transactional
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseParticipationRequestDTO createRequest(String requesterId, Long eventId) {
         if (requestRepository.findRequestByRequesterIdAndEventId(requesterId, eventId) != null)
@@ -56,6 +59,11 @@ public class RequestService {
             request.setState(ParticipationRequestState.PENDING);
         } else {
             request.setState(ParticipationRequestState.CONFIRMED);
+            notificationService.sendNotification(ConfirmedRequestNotificationDTO.builder()
+                            .eventName(event.getTitle())
+                            .userId(requesterId)
+                            .isConfirmed(true)
+                    .build());
             confirmedRequestService.sendConfirmedRequestMsg(new ConfirmedRequestsDTO(eventId, 1));
         }
 
@@ -106,6 +114,11 @@ public class RequestService {
                     request.setState(ParticipationRequestState.REJECTED);
                 }
                 requests.add(request);
+                notificationService.sendNotification(ConfirmedRequestNotificationDTO.builder()
+                        .eventName(eventDTO.getTitle())
+                        .userId(request.getRequesterId())
+                        .isConfirmed(request.getState() == ParticipationRequestState.CONFIRMED)
+                        .build());
             }
         }
         requestRepository.saveAllAndFlush(requests);
@@ -156,7 +169,14 @@ public class RequestService {
             List<Request> remainingPendingRequests = requestRepository
                     .findRequestsByEventIdAndState(eventId, ParticipationRequestState.PENDING);
             if (! remainingPendingRequests.isEmpty()) {
-                remainingPendingRequests.forEach(r -> r.setState(ParticipationRequestState.REJECTED));
+                remainingPendingRequests.forEach(r -> {
+                    r.setState(ParticipationRequestState.REJECTED);
+                    notificationService.sendNotification(ConfirmedRequestNotificationDTO.builder()
+                            .eventName(eventId.toString())
+                            .userId(r.getRequesterId())
+                            .isConfirmed(false)
+                            .build());
+                });
                 requestRepository.saveAll(remainingPendingRequests);
             }
         }
