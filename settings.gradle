@@ -9,4 +9,4 @@ include 'request-service'
 include 'gateway'
 include 'config-service'
 include 'statistics-service'
-
+include 'notification-service'
