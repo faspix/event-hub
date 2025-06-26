@@ -116,17 +116,31 @@ public class KeycloakUserService implements UserService {
 
     @Override
     @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MICROSERVICE')")
-    @Cacheable(value = "UserService::getUserById", key = "#userId")
     public ResponseUserDTO findUserById(String userId) {
+
+        Cache cache = cacheManager.getCache("UserService::getUserById");
+        if (cache != null) {
+            ResponseUserDTO responseUserDTO = cache.get(userId, ResponseUserDTO.class);
+            if (responseUserDTO != null) {
+                return responseUserDTO;
+            }
+        } else {
+            log.error("Cache UserService::getUserById is null");
+        }
+
         UsersResource usersResource = realmResource.users();
         UserResource userResource = usersResource.get(userId);
         UserRepresentation userRepresentation = getUserRepresentation(userId, userResource);
-        return ResponseUserDTO.builder()
+        ResponseUserDTO userDTO = ResponseUserDTO.builder()
                 .userId(userRepresentation.getId())
                 .username(userRepresentation.getUsername())
                 .email(userRepresentation.getEmail())
                 .roles(getUserRoles(userId, usersResource))
                 .build();
+        if (cache != null) {
+            cache.put(userId, userDTO);
+        }
+        return userDTO;
     }
 
     @Override
@@ -183,6 +197,12 @@ public class KeycloakUserService implements UserService {
     @Override
     public List<ResponseUserShortDTO> findUserByIds(Set<String> userIds) {
         return userDAO.findAll(userIds);
+    }
+
+    @Override
+    public String findUserEmailById(String id) {
+        ResponseUserDTO userById = findUserById(id);
+        return userById.getEmail();
     }
 
     private static void updateUser(RequestUserAdminEditDTO userDTO, UserRepresentation userRepresentation) {

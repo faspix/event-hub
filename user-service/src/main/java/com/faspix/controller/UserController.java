@@ -91,4 +91,11 @@ public class UserController {
         return userService.findUserByIds(userIds);
     }
 
+    @GetMapping("/email/{userId}")
+    public String findUserEmailById(
+            @PathVariable String userId
+    ) {
+        return userService.findUserEmailById(userId);
+    }
+
 }

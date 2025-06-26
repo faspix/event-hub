@@ -1,4 +1,4 @@
-package com.faspix.config;
+package com.faspix.notificationservice.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

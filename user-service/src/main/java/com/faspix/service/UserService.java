@@ -26,4 +26,6 @@ public interface UserService {
     List<ResponseUserDTO> searchUsers(String nickname, String email, Integer from, Integer size);
 
     List<ResponseUserShortDTO> findUserByIds(Set<String> userIds);
+
+    String findUserEmailById(String id);
 }
