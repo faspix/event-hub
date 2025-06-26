@@ -1,4 +1,4 @@
-package com.faspix.config;
+package com.faspix.notificationservice.config;
 
 import com.faspix.shared.exception.ExceptionResponse;
 import com.faspix.shared.exception.ResourceNotFoundException;
