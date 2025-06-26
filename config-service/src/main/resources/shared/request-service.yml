@@ -17,11 +17,13 @@ spring:
         format_sql: true
   cloud:
     function:
-      definition: newConfirmedRequestProduce
+      definition: newConfirmedRequestProduce, notificationProduce
     stream:
       bindings:
         newConfirmedRequestProduce-out-0:
           destination: confirmed-request-dest
+        notificationProduce-out-0:
+          destination: notification-dest
       kafka:
         binder:
           brokers: kafka:9025
