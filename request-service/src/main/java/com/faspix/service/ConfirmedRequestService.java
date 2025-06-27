@@ -17,7 +17,7 @@ public class ConfirmedRequestService {
 
     public void sendConfirmedRequestMsg(ConfirmedRequestsDTO message) {
         configuration.getRequestBus().emitNext(MessageBuilder.withPayload(message).build(), Sinks.EmitFailureHandler.FAIL_FAST);
-        log.debug("Message to sent via Kafka: {}", message);
+        log.debug("Message to sent to Kafka: {}", message);
     }
 
 }

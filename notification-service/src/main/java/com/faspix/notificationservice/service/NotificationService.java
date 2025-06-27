@@ -1,9 +1,11 @@
 package com.faspix.notificationservice.service;
 
-import com.faspix.shared.dto.ConfirmedRequestNotificationDTO;
+import com.faspix.shared.dto.NotificationDTO;
 
 public interface NotificationService {
 
-    void sendConfirmedRequestNotification(ConfirmedRequestNotificationDTO notification);
+    void sendConfirmedRequestNotification(NotificationDTO notification);
+
+    void sendRejectedRequestNotification(NotificationDTO notification);
 
 }

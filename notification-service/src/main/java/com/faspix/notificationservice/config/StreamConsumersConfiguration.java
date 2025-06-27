@@ -1,7 +1,8 @@
 package com.faspix.notificationservice.config;
 
+import com.faspix.notificationservice.router.NotificationRouter;
 import com.faspix.notificationservice.service.NotificationService;
-import com.faspix.shared.dto.ConfirmedRequestNotificationDTO;
+import com.faspix.shared.dto.NotificationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,12 +14,12 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class StreamConsumersConfiguration {
 
-    private final NotificationService notificationService;
+    private final NotificationRouter notificationRouter;
 
     @Bean
-    Consumer<Message<ConfirmedRequestNotificationDTO>> endpointStatisticsConsume() {
+    Consumer<Message<NotificationDTO>> notificationConsume() {
         return msg ->
-                notificationService.sendConfirmedRequestNotification(msg.getPayload());
+                notificationRouter.receiveNotification(msg.getPayload());
     }
 
 }
