@@ -17,6 +17,6 @@ public class EndpointStatisticsService {
 
     public void sendEndpointStatistics(RequestEndpointStatsDTO message) {
         configuration.getBus().emitNext(MessageBuilder.withPayload(message).build(), Sinks.EmitFailureHandler.FAIL_FAST);
-        log.debug("Message to sent via Kafka: {}", message);
+        log.debug("Message to sent to Kafka: {}", message);
     }
 }
