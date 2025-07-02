@@ -20,7 +20,7 @@ jobs:
           echo "Parsing settings.gradle..."
           services=$(grep "^include" settings.gradle | sed "s/include '//;s/'//")
           services=$(echo "$services" | grep -v '^shared-lib$')
-          json=$(printf '%s\n' "$services" | jq -R . | jq -s .)
+          json=$(printf '%s\n' "$services" | jq -R . | jq -s -c .)
           echo "services=$json" >> $GITHUB_OUTPUT
 
       - name: Show generated matrix
