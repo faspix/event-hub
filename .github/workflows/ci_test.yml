@@ -1,4 +1,4 @@
-name: ci tests
+name: Tests Services
 
 permissions:
   contents: read
@@ -6,11 +6,10 @@ permissions:
 on:
   push:
     branches:
-      - master
-      - feature/*
+      - develop
   pull_request:
     branches:
-      - master
+      - develop
 
 jobs:
   test:
