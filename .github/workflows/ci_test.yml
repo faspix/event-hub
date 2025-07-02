@@ -1,4 +1,7 @@
-name: Test Microservices
+name: ci tests
+
+permissions:
+  contents: read
 
 on:
   push:
@@ -9,11 +12,8 @@ on:
     branches:
       - master
 
-permissions:
-  contents: read
-
 jobs:
-  test-microservices:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
@@ -42,7 +42,7 @@ jobs:
 
       - name: Accept EULA and set initial password
         run: |
-          curl -u $REPOSITORY_USERNAME:$REPOSITORY_PASSWORD -X POST \
+          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST \
             -H "Content-Type: application/json" \
             -d '{
               "disclaimer": "Use of Sonatype Nexus Repository - Community Edition is governed by the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula. By returning the value from ‘accepted:false’ to ‘accepted:true’, you acknowledge that you have read and agree to the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula.",
@@ -76,7 +76,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
