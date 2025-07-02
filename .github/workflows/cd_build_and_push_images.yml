@@ -104,6 +104,12 @@ jobs:
       - name: Show generated matrix
         run: echo "${{ steps.set-matrix.outputs.services }}"
 
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: */build/libs/
+
   build-images-and-push:
     needs: generate-matrix
     runs-on: ubuntu-latest
@@ -113,6 +119,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: .
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
