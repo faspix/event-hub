@@ -1,0 +1,34 @@
+name: Publish Shared Library to Github Maven Repository
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build packages
+        run: ./gradlew :shared-lib:build
+
+
+      - name: Publish to GitHub Packages
+        run: |
+          ./gradlew :shared-lib:publish \
+          -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
+          -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
+          -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
+

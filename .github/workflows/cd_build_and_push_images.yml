@@ -15,62 +15,6 @@ jobs:
     outputs:
       services: ${{ steps.set-matrix.outputs.services }}
     steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Run Nexus Container
-        run: |
-          docker run -d -p 8231:8081 --name nexus sonatype/nexus3:3.78.2
-          for i in {1..30}; do
-            if curl -s http://localhost:8231 > /dev/null; then
-              echo "Nexus is up!"
-              break
-            fi
-            sleep 10
-          done
-          if ! curl -s http://localhost:8231 > /dev/null; then
-            echo "Nexus failed to start in time"
-            exit 1
-          fi
-
-      - name: Get Nexus Admin Password
-        run: |
-          PASSWORD=$(docker exec nexus cat /nexus-data/admin.password)
-          echo "REPOSITORY_USERNAME=admin" >> $GITHUB_ENV
-          echo "REPOSITORY_PASSWORD=$PASSWORD" >> $GITHUB_ENV
-
-      - name: Accept EULA and set initial password
-        run: |
-          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST \
-            -H "Content-Type: application/json" \
-            -d '{
-              "disclaimer": "Use of Sonatype Nexus Repository - Community Edition is governed by the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula. By returning the value from ‘accepted:false’ to ‘accepted:true’, you acknowledge that you have read and agree to the End User License Agreement at https://links.sonatype.com/products/nxrm/ce-eula.",
-              "accepted": true
-              }' \
-            http://localhost:8231/service/rest/v1/system/eula
-
-      - name: Create eventhub-shared-lib repository
-        run: |
-          curl -u ${{ env.REPOSITORY_USERNAME }}:${{ env.REPOSITORY_PASSWORD }} -X POST \
-            -H "Content-Type: application/json" \
-            -d '{
-                  "name": "eventhub-shared-lib",
-                  "online": true,
-                  "storage": {
-                    "blobStoreName": "default",
-                    "strictContentTypeValidation": true,
-                    "writePolicy": "ALLOW"
-                  },
-                  "maven": {
-                    "versionPolicy": "RELEASE",
-                    "layoutPolicy": "STRICT",
-                    "contentDisposition": "INLINE"
-                  },
-                  "type": "hosted",
-                  "format": "maven2"
-                }' \
-            http://localhost:8231/service/rest/v1/repositories/maven/hosted
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -80,21 +24,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Publish shared-lib to Nexus
-        run: |
-          cd shared-lib
-          ./../gradlew publish \
-          -PREPOSITORY_WRITE_USERNAME=${{ env.REPOSITORY_USERNAME }} \
-          -PREPOSITORY_WRITE_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Build without test
         run: |
           ./gradlew build -x test \
-          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
-          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }}
+          -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
+          -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
+          -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
+
 
       - name: Generate services list
         id: set-matrix

@@ -9,7 +9,13 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    maven {
+        url = uri(project.findProperty("REPOSITORY_URL") ?: "")
+        credentials {
+            username = project.findProperty("REPOSITORY_USERNAME") ?: ""
+            password = project.findProperty("REPOSITORY_PASSWORD") ?: ""
+        }
+    }
 }
 
 configurations {
