@@ -26,14 +26,18 @@ jobs:
           distribution: 'temurin'
 
       - name: Run tests
-        run: ./gradlew test --info -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }} -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
+        run: |
+          ./gradlew test --info \
+          -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
+          -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
+          -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
 
 
       - name: Generate coverage report
         run: |
           ./gradlew jacocoRootReport \
-          -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
-          -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }} \
+          -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
+          -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
           -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
 
       - name: Run codacy-coverage-reporter

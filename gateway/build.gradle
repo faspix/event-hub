@@ -8,6 +8,7 @@ group = 'com.faspix'
 version = '1.0-SNAPSHOT'
 
 repositories {
+    mavenCentral()
     maven {
         url = uri(project.findProperty("REPOSITORY_URL") ?: "")
         credentials {
@@ -15,7 +16,6 @@ repositories {
             password = project.findProperty("REPOSITORY_PASSWORD") ?: ""
         }
     }
-    mavenCentral()
 }
 
 configurations {
