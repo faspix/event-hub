@@ -27,11 +27,11 @@ jobs:
 
       - name: Run tests
         run: |
-          ./gradlew test \
+          ./gradlew test --debug \
           -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }} \
           -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }} \ 
-          --info
+
       - name: Generate coverage report
         run: |
           ./gradlew jacocoRootReport \
