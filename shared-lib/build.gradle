@@ -13,22 +13,6 @@ repositories {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = 'nexus'
-            url = uri("http://localhost:8231/repository/eventhub-shared-lib/")
-            credentials {
-                username = project.hasProperty("REPOSITORY_WRITE_USERNAME")
-                        ? project.property("REPOSITORY_WRITE_USERNAME")
-                        : ""
-                password = project.hasProperty("REPOSITORY_WRITE_PASSWORD")
-                        ? project.property("REPOSITORY_WRITE_PASSWORD")
-                        : ""
-            }
-            allowInsecureProtocol = true
-        }
-    }
-
     publications {
         mavenJava(MavenPublication) {
             from components.java
@@ -37,21 +21,17 @@ publishing {
             version = '0.0.1'
         }
     }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri(project.findProperty("REPOSITORY_URL") ?: "")
+            credentials {
+                username = project.findProperty("REPOSITORY_USERNAME") ?: ""
+                password = project.findProperty("REPOSITORY_PASSWORD") ?: ""
+            }
+        }
+    }
 }
-
-
-
-//publishing {
-//    publications {
-//        mavenJava(MavenPublication) {
-//            from components.java
-//        }
-//    }
-//    repositories {
-//        mavenLocal()
-//    }
-//}
-
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation:3.4.2'

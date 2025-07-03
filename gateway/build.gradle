@@ -9,20 +9,14 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     maven {
-        url = uri("http://localhost:8231/repository/eventhub-shared-lib/")
+        url = uri(project.findProperty("REPOSITORY_URL") ?: "")
         credentials {
-            username = project.hasProperty("REPOSITORY_USERNAME")
-                    ? project.property("REPOSITORY_USERNAME")
-                    : ""
-            password = project.hasProperty("REPOSITORY_PASSWORD")
-                    ? project.property("REPOSITORY_PASSWORD")
-                    : ""
+            username = project.findProperty("REPOSITORY_USERNAME") ?: ""
+            password = project.findProperty("REPOSITORY_PASSWORD") ?: ""
         }
-        allowInsecureProtocol = true
     }
     mavenCentral()
 }
-
 
 configurations {
     compileOnly {
