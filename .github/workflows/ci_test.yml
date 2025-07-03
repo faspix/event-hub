@@ -30,8 +30,8 @@ jobs:
           ./gradlew test \
           -PREPOSITORY_USERNAME=${{ env.REPOSITORY_USERNAME }} \
           -PREPOSITORY_PASSWORD=${{ env.REPOSITORY_PASSWORD }} \
-          -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
-
+          -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }} \ 
+          --info
       - name: Generate coverage report
         run: |
           ./gradlew jacocoRootReport \
