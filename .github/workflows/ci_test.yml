@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests
         run: |
-          ./gradlew test --info \
+          ./gradlew test \
           -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
           -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
           -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
