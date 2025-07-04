@@ -22,5 +22,22 @@ spring:
               backOffInitialInterval: 1000
               backOffMaxInterval: 5000
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: email@gmail.com
+    password: password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+app:
+  mail:
+    from: email@gmail.com
+
 server:
   port: 8080

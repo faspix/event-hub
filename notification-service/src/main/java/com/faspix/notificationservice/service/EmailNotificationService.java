@@ -18,16 +18,18 @@ public class EmailNotificationService implements NotificationService {
 
     private final CacheManager cacheManager;
 
+    private final EmailService emailService;
+
     @Override
     public void sendConfirmedRequestNotification(NotificationDTO notification) {
         String userEmail = getEmailByUserId(notification.getUserId());
-
+        emailService.sendEmail(userEmail, "", "");
     }
 
     @Override
     public void sendRejectedRequestNotification(NotificationDTO notification) {
         String userEmail = getEmailByUserId(notification.getUserId());
-
+        emailService.sendEmail(userEmail, "", "");
     }
 
     private String getEmailByUserId(String userId) {
