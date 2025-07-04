@@ -1,9 +1,9 @@
 package com.faspix.service;
 
 import com.faspix.client.EventServiceClient;
-import com.faspix.shared.dto.ConfirmedRequestNotificationDTO;
 import com.faspix.shared.dto.ConfirmedRequestsDTO;
 import com.faspix.dto.RequestParticipationRequestDTO;
+import com.faspix.shared.dto.NotificationDTO;
 import com.faspix.shared.dto.ResponseEventDTO;
 import com.faspix.dto.ResponseParticipationRequestDTO;
 import com.faspix.entity.Request;
@@ -13,6 +13,7 @@ import com.faspix.exception.ValidationException;
 import com.faspix.mapper.RequestMapper;
 import com.faspix.repository.RequestRepository;
 import com.faspix.shared.utility.EventState;
+import com.faspix.shared.utility.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,10 +60,10 @@ public class RequestService {
             request.setState(ParticipationRequestState.PENDING);
         } else {
             request.setState(ParticipationRequestState.CONFIRMED);
-            notificationService.sendNotification(ConfirmedRequestNotificationDTO.builder()
-                            .eventName(event.getTitle())
-                            .userId(requesterId)
-                            .isConfirmed(true)
+            notificationService.sendNotification(NotificationDTO.builder()
+                    .type(NotificationType.REQUEST_CONFIRMED)
+                    .eventName(event.getTitle())
+                    .userId(requesterId)
                     .build());
             confirmedRequestService.sendConfirmedRequestMsg(new ConfirmedRequestsDTO(eventId, 1));
         }
@@ -114,10 +115,12 @@ public class RequestService {
                     request.setState(ParticipationRequestState.REJECTED);
                 }
                 requests.add(request);
-                notificationService.sendNotification(ConfirmedRequestNotificationDTO.builder()
+                notificationService.sendNotification(NotificationDTO.builder()
                         .eventName(eventDTO.getTitle())
                         .userId(request.getRequesterId())
-                        .isConfirmed(request.getState() == ParticipationRequestState.CONFIRMED)
+                        .type(request.getState().equals(ParticipationRequestState.CONFIRMED)
+                                ? NotificationType.REQUEST_CONFIRMED
+                                : NotificationType.REQUEST_REJECTED)
                         .build());
             }
         }
@@ -171,10 +174,10 @@ public class RequestService {
             if (! remainingPendingRequests.isEmpty()) {
                 remainingPendingRequests.forEach(r -> {
                     r.setState(ParticipationRequestState.REJECTED);
-                    notificationService.sendNotification(ConfirmedRequestNotificationDTO.builder()
+                    notificationService.sendNotification(NotificationDTO.builder()
                             .eventName(eventId.toString())
                             .userId(r.getRequesterId())
-                            .isConfirmed(false)
+                            .type(NotificationType.REQUEST_REJECTED)
                             .build());
                 });
                 requestRepository.saveAll(remainingPendingRequests);
