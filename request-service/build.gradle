@@ -9,12 +9,18 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri(project.findProperty("REPOSITORY_URL") ?: "")
-        credentials {
-            username = project.findProperty("REPOSITORY_USERNAME") ?: ""
-            password = project.findProperty("REPOSITORY_PASSWORD") ?: ""
+
+    def repoUrl = project.findProperty("REPOSITORY_URL")
+    if (repoUrl) {
+        maven {
+            url = uri(repoUrl)
+            credentials {
+                username = project.findProperty("REPOSITORY_USERNAME") ?: ""
+                password = project.findProperty("REPOSITORY_PASSWORD") ?: ""
+            }
         }
+    } else {
+        println "Gradle: REPOSITORY_URL not set, skipping custom Maven repository."
     }
 }
 
