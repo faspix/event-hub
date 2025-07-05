@@ -1,21 +1,24 @@
 package com.faspix.notificationservice.service;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
     @Value("${app.mail.from}")
-    private final String fromAddress;
+    private String fromAddress;
 
     public void sendEmail(String email, String subject, String body) {
+        if (email == null) {
+            throw new IllegalArgumentException("Email cannot be null");
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromAddress);
         message.setTo(email);

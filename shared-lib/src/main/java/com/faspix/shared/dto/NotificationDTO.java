@@ -8,10 +8,10 @@ import lombok.Data;
 @Builder
 public class NotificationDTO {
 
-    private final NotificationType type;
+    private NotificationType type;
 
-    private final String userId;
+    private String userId;
 
-    private final String eventName;
+    private String eventName;
 
 }
