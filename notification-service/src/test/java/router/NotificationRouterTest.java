@@ -10,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static utility.NotificationFactory.makeNotificationDTO;
 
@@ -46,13 +49,4 @@ class NotificationRouterTest {
         verifyNoMoreInteractions(notificationService);
     }
 
-    @Test
-    void receiveNotification_UnknownType_ShouldDoNothing() {
-        NotificationDTO notification = makeNotificationDTO();
-        notification.setType(null);
-
-        notificationRouter.receiveNotification(notification);
-
-        verifyNoInteractions(notificationService);
-    }
 }

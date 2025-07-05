@@ -15,6 +15,7 @@ public class NotificationRouter {
         switch (notification.getType()) {
             case REQUEST_CONFIRMED -> notificationService.sendConfirmedRequestNotification(notification);
             case REQUEST_REJECTED -> notificationService.sendRejectedRequestNotification(notification);
+            default -> throw new IllegalArgumentException("Invalid notification type");
         }
     }
 
