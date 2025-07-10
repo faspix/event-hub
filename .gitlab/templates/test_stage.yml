@@ -1,0 +1,33 @@
+# docker is needed for test containers
+.dind_service: &dind_service_java
+  image: registry.gitlab.com/event-hub-group/event-hub/ci-image:0.1
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+
+test_and_coverage_job:
+  <<: *dind_service_java
+  stage: test_stage
+  script:
+    - >-
+      ./gradlew test
+      -PREPOSITORY_USERNAME=gitlab-ci-token
+      -PREPOSITORY_PASSWORD=$CI_JOB_TOKEN
+      -PREPOSITORY_URL=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/maven
+    - >-
+      ./gradlew jacocoRootReport
+      -PREPOSITORY_USERNAME=gitlab-ci-token
+      -PREPOSITORY_PASSWORD=$CI_JOB_TOKEN
+      -PREPOSITORY_URL=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/maven
+  artifacts:
+    paths:
+      - build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+
+upload_coverage_job:
+  stage: test_stage
+  image: eclipse-temurin:21
+  script:
+    - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+  needs:
+    - test_and_coverage_job

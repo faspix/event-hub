@@ -1,0 +1,13 @@
+
+build_and_publish_shared-lib_job:
+  stage: build_and_publish_shared-lib_stage
+  when: manual
+  script:
+    - >- 
+      gradle :shared-lib:build 
+      -PREPOSITORY_URL=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/maven
+    - >-
+      gradle :shared-lib:publish 
+      -PREPOSITORY_USERNAME=gitlab-ci-token 
+      -PREPOSITORY_PASSWORD=$CI_JOB_TOKEN 
+      -PREPOSITORY_URL=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/maven
