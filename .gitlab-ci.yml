@@ -5,10 +5,10 @@ workflow:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "develop"'
 
 default:
-  image: gradle:8.14-jdk21
+  image: registry.gitlab.com/event-hub-group/event-hub/ci-image:0.1
 
 stages:
-#  - lint_stage
+  - lint_stage
   - test_stage
   - build_and_push_stage
   - build_and_publish_shared-lib_stage
@@ -16,7 +16,7 @@ stages:
 #  - deploy_prod_stage
 
 include:
-#  - local: '.gitlab/templates/lint_stage.yml'
+  - local: '.gitlab/templates/lint_stage.yml'
   - local: '.gitlab/templates/test_stage.yml'
   - local: '.gitlab/templates/build_and_push_stage.yml'
   - local: '.gitlab/templates/build_and_publish_shared-lib_stage.yml'

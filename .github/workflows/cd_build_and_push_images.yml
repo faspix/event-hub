@@ -24,14 +24,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build without test
-        run: |
-          ./gradlew build -x test \
-          -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
-          -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
-          -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
-
-
       - name: Generate services list
         id: set-matrix
         run: |
@@ -43,12 +35,6 @@ jobs:
 
       - name: Show generated matrix
         run: echo "${{ steps.set-matrix.outputs.services }}"
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: '*/build/libs/'
 
   build-images-and-push:
     needs: generate-matrix
@@ -65,6 +51,19 @@ jobs:
         with:
           name: build-artifacts
           path: .
+
+      - name: Build without test
+        run: |
+          ./gradlew :${{ matrix.service }}:build -x test \
+          -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
+          -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
+          -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: '*/build/libs/'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2

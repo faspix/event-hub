@@ -1,3 +1,4 @@
+---
 # docker is needed for test containers
 .dind_service: &dind_service_java
   image: registry.gitlab.com/event-hub-group/event-hub/ci-image:0.1
