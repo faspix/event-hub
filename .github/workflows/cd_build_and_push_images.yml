@@ -51,6 +51,7 @@ jobs:
         with:
           name: build-artifacts
           path: .
+        continue-on-error: true
 
       - name: Build without test
         run: |
