@@ -1,5 +1,5 @@
 ---
-build_and_publish_shared-lib_job:
+build_and_publish_shared-lib:
   stage: build_and_publish_shared-lib_stage
   when: manual
   script:

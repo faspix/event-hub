@@ -25,7 +25,7 @@ unit_tests:
     paths:
       - build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
 
-upload_coverage_job:
+upload_coverage:
   stage: test_stage
   image: eclipse-temurin:21-alpine
   script:
