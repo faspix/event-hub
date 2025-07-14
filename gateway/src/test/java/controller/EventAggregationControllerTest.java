@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static utility.CommentFactory.makeComment;
 import static utility.EventFactory.makeEventWithComments;

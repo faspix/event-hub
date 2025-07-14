@@ -7,7 +7,7 @@
   variables:
     DOCKER_HOST: tcp://docker:2375/
 
-test_and_coverage_job:
+unit_tests:
   <<: *dind_service_java
   stage: test_stage
   script:
@@ -31,4 +31,4 @@ upload_coverage_job:
   script:
     - bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
   needs:
-    - test_and_coverage_job
+    - unit_tests
