@@ -1,1 +1,13 @@
 ---
+lint_job:
+  stage: lint_stage
+  script:
+    - ./gradlew pmdMain pmdTest --console=plain --no-daemon
+  artifacts:
+    paths:
+      - build/reports/pmd/
+    expire_in: 5 days
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Code-Quality.gitlab-ci.yml

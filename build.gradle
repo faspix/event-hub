@@ -38,6 +38,13 @@ def findDuplicateClasses() {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
+    apply plugin: 'pmd'
+
+    pmd {
+        toolVersion = '7.0.0'
+        ruleSets = []
+        ruleSetFiles = files(rootProject.file('.config/pmd/pmd.xml'))
+    }
 
     jacocoTestReport {
         afterEvaluate {
