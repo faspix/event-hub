@@ -46,12 +46,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
         with:
-          name: build-artifacts
-          path: .
-        continue-on-error: true
+          path: ~/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Build without test
         run: |
@@ -59,12 +60,6 @@ jobs:
           -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
           -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
           -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: '*/build/libs/'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
