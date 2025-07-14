@@ -24,7 +24,6 @@ jobs:
       - name: Build packages
         run: ./gradlew :shared-lib:build
 
-
       - name: Publish to GitHub Packages
         run: |
           ./gradlew :shared-lib:publish \

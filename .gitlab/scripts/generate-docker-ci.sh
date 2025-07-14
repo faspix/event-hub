@@ -26,6 +26,9 @@ build_and_push_$MODULE:
     - docker build -t registry.gitlab.com/\$CI_PROJECT_PATH/$MODULE:\$CI_COMMIT_SHORT_SHA $MODULE
     - docker push registry.gitlab.com/\$CI_PROJECT_PATH/$MODULE:\$CI_COMMIT_SHORT_SHA
   cache:
+    key:
+      files:
+        - build.gradle
     paths:
       - .gradle/
 EOF
