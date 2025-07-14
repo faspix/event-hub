@@ -2,7 +2,6 @@ package utility;
 
 import com.faspix.shared.dto.ResponseCategoryDTO;
 import com.faspix.shared.dto.ResponseEventDTO;
-import com.faspix.shared.dto.ResponseEventShortDTO;
 import com.faspix.shared.dto.ResponseUserShortDTO;
 import com.faspix.shared.utility.EventState;
 import com.faspix.shared.utility.Location;

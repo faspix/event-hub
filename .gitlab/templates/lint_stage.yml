@@ -1,0 +1,21 @@
+---
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Code-Quality.gitlab-ci.yml
+
+lint:
+  stage: lint_stage
+  script:
+    - >-
+      ./gradlew pmdMain pmdTest --console=plain --no-daemon
+      -PREPOSITORY_URL=https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/maven
+  artifacts:
+    paths:
+      - "**/build/reports/pmd/"
+    expire_in: 5 days
+
+sast:
+  stage: lint_stage
+
+code_quality:
+  stage: lint_stage

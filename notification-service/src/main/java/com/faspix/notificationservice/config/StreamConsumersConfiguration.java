@@ -1,7 +1,6 @@
 package com.faspix.notificationservice.config;
 
 import com.faspix.notificationservice.router.NotificationRouter;
-import com.faspix.notificationservice.service.NotificationService;
 import com.faspix.shared.dto.NotificationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
