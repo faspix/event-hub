@@ -10,7 +10,6 @@ on:
   pull_request:
     branches:
       - develop
-      - master
 
 jobs:
   test:
@@ -32,7 +31,6 @@ jobs:
           -PREPOSITORY_USERNAME=${{ secrets.GITHUB_ACTOR }} \
           -PREPOSITORY_PASSWORD=${{ secrets.GITHUB_TOKEN }} \
           -PREPOSITORY_URL=${{ vars.REPOSITORY_URL }}
-
 
       - name: Generate coverage report
         run: |

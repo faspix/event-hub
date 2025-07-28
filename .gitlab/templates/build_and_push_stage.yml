@@ -1,4 +1,3 @@
----
 .build_and_push_stage_rules: &build_and_push_rules
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "develop"'
@@ -8,9 +7,9 @@
 generate-dynamic-ci:
   stage: build_and_push_stage
   <<: *build_and_push_rules
-  image: alpine:latest
+#  image: alpine:latest
   script:
-    - apk add --no-cache bash grep sed coreutils
+#    - apk add --no-cache bash grep sed coreutils
     - chmod +x .gitlab/scripts/generate-docker-ci.sh
     - .gitlab/scripts/generate-docker-ci.sh > docker-ci.yml
   artifacts:

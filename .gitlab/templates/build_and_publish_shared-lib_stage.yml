@@ -1,4 +1,3 @@
----
 build_and_publish_shared-lib:
   stage: build_and_publish_shared-lib_stage
   when: manual
